@@ -9,7 +9,7 @@ export function Home() {
 
   return (
     <>
-      <h1>io-field-app</h1>
+      <h1>io-technik</h1>
       <div class="card">
         <button type="button" class="button is-link is-small" onClick={() => setCount((count) => count + 1)}>
           count is {count()}
