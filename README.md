@@ -1,10 +1,26 @@
+## Installation
+
+This project requires the following dependencies:
+- Node v18.12^
+- SolidJS
+- Bulma
+- PNPM
+
+### Prerequisites
+If you don't use the standalone script or @pnpm/exe to install pnpm, then you need to have Node.js (at least v18.12) to be installed on your system.
+
+Using a standalone script
+You may install pnpm even if you don't have Node.js installed, using the following scripts.
+
+```bash
+$ npm install -g pnpm
+```
+
 ## Usage
 
 ```bash
 $ npm install # or pnpm install or yarn install
 ```
-
-### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
 
 ## Available Scripts
 
