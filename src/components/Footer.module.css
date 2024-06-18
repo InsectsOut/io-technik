@@ -1,0 +1,8 @@
+footer {
+    width: -webkit-fill-available;
+    padding: 1rem;
+
+    a {
+        color: white;
+    }
+}

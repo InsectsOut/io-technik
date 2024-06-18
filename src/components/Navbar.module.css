@@ -1,0 +1,3 @@
+.dropdown-expand .navbar-link:not(.is-arrowless)::after {
+    transform: rotate(-225deg);
+}

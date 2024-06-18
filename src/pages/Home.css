@@ -1,0 +1,10 @@
+.card {
+    justify-content: center;
+    padding: 2em;
+    display: flex;
+    gap: 1rem;
+}
+
+h1 {
+    padding: 1rem;
+}
