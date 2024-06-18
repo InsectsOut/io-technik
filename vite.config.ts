@@ -1,10 +1,17 @@
+import { resolve } from "path";
 import { VitePWA } from 'vite-plugin-pwa';
+import solid from 'vite-plugin-solid'
 import { defineConfig } from 'vite'
 // import basicSsl from '@vitejs/plugin-basic-ssl'
-import solid from 'vite-plugin-solid'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: [
+      { find: "@", replacement: resolve(__dirname, "./src") },
+    ]
+  },
+
   plugins: [solid(), VitePWA({
     registerType: 'autoUpdate',
     injectRegister: "script",

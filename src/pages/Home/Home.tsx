@@ -1,7 +1,7 @@
 import { createSignal } from 'solid-js'
 
 import "./Home.css";
-import { userStore as user } from "../../state/User";
+import { userStore as user } from "@/state/User";
 
 export function Home() {
   const [count, setCount] = createSignal(0);

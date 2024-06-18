@@ -16,6 +16,7 @@
     "ts-pattern": "^5.1.2"
   },
   "devDependencies": {
+    "@types/node": "^20.14.5",
     "@vite-pwa/assets-generator": "^0.2.4",
     "typescript": "^5.2.2",
     "vite": "^5.2.10",
