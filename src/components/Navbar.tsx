@@ -2,7 +2,8 @@ import { classNames } from "../utils/CssHelpers";
 import { Show, createSignal } from "solid-js";
 
 import "./Navbar.module.css";
-import { userStore as user } from "../state/User"
+import { userStore as user } from "@/state/User";
+import { A } from "@solidjs/router";
 
 export function Navbar() {
     const [isMenuActive, setMenuActive] = createSignal(false);
@@ -32,10 +33,10 @@ export function Navbar() {
     return (
         <nav class="navbar is-transparent is-fixed-top">
             <div class="navbar-brand">
-                <a onClick={closeMenu} href="/" class="has-text-link navbar-item">
+                <a onClick={closeMenu} href="/" class="has-text-white navbar-item">
                     insects-out
                 </a>
-                <div class="has-text-link navbar-item">{user.firstname} {user.lastname}</div>
+
                 <div class={navbarBurgerClass()}
                     data-target="navbar-element"
                     onClick={toggleMenu}
@@ -49,6 +50,10 @@ export function Navbar() {
 
             <div id="navbar-element" class={navbarMenuClass()}>
                 <div class="navbar-start">
+                    <A onClick={closeMenu} href="/user" class="has-text-link navbar-item">
+                        {user.firstname} {user.lastname}
+                    </A>
+                    
                     <a onClick={closeMenu} class="navbar-item" href="/home">Inicio</a>
                     <div class={navbarDropdownClass()}>
                         <a class="navbar-link" onClick={toggleDrop}>Más</a>

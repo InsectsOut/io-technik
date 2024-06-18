@@ -1,7 +1,6 @@
-.error {
+.username {
     text-align: center;
     vertical-align: middle;
-    margin: 1rem;
 }
 
 .container {
@@ -10,8 +9,4 @@
     justify-content: center;
     align-items: center;
     height: 50vh;
-
-    & button {
-        min-width: 35%;
-    }
 }
