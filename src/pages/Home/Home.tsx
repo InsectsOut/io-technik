@@ -17,8 +17,8 @@ export function Home() {
         <button type="button" class="button is-danger is-small is-outlined" onClick={() => setCount((count) => count + 1)}>
           count x2 is {double()}
         </button>
-        <label>Set the username: </label>
-        <input type="text"
+        <label for="home-input">Escribe tu nombre de usuario: </label>
+        <input id="home-input" type="text"
           value={user.firstname}
           onInput={(e) => user.firstname = e.target.value}
         />

@@ -1,8 +1,7 @@
 import PWABadge from './PWABadge.tsx'
-import { Navbar } from './components/Navbar.tsx';
+import { Footer, Navbar } from "@/components";
 
 import './App.css'
-import { Footer } from './components/Footer.tsx';
 import { ParentProps } from 'solid-js';
 
 function App(props: ParentProps) {
@@ -13,7 +12,7 @@ function App(props: ParentProps) {
       <Footer />
       <PWABadge />
     </>
-  )
+  );
 }
 
 export default App;
