@@ -1,6 +1,7 @@
 import { createSignal } from 'solid-js'
 
 import "./Home.css";
+import { userStore as user } from "../../state/User";
 
 export function Home() {
   const [count, setCount] = createSignal(0);
@@ -16,6 +17,11 @@ export function Home() {
         <button type="button" class="button is-danger is-small is-outlined" onClick={() => setCount((count) => count + 1)}>
           count x2 is {double()}
         </button>
+        <label>Set the username: </label>
+        <input type="text"
+          value={user.firstname}
+          onInput={(e) => user.firstname = e.target.value}
+        />
       </div>
     </>
   )

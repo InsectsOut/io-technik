@@ -1,7 +1,8 @@
-import { classNames } from '../utils/CssHelpers';
-import { Show, createSignal } from 'solid-js';
+import { classNames } from "../utils/CssHelpers";
+import { Show, createSignal } from "solid-js";
 
-import './Navbar.module.css';
+import "./Navbar.module.css";
+import { userStore as user } from "../state/User"
 
 export function Navbar() {
     const [isMenuActive, setMenuActive] = createSignal(false);
@@ -34,6 +35,7 @@ export function Navbar() {
                 <a onClick={closeMenu} href="/" class="has-text-link navbar-item">
                     insects-out
                 </a>
+                <div class="has-text-link navbar-item">{user.firstname} {user.lastname}</div>
                 <div class={navbarBurgerClass()}
                     data-target="navbar-element"
                     onClick={toggleMenu}
