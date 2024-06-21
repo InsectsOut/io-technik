@@ -15,6 +15,7 @@
     "bulma": "^1.0.1",
     "solid-js": "^1.8.17",
     "solid-motionone": "^1.0.0",
+    "solidjs-use": "^2.3.0",
     "ts-pattern": "^5.1.2"
   },
   "devDependencies": {
