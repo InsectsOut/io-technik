@@ -54,7 +54,7 @@ export function Navbar() {
                         {user.firstname} {user.lastname}
                     </A>
                     
-                    <a onClick={closeMenu} class="navbar-item" href="/home">Inicio</a>
+                    <a onClick={closeMenu} class="navbar-item" href="/">Inicio</a>
                     <div class={navbarDropdownClass()}>
                         <a class="navbar-link" onClick={toggleDrop}>Más</a>
                         <Show when={isDropActive()}>
