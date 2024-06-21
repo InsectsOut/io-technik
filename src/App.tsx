@@ -14,7 +14,7 @@ const Animation: MotionOptions = {
   exit: { opacity: [1, 0] },
   transition: {
     easing: "ease-in-out",
-    duration: 0.5,
+    duration: 0.75,
   }
 };
 
