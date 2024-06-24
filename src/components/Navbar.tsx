@@ -4,6 +4,7 @@ import { Show, createSignal } from "solid-js";
 import "./Navbar.module.css";
 import { userStore as user } from "@/state/User";
 import { A, useBeforeLeave } from "@solidjs/router";
+import { session } from "@/supabase";
 
 export function Navbar() {
     const [isMenuActive, setMenuActive] = createSignal(false);
@@ -58,9 +59,11 @@ export function Navbar() {
 
             <div id="navbar-element" class={navbarMenuClass()}>
                 <div class="navbar-start">
-                    <A href="/user" class="has-text-link navbar-item">
-                        {user.firstname} {user.lastname}
-                    </A>
+                    <Show when={session()}>
+                        <A href="/user" class="has-text-link navbar-item">
+                            {user.firstname} {user.lastname}
+                        </A>
+                    </Show>
 
                     <a class="navbar-item" href="/home">Inicio</a>
                     <div class={navbarDropdownClass()}>
