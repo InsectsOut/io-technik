@@ -27,6 +27,7 @@ export function Navbar() {
     const closeSession = () => {
         supabase.auth.signOut().then(() => {
             navigate("/login");
+            closeMenu();
         });
     };
 
@@ -47,62 +48,57 @@ export function Navbar() {
     useBeforeLeave(() => closeMenu());
 
     return (
-        <nav class="navbar is-transparent is-fixed-top">
-            <div class="navbar-brand">
-                <a href="/home" class="has-text-link navbar-item">
-                    insects-out
-                </a>
+        <Show when={session()}>
+            <nav class="navbar is-transparent is-fixed-top">
+                <div class="navbar-brand">
+                    <a href="/home" class="has-text-link navbar-item">
+                        insects-out
+                    </a>
 
-                <div class={navbarBurgerClass()}
-                    data-target="navbar-element"
-                    onClick={toggleMenu}
-                >
-                    <span />
-                    <span />
-                    <span />
-                    <span />
-                </div>
-            </div>
-
-            <div id="navbar-element" class={navbarMenuClass()}>
-                <div class="navbar-start">
-                    <Show when={session()}>
-                        <A href="/user" class="has-text-link navbar-item">
-                            {user.firstname} {user.lastname}
-                        </A>
-                    </Show>
-
-                    <a class="navbar-item" href="/home">Inicio</a>
-                    <div class={navbarDropdownClass()}>
-                        <a class="navbar-link" onClick={toggleDrop}>Más</a>
-                        <Show when={isDropActive()}>
-                            <div class="navbar-dropdown is-boxed is-hoverable">
-                                <a href="/about" class="navbar-item"> Información </a>
-                                <a class="navbar-item"> Contacto </a>
-                                <hr class="navbar-divider" />
-                                <a class="navbar-item"> Reporta un problema </a>
-                            </div>
-                        </Show>
+                    <div class={navbarBurgerClass()}
+                        data-target="navbar-element"
+                        onClick={toggleMenu}
+                    >
+                        <span />
+                        <span />
+                        <span />
+                        <span />
                     </div>
                 </div>
 
-                <div class="navbar-end">
-                    <div class="navbar-item">
-                        <div class="buttons is-centered">
-                            <Show when={session()}>
-                                <a onClick={closeSession} class="button is-link">
-                                    <strong>Cerrar sesión</strong>
-                                </a>
-                            </Show>
-                            <Show when={!session()}>
-                                <a href="/login" class="button is-light">
-                                    Iniciar sesión
-                                </a>
+                <div id="navbar-element" class={navbarMenuClass()}>
+                    <div class="navbar-start">
+                        <Show when={session()}>
+                            <A href="/user" class="has-text-link navbar-item">
+                                {user.firstname} {user.lastname}
+                            </A>
+                        </Show>
+
+                        <a class="navbar-item" href="/home">Inicio</a>
+                        <div class={navbarDropdownClass()}>
+                            <a class="navbar-link" onClick={toggleDrop}>Más</a>
+                            <Show when={isDropActive()}>
+                                <div class="navbar-dropdown is-boxed is-hoverable">
+                                    <a href="/about" class="navbar-item"> Información </a>
+                                    <a class="navbar-item"> Contacto </a>
+                                    <hr class="navbar-divider" />
+                                    <a class="navbar-item"> Reporta un problema </a>
+                                </div>
                             </Show>
                         </div>
                     </div>
+
+                    <div class="navbar-end">
+                        <div class="navbar-item">
+                            <div class="buttons is-centered">
+                                <a onClick={closeSession} class="button is-link">
+                                    <strong>Cerrar sesión</strong>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </nav>
+            </nav>
+        </Show>
     );
 }
