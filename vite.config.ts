@@ -6,6 +6,8 @@ import { defineConfig } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  envPrefix: "IO_",
+
   resolve: {
     alias: [
       { find: "@", replacement: resolve(__dirname, "./src") },
