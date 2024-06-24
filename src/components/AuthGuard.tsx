@@ -10,16 +10,17 @@ import "./AuthGuard.css";
  * @returns The rendered `children` if logged in; Redirects to `'/login'` otherwise.
  */
 export function AuthGuard(props: ParentProps) {
-    const navigate = useNavigate();
+    /** Time to wait before redirecting to login page */
     const redirectDelay = 1500;
-
+    const navigate = useNavigate();
+    
     createEffect(() => {
         if (session()) {
             return;
         }
 
         setTimeout(
-            () => navigate("/login", { replace: true }),
+            () => navigate("/login"),
             redirectDelay
         );
     });

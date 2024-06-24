@@ -39,7 +39,6 @@ export function Login() {
             .then(() => "Sesión iniciada");
     }
 
-    redirectHome();
     createEffect(redirectHome);
 
     return (

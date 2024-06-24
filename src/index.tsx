@@ -10,10 +10,10 @@ import { AuthGuard } from "@/components";
 render(() => (
     <Router root={App}>
         <Route path="/login" component={Login} />
-        <Route component={AuthGuard}>
-            <Route path={["/", "/home"]} component={Home} />
-            <Route path="about" component={About} />
-            <Route path="user" component={Profile} />
+        <Route path="/" component={AuthGuard}>
+            <Route path="/home" component={Home} />
+            <Route path="/about" component={About} />
+            <Route path="/user" component={Profile} />
         </Route>
         <Route path="*404" component={NotFound} />
     </Router>
