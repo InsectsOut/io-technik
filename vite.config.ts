@@ -28,7 +28,7 @@ export default defineConfig({
       short_name: 'io-field-app',
       description: 'Aplicacion PWA de campo para Insects Out',
       theme_color: '#69748c',
-      start_url: "/",
+      start_url: "/login",
       lang: "es",
     },
 

@@ -1,7 +1,14 @@
 .error {
     text-align: center;
     vertical-align: middle;
+}
+
+button {
     margin: 1rem;
+}
+
+.strong {
+    font-size: 1.5rem;
 }
 
 .container {

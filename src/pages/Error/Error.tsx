@@ -3,16 +3,20 @@ import css from "./Error.module.css";
 
 export function Error() {
     const navigate = useNavigate();
-    const goHome = () =>navigate("/home");
+    const goHome = () => navigate("/home");
+
     return (
         <div class={css.container}>
             <h1 class={css.error}>Error 🚧</h1>
-            <h2 class={css.error}>Regresar al inicio</h2>
+            <h2 class="subtitle">Regresar al inicio</h2>
             <button
-                class="button is-link navbar-item"
+                type="button"
+                class="button is-link"
                 onClick={goHome}
             >
-                Inicio 🏠
+                <strong class={css.strong}>
+                    Inicio
+                </strong>
             </button>
         </div>
     );

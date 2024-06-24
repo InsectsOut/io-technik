@@ -1,6 +1,6 @@
 import insectsImg from "@/assets/insects-out-med.png";
 import { getUserData } from "@/state/User";
-import { supabase } from "@/supabase";
+import { session, supabase } from "@/supabase";
 import { useNavigate } from "@solidjs/router";
 import { createEffect, createSignal } from "solid-js";
 
@@ -10,6 +10,12 @@ const [pass, setPass] = createSignal("");
 
 export function Login() {
     const navigate = useNavigate();
+
+    function redirectHome() {
+        if (session()) {
+            navigate("/home");
+        }
+    }
 
     function loginUser(): Promise<string> {
         if (!email()) {
@@ -33,14 +39,8 @@ export function Login() {
             .then(() => "Sesión iniciada");
     }
 
-    createEffect(() => {
-        supabase.auth.getUser()
-            .then(({ data }) => {
-                if (data.user) {
-                    navigate("/home");
-                }
-            })
-    })
+    redirectHome();
+    createEffect(redirectHome);
 
     return (
         <div class="field is-grouped is-flex-direction-column">
