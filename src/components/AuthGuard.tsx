@@ -11,7 +11,6 @@ import "./AuthGuard.css";
  */
 export function AuthGuard(props: ParentProps) {
     /** Time to wait before redirecting to login page */
-    const redirectDelay = 1000;
     const navigate = useNavigate();
     
     createEffect(() => {
@@ -19,10 +18,7 @@ export function AuthGuard(props: ParentProps) {
             return;
         }
 
-        setTimeout(
-            () => navigate("/login"),
-            redirectDelay
-        );
+        navigate("/login");
     });
 
     return (

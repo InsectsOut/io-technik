@@ -11,7 +11,7 @@ export const supabase = createClient(IO_SUPABASE_URL, IO_SUPABASE_KEY, {
 /**
  * Getter/Setter for the current user session, if any
 */
-export const [session, setSession] = createSignal<Session | null>();
+export const [session, setSession] = createSignal<Session | null>(null);
 
 /**
  * Updates the session when the auth state changes

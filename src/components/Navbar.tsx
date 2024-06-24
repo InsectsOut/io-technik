@@ -44,7 +44,7 @@ export function Navbar() {
     );
 
     /** Close the dropdown menu on navigation */
-    useBeforeLeave(closeMenu);
+    useBeforeLeave(() => closeMenu());
 
     return (
         <nav class="navbar is-transparent is-fixed-top">
