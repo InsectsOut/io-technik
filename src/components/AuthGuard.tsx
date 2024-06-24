@@ -12,14 +12,15 @@ import "./AuthGuard.css";
 export function AuthGuard(props: ParentProps) {
     /** Time to wait before redirecting to login page */
     const navigate = useNavigate();
-    
-    createEffect(() => {
+    function checkSession() {
         if (session()) {
             return;
         }
 
         navigate("/login");
-    });
+    }
+
+    createEffect(checkSession);
 
     return (
         <Show when={session()}
