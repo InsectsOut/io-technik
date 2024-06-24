@@ -3,14 +3,15 @@ import { Show, createSignal } from "solid-js";
 
 import "./Navbar.module.css";
 import { userStore as user } from "@/state/User";
-import { A, useBeforeLeave } from "@solidjs/router";
-import { session } from "@/supabase";
+import { A, useBeforeLeave, useNavigate } from "@solidjs/router";
+import { session, supabase } from "@/supabase";
 
 export function Navbar() {
     const [isMenuActive, setMenuActive] = createSignal(false);
     const [isDropActive, setDropActive] = createSignal(false);
     const toggleMenu = () => setMenuActive(!isMenuActive());
     const toggleDrop = () => setDropActive(!isDropActive());
+    const navigate = useNavigate();
     const closeMenu = () => {
         setMenuActive(false);
         setDropActive(false);
@@ -22,11 +23,19 @@ export function Navbar() {
         ["is-active", isMenuActive()]
     );
 
+    /** Closes the current user session */
+    const closeSession = () => {
+        supabase.auth.signOut().then(() => {
+            navigate("/login");
+        });
+    };
+
     /** Classname for the navbar-menu element */
     const navbarMenuClass = () => classNames(
         "navbar-menu", ["is-active", isMenuActive()]
     );
 
+    /** Classname for the navbar-dropdown */
     const navbarDropdownClass = () => classNames(
         "navbar-item has-dropdown is-hoverable",
         ["dropdown-expand", isDropActive()],
@@ -35,9 +44,7 @@ export function Navbar() {
     );
 
     /** Close the dropdown menu on navigation */
-    useBeforeLeave(() => {
-        closeMenu();
-    });
+    useBeforeLeave(closeMenu);
 
     return (
         <nav class="navbar is-transparent is-fixed-top">
@@ -82,12 +89,16 @@ export function Navbar() {
                 <div class="navbar-end">
                     <div class="navbar-item">
                         <div class="buttons is-centered">
-                            <a class="button is-link">
-                                <strong>Registrarse</strong>
-                            </a>
-                            <a href="/login" class="button is-light">
-                                Iniciar sesión
-                            </a>
+                            <Show when={session()}>
+                                <a onClick={closeSession} class="button is-link">
+                                    <strong>Cerrar sesión</strong>
+                                </a>
+                            </Show>
+                            <Show when={!session()}>
+                                <a href="/login" class="button is-light">
+                                    Iniciar sesión
+                                </a>
+                            </Show>
                         </div>
                     </div>
                 </div>
