@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { Session, createClient } from "@supabase/supabase-js";
 import { createSignal } from "solid-js";
 
 const { IO_SUPABASE_KEY, IO_SUPABASE_URL } = import.meta.env;
@@ -8,13 +8,10 @@ export const supabase = createClient(IO_SUPABASE_URL, IO_SUPABASE_KEY, {
     auth: { autoRefreshToken: true, persistSession: true }
 });
 
-/** Initial data for the user session */
-const { data } = await supabase.auth.getSession();
-
 /**
  * Getter/Setter for the current user session, if any
 */
-export const [session, setSession] = createSignal(data.session);
+export const [session, setSession] = createSignal<Session | null>();
 
 /**
  * Updates the session when the auth state changes
