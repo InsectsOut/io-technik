@@ -80,7 +80,6 @@ export function Navbar() {
                             <Show when={isDropActive()}>
                                 <div class="navbar-dropdown is-boxed is-hoverable">
                                     <a href="/about" class="navbar-item"> Información </a>
-                                    <a class="navbar-item"> Contacto </a>
                                     <hr class="navbar-divider" />
                                     <a class="navbar-item"> Reporta un problema </a>
                                 </div>

@@ -1,9 +1,9 @@
 import PWABadge from './PWABadge.tsx'
-import { AuthGuard, Footer, Navbar } from "@/components";
-import { About, Error, Home, Login, NotFound, Profile } from "@/pages";
+import { Footer, Navbar } from "@/components";
+import { Error } from "@/pages";
 
-import { ErrorBoundary, createSignal, Show } from 'solid-js';
-import { Route, Router, useBeforeLeave } from '@solidjs/router';
+import { ErrorBoundary, createSignal, Show, ParentProps } from 'solid-js';
+import { useBeforeLeave } from '@solidjs/router';
 import { Motion, Options as MotionOptions } from 'solid-motionone';
 
 import './App.css'
@@ -18,7 +18,7 @@ const Animation: MotionOptions = {
   }
 };
 
-function App() {
+function App(props: ParentProps) {
   /** Resets the animation state so it shows up on navigation */
   const [visible, setVisible] = createSignal(true);
 
@@ -37,15 +37,7 @@ function App() {
             animate={Animation.animate}
             exit={Animation.exit}
           >
-            <Router>
-              <Route path="/login" component={Login} />
-              <Route path="/" component={AuthGuard}>
-                <Route path="/home" component={Home} />
-                <Route path="/about" component={About} />
-                <Route path="/user" component={Profile} />
-              </Route>
-              <Route path="*404" component={NotFound} />
-            </Router>
+            {props.children}
           </Motion.main>
         </Show>
       </ErrorBoundary>
