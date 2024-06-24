@@ -31,8 +31,9 @@ export function Login() {
                 if (response.error) {
                     alert("Correo o contraseña incorrecta");
                 } else {
-                    getUserData();
-                    navigate("/home", { replace: true });
+                    getUserData().then(() => {
+                        navigate("/home", { replace: true });
+                    });
                 }
             })
             .catch(console.error)

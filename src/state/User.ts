@@ -9,8 +9,8 @@ type User = {
     id: string
 }
 
-export function getUserData() {
-    supabase.auth.getUser().then(({ data, error }) => {
+export function getUserData(): Promise<void> {
+    return supabase.auth.getUser().then(({ data, error }) => {
         if (data.user) {
             const { email, id } = data.user;
             userStore.email = email || "no-email";
