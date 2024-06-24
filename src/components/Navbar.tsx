@@ -3,14 +3,17 @@ import { Show, createSignal } from "solid-js";
 
 import "./Navbar.module.css";
 import { userStore as user } from "@/state/User";
-import { A } from "@solidjs/router";
+import { A, useBeforeLeave } from "@solidjs/router";
 
 export function Navbar() {
     const [isMenuActive, setMenuActive] = createSignal(false);
     const [isDropActive, setDropActive] = createSignal(false);
-    const closeMenu = () => setMenuActive(false);
     const toggleMenu = () => setMenuActive(!isMenuActive());
     const toggleDrop = () => setDropActive(!isDropActive());
+    const closeMenu = () => {
+        setMenuActive(false);
+        setDropActive(false);
+    };
 
     /** Classname for the navbar-burger element */
     const navbarBurgerClass = () => classNames(
@@ -30,10 +33,15 @@ export function Navbar() {
         ["is-active", isDropActive()],
     );
 
+    /** Close the dropdown menu on navigation */
+    useBeforeLeave(() => {
+        closeMenu();
+    });
+
     return (
         <nav class="navbar is-transparent is-fixed-top">
             <div class="navbar-brand">
-                <a onClick={closeMenu} href="/" class="has-text-white navbar-item">
+                <a href="/home" class="has-text-link navbar-item">
                     insects-out
                 </a>
 
@@ -50,16 +58,16 @@ export function Navbar() {
 
             <div id="navbar-element" class={navbarMenuClass()}>
                 <div class="navbar-start">
-                    <A onClick={closeMenu} href="/user" class="has-text-link navbar-item">
+                    <A href="/user" class="has-text-link navbar-item">
                         {user.firstname} {user.lastname}
                     </A>
-                    
-                    <a onClick={closeMenu} class="navbar-item" href="/">Inicio</a>
+
+                    <a class="navbar-item" href="/home">Inicio</a>
                     <div class={navbarDropdownClass()}>
                         <a class="navbar-link" onClick={toggleDrop}>Más</a>
                         <Show when={isDropActive()}>
                             <div class="navbar-dropdown is-boxed is-hoverable">
-                                <a onClick={closeMenu} href="/about" class="navbar-item"> Información </a>
+                                <a href="/about" class="navbar-item"> Información </a>
                                 <a class="navbar-item"> Contacto </a>
                                 <hr class="navbar-divider" />
                                 <a class="navbar-item"> Reporta un problema </a>
@@ -74,7 +82,7 @@ export function Navbar() {
                             <a class="button is-link">
                                 <strong>Registrarse</strong>
                             </a>
-                            <a class="button is-light">
+                            <a href="/login" class="button is-light">
                                 Iniciar sesión
                             </a>
                         </div>
