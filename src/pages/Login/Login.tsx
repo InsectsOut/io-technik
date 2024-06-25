@@ -1,8 +1,7 @@
 import insectsImg from "@/assets/insects-out-med.png";
-import { getUserData } from "@/state/User";
-import { session, supabase } from "@/supabase";
+import { supabase } from "@/supabase";
 import { useNavigate } from "@solidjs/router";
-import { createEffect, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 
 const [email, setEmail] = createSignal("");
 const [pass, setPass] = createSignal("");
@@ -10,12 +9,6 @@ const [pass, setPass] = createSignal("");
 
 export function Login() {
     const navigate = useNavigate();
-
-    function redirectHome() {
-        if (session()) {
-            navigate("/home");
-        }
-    }
 
     function loginUser(): Promise<string> {
         if (!email()) {
@@ -26,21 +19,18 @@ export function Login() {
             return Promise.resolve("No password");
         }
 
-        return supabase.auth.signInWithPassword({ email: email(), password: pass() })
-            .then((response) => {
-                if (response.error) {
+        return supabase.auth
+            .signInWithPassword({ email: email(), password: pass() })
+            .then(({ data, error }) => {
+                if (!data.user || error) {
                     alert("Correo o contraseña incorrecta");
                 } else {
-                    getUserData().then(() => {
-                        navigate("/home", { replace: true });
-                    });
+                    navigate("/home", { replace: true });
                 }
             })
             .catch(console.error)
             .then(() => "Sesión iniciada");
     }
-
-    createEffect(redirectHome);
 
     return (
         <div class="field is-grouped is-flex-direction-column">
@@ -58,6 +48,7 @@ export function Login() {
                     onInput={(e) => setEmail(e.target.value)}
                     class="input is-rounded"
                     placeholder="Correo"
+                    required={true}
                 />
                 <span class="icon is-small is-left">
                     <i class="fas fa-envelope" />
@@ -72,6 +63,7 @@ export function Login() {
                     onInput={(e) => setPass(e.target.value)}
                     class="input is-rounded"
                     placeholder="Contraseña"
+                    required={true}
                 />
                 <span class="icon is-small is-left">
                     <i class="fas fa-lock" />

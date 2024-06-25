@@ -1,0 +1,6 @@
+## Redirects to the homepage if the route is empty
+[[redirects]]
+  from = "/"
+  to = "/home"
+  status = 301
+  force = false

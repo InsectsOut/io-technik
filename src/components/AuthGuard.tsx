@@ -1,6 +1,6 @@
 import { session } from "@/supabase";
-import { useNavigate } from "@solidjs/router";
-import { ParentProps, Show, createEffect } from "solid-js";
+import { Navigate } from "@solidjs/router";
+import { ParentProps, Show } from "solid-js";
 
 import "./AuthGuard.css";
 
@@ -10,23 +10,12 @@ import "./AuthGuard.css";
  * @returns The rendered `children` if logged in; Redirects to `'/login'` otherwise.
  */
 export function AuthGuard(props: ParentProps) {
-    /** Time to wait before redirecting to login page */
-    const navigate = useNavigate();
-    function checkSession() {
-        if (session()) {
-            return;
-        }
-
-        navigate("/login");
-    }
-
-    createEffect(checkSession);
-
     return (
-        <Show when={session()}
+        <Show when={session() != null}
             children={props.children}
             fallback={(
                 <div class="redirect">
+                    <Navigate href="/login" />
                     <p class="subtitle">Iniciando sesión...</p>
                 </div>
             )}

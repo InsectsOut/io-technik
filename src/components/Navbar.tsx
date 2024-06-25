@@ -3,7 +3,7 @@ import { Show, createSignal } from "solid-js";
 
 import "./Navbar.module.css";
 import { userStore as user } from "@/state/User";
-import { A, useBeforeLeave, useNavigate } from "@solidjs/router";
+import { A, useBeforeLeave } from "@solidjs/router";
 import { session, supabase } from "@/supabase";
 
 export function Navbar() {
@@ -11,7 +11,6 @@ export function Navbar() {
     const [isDropActive, setDropActive] = createSignal(false);
     const toggleMenu = () => setMenuActive(!isMenuActive());
     const toggleDrop = () => setDropActive(!isDropActive());
-    const navigate = useNavigate();
     const closeMenu = () => {
         setMenuActive(false);
         setDropActive(false);
@@ -24,12 +23,11 @@ export function Navbar() {
     );
 
     /** Closes the current user session */
-    const closeSession = () => {
-        supabase.auth.signOut().then(() => {
-            navigate("/login");
-            closeMenu();
-        });
-    };
+    function closeSession() {
+        supabase.auth
+            .signOut()
+            .then(closeMenu);
+    }
 
     /** Classname for the navbar-menu element */
     const navbarMenuClass = () => classNames(
@@ -51,9 +49,9 @@ export function Navbar() {
         <Show when={session()}>
             <nav class="navbar is-transparent is-fixed-top">
                 <div class="navbar-brand">
-                    <a href="/home" class="has-text-link navbar-item">
+                    <A href="/home" class="has-text-link navbar-item">
                         insects-out
-                    </a>
+                    </A>
 
                     <div class={navbarBurgerClass()}
                         data-target="navbar-element"
@@ -74,18 +72,18 @@ export function Navbar() {
                             </A>
                         </Show>
 
-                        <a class="navbar-item" href="/home">Inicio</a>
+                        <A class="has-text-weight-semibold navbar-item" href="/home">Inicio</A>
                         <div class={navbarDropdownClass()}>
-                            <a class="navbar-link" onClick={toggleDrop}>Más</a>
+                            <div class="has-text-weight-semibold navbar-link" onClick={toggleDrop}>Más</div>
                             <Show when={isDropActive()}>
                                 <div class="navbar-dropdown is-boxed is-hoverable">
-                                    <a href="/about" class="navbar-item">
+                                    <A href="/about" class="navbar-item">
                                         Información
-                                    </a>
+                                    </A>
                                     <hr class="navbar-divider" />
-                                    <a href="/feedback" class="navbar-item">
+                                    <A href="/feedback" class="navbar-item">
                                         Reporta un problema
-                                    </a>
+                                    </A>
                                 </div>
                             </Show>
                         </div>
@@ -94,9 +92,9 @@ export function Navbar() {
                     <div class="navbar-end">
                         <div class="navbar-item">
                             <div class="buttons is-centered">
-                                <a onClick={closeSession} class="button is-link">
+                                <button onClick={closeSession} class="button is-link">
                                     <strong>Cerrar sesión</strong>
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
