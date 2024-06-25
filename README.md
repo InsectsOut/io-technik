@@ -9,8 +9,7 @@ This project requires the following dependencies:
 ### Prerequisites
 If you don't use the standalone script or @pnpm/exe to install pnpm, then you need to have Node.js (at least v18.12) to be installed on your system.
 
-Using a standalone script
-You may install pnpm even if you don't have Node.js installed, using the following scripts.
+Using a standalone script you may install pnpm even if you don't have Node.js installed, using the following scripts.
 
 ```bash
 $ npm install -g pnpm
