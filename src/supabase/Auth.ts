@@ -1,10 +1,11 @@
 import { Session, createClient } from "@supabase/supabase-js";
 import { createSignal } from "solid-js";
+import { Database } from "./Database";
 
 const { IO_SUPABASE_KEY, IO_SUPABASE_URL } = import.meta.env;
 
 /** Supabase client instance - used to interact with the Database and Auth */
-export const supabase = createClient(IO_SUPABASE_URL, IO_SUPABASE_KEY);
+export const supabase = createClient<Database>(IO_SUPABASE_URL, IO_SUPABASE_KEY);
 
 /**
  * Getter/Setter for the current user session, if any
