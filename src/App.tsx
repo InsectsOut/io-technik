@@ -30,17 +30,17 @@ function App(props: ParentProps) {
   return (
     <>
       <Navbar />
-      <ErrorBoundary fallback={Error}>
-        <Show when={visible()}>
-          <Motion.main
-            transition={Animation.transition}
-            animate={Animation.animate}
-            exit={Animation.exit}
-          >
+      <Show when={visible()}>
+        <Motion.main
+          transition={Animation.transition}
+          animate={Animation.animate}
+          exit={Animation.exit}
+        >
+          <ErrorBoundary fallback={Error}>
             {props.children}
-          </Motion.main>
-        </Show>
-      </ErrorBoundary>
+          </ErrorBoundary>
+        </Motion.main>
+      </Show>
       <Footer />
       <PWABadge />
     </>
