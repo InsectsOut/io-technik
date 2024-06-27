@@ -24,9 +24,9 @@ export default defineConfig({
     },
 
     manifest: {
-      name: 'io-field-app',
-      short_name: 'io-field-app',
-      description: 'Aplicacion PWA de campo para Insects Out',
+      name: 'io-technik',
+      short_name: 'io-technik',
+      description: 'Registra tus servicios de Insects Out',
       theme_color: '#69748c',
       start_url: "/login",
       lang: "es",
