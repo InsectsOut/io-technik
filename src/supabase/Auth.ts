@@ -1,11 +1,18 @@
 import { Session, createClient } from "@supabase/supabase-js";
 import { createSignal } from "solid-js";
-import { Database } from "./Database";
+import { Database as IO_Schema } from "./Database";
 
 const { IO_SUPABASE_KEY, IO_SUPABASE_URL } = import.meta.env;
 
 /** Supabase client instance - used to interact with the Database and Auth */
-const supabase = createClient<Database>(IO_SUPABASE_URL, IO_SUPABASE_KEY);
+const supabase = createClient<IO_Schema>(IO_SUPABASE_URL, IO_SUPABASE_KEY);
+
+/**
+ * Updates the session when the auth state changes
+*/
+supabase.auth.onAuthStateChange((_, session) => {
+    setSession(session);
+});
 
 /**
  * Getter/Setter for the current user session, if any
@@ -13,11 +20,9 @@ const supabase = createClient<Database>(IO_SUPABASE_URL, IO_SUPABASE_KEY);
 export const [currentSession, setSession] = createSignal<Session | null>(null);
 
 /**
- * Updates the session when the auth state changes
+ * Exports the **Insects Out** database for CRUD operations
  */
-supabase.auth.onAuthStateChange((_, session) => {
-    setSession(session);
-});
+export const Database = supabase.schema("public");
 
 /**
  * Singleton that exports most common auth operations.
