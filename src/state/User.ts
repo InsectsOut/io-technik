@@ -1,4 +1,3 @@
-import { supabase } from "@/supabase";
 import { createMutable } from "solid-js/store";
 
 type User = {
@@ -7,18 +6,6 @@ type User = {
     lastname: string,
     email: string,
     id: string
-}
-
-export function getUserData(): Promise<void> {
-    return supabase.auth.getUser().then(({ data, error }) => {
-        if (data.user) {
-            const { email, id } = data.user;
-            userStore.email = email || "no-email";
-            userStore.id = id;
-        } else {
-            console.error(error);
-        }
-    })
 }
 
 const userStore = createMutable<User>({

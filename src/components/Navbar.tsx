@@ -4,7 +4,7 @@ import { Show, createSignal } from "solid-js";
 import "./Navbar.module.css";
 import { userStore as user } from "@/state/User";
 import { A, useBeforeLeave } from "@solidjs/router";
-import { session, supabase } from "@/supabase";
+import { Auth, currentSession } from "@/supabase";
 
 export function Navbar() {
     const [isMenuActive, setMenuActive] = createSignal(false);
@@ -24,9 +24,7 @@ export function Navbar() {
 
     /** Closes the current user session */
     function closeSession() {
-        supabase.auth
-            .signOut()
-            .then(closeMenu);
+        Auth.signOut().then(closeMenu);
     }
 
     /** Classname for the navbar-menu element */
@@ -46,7 +44,7 @@ export function Navbar() {
     useBeforeLeave(() => closeMenu());
 
     return (
-        <Show when={session()}>
+        <Show when={currentSession()}>
             <nav class="navbar is-transparent is-fixed-top">
                 <div class="navbar-brand">
                     <A href="/home" class="has-text-link navbar-item">
@@ -66,7 +64,7 @@ export function Navbar() {
 
                 <div id="navbar-element" class={navbarMenuClass()}>
                     <div class="navbar-start">
-                        <Show when={session()}>
+                        <Show when={currentSession()}>
                             <A href="/user" class="has-text-link navbar-item">
                                 {user.firstname} {user.lastname}
                             </A>

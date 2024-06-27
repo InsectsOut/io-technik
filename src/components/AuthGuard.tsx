@@ -1,4 +1,4 @@
-import { session } from "@/supabase";
+import { currentSession } from "@/supabase";
 import { Navigate } from "@solidjs/router";
 import { ParentProps, Show } from "solid-js";
 
@@ -11,7 +11,7 @@ import "./AuthGuard.css";
  */
 export function AuthGuard(props: ParentProps) {
     return (
-        <Show when={session() != null}
+        <Show when={currentSession()}
             children={props.children}
             fallback={(
                 <div class="redirect">

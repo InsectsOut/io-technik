@@ -1,5 +1,5 @@
 import insectsImg from "@/assets/insects-out-med.png";
-import { supabase } from "@/supabase";
+import { Auth } from "@/supabase";
 import { useNavigate } from "@solidjs/router";
 import { createSignal } from "solid-js";
 
@@ -10,17 +10,9 @@ const [pass, setPass] = createSignal("");
 export function Login() {
     const navigate = useNavigate();
 
-    function loginUser(): Promise<string> {
-        if (!email()) {
-            return Promise.resolve("No email");
-        }
-
-        if (!pass()) {
-            return Promise.resolve("No password");
-        }
-
-        return supabase.auth
-            .signInWithPassword({ email: email(), password: pass() })
+    function signIn(): Promise<string> {
+        return Auth
+            .signIn(email(), pass())
             .then(({ data, error }) => {
                 if (!data.user || error) {
                     alert("Correo o contraseña incorrecta");
@@ -41,7 +33,7 @@ export function Login() {
                 />
             </figure>
 
-            <h2 class="subtitle is-align-self-center">io-technik</h2>
+            <h2 class="title is-align-self-center">io-technik</h2>
 
             <p class="control has-icons-left has-icons-right">
                 <input type="email"
@@ -72,7 +64,7 @@ export function Login() {
 
             <p class="control is-align-self-center">
                 <button type="button"
-                    onClick={loginUser}
+                    onClick={signIn}
                     class="button is-link"
                 >
                     Iniciar Sesión
