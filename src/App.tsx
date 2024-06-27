@@ -2,7 +2,7 @@ import PWABadge from './PWABadge.tsx'
 import { Footer, Navbar } from "@/components";
 import { Error } from "@/pages";
 
-import { ErrorBoundary, createSignal, Show, ParentProps } from 'solid-js';
+import { ErrorBoundary, createSignal, Show, ParentProps, onMount } from 'solid-js';
 import { useBeforeLeave } from '@solidjs/router';
 import { Motion, Options as MotionOptions } from 'solid-motionone';
 
@@ -25,6 +25,15 @@ function App(props: ParentProps) {
   useBeforeLeave(() => {
     setVisible(false);
     setVisible(true);
+  });
+
+  onMount(async () => {
+    /** Mounts eruda mobile dev tools if the qsp `debug=true` is set */
+    const params = new URLSearchParams(location.search);
+    if (params.has("debug", "true")) {
+      const eruda = await import("eruda");
+      eruda.default.init({ autoScale: true });
+    }
   });
 
   return (
