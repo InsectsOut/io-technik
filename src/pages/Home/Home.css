@@ -9,3 +9,34 @@
 h1 {
     padding: 1rem;
 }
+
+.icon-col {
+    vertical-align: middle !important;
+}
+
+.icon-link {
+    color: #c42424;
+}
+
+.io-heading {
+    padding: 15px;
+}
+
+.io-table-container {
+    height: 43vh;
+    overflow-y: auto;
+}
+
+.io-table {
+    position: relative;
+
+    thead {
+        background-color: white;
+        position: sticky;
+        top: 0;
+    }
+
+    td, th {
+        padding: 6px;
+    }
+}
