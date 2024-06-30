@@ -21,7 +21,11 @@ export function Home() {
         return servicesQuery.data;
       }
 
-      return `${c?.nombre} ${c?.apellidos}`.includes(filter());
+      return `${c?.nombre} ${c?.apellidos}`
+        .toLowerCase()
+        .includes(
+          filter().toLowerCase()
+        );
     });
 
   const servicesQuery = createQuery(() => ({
@@ -87,7 +91,7 @@ export function Home() {
                   <th>{service.horario_servicio}</th>
                   <td>{service.Clientes?.nombre} {service.Clientes?.apellidos}</td>
                   <td class="icon-col">
-                    <a class="icon-link" href="https://maps.app.goo.gl/kuAaMUd9x9qzMAP3A">
+                    <a class="icon-link" target="_blank" href="https://maps.app.goo.gl/kuAaMUd9x9qzMAP3A">
                       <span class="icon is-left">
                         <i class="fas fa-location-dot fa-lg" aria-hidden="true" />
                       </span>
