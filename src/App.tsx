@@ -1,5 +1,5 @@
 import PWABadge from './PWABadge.tsx'
-import { Footer, Navbar } from "@/components";
+import { Navbar } from "@/components";
 import { Error } from "@/pages";
 
 import { ErrorBoundary, createSignal, Show, ParentProps, onMount } from 'solid-js';
@@ -50,7 +50,6 @@ function App(props: ParentProps) {
           </ErrorBoundary>
         </Motion.main>
       </Show>
-      <Footer />
       <PWABadge />
     </>
   );

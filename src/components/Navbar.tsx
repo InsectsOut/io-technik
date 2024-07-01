@@ -45,7 +45,7 @@ export function Navbar() {
 
     return (
         <Show when={currentSession()}>
-            <nav class="navbar is-transparent is-fixed-top">
+            <nav class="navbar is-transparent">
                 <div class="navbar-brand">
                     <A href="/home" class="has-text-link navbar-item">
                         insects-out
