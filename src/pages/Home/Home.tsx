@@ -1,19 +1,42 @@
-import { For, createEffect, createSignal } from "solid-js";
+import { For, createSignal } from "solid-js";
 
 import { Locale } from "@/constants";
 import { createQuery } from "@tanstack/solid-query";
-import { fetchServices } from "./Home.service";
+import { Service, fetchServices } from "./Home.service";
 
 import "./Home.css";
 import { Pages } from "..";
+import dayjs from "dayjs";
 
-const today = new Date();
-const shortDate = today.toLocaleDateString(Locale, { dateStyle: "short" });
-const fullDate = today.toLocaleDateString(Locale, { dateStyle: "full" });
+const [date, setDate] = createSignal(dayjs());
+
+const shortDate = () => date()
+  .format("DD/MM/YY");
+
+const fullDate = () => date().toDate()
+  .toLocaleDateString(Locale, { dateStyle: "full" });
+
+function Share(service: Service) {
+  if (!service.Clientes) {
+    return;
+  }
+
+  const { Clientes: c } = service;
+
+  navigator.share({
+    title: "Servicio",
+    text: `Servicio de ${c.nombre} ${c.apellidos} - Fecha: ${service.fecha_servicio}`,
+    url: "https://insectsout.com.mx/"
+  });
+}
 
 export function Home() {
 
   const [filter, setFilter] = createSignal("");
+
+  const setDay = (val: number) => {
+    return () => setDate(day => day.add(val, "day"));
+  };
 
   const filteredServices = () => servicesQuery
     .data?.filter(({ Clientes: c }) => {
@@ -30,18 +53,14 @@ export function Home() {
 
   const servicesQuery = createQuery(() => ({
     queryKey: ["ServiceQuery"],
-    queryFn: fetchServices,
+    queryFn: () => fetchServices(true, date()),
     staleTime: 1000 * 60 * 10,
     throwOnError: false
   }));
 
-  createEffect(() => {
-    console.log(servicesQuery.data);
-  })
-
   return (
-    <nav class="panel">
-      <p class="panel-heading io-heading has-background-grey">Servicios</p>
+    <nav class="panel is-shadowless">
+      <p class="panel-heading io-heading">Servicios</p>
       <div class="panel-block">
         <p class="control has-icons-left">
           <input onInput={(e) => setFilter(e.target.value)}
@@ -57,18 +76,26 @@ export function Home() {
       </div>
       <div class="panel-tabs is-align-items-center is-justify-content-space-between">
         <p class="panel-tabs is-align-items-center">
-          <span class="icon is-left">
+          <button
+            onClick={setDay(-1)}
+            class="button icon is-left"
+          >
             <i class="fas fa-chevron-left" aria-hidden="true" />
-          </span>
+          </button>
+
           <a class="is-active">Hoy</a>
-          <span class="icon is-left">
+
+          <button
+            onClick={setDay(+1)}
+            class="button icon is-left"
+          >
             <i class="fas fa-chevron-right" aria-hidden="true" />
-          </span>
+          </button>
         </p>
 
         <div class="panel-tabs is-align-items-center">
-          <a class="has-text-grey-dark" title={fullDate}>
-            {shortDate}
+          <a class="has-text-grey-dark" title={fullDate()}>
+            {shortDate()}
           </a>
         </div>
       </div>
@@ -91,23 +118,30 @@ export function Home() {
                   <th>{service.horario_servicio}</th>
                   <td>{service.Clientes?.nombre} {service.Clientes?.apellidos}</td>
                   <td class="icon-col">
-                    <a class="icon-link" target="_blank" href="https://maps.app.goo.gl/kuAaMUd9x9qzMAP3A">
+                    <a target="_blank" href="https://maps.app.goo.gl/kuAaMUd9x9qzMAP3A">
                       <span class="icon is-left">
                         <i class="fas fa-location-dot fa-lg" aria-hidden="true" />
                       </span>
                     </a>
                   </td>
                   <td class="icon-col">
-                    <a class="icon-link" href={`tel:+${service.Clientes?.telefono}`}>
+                    <a href={`tel:+${service.Clientes?.telefono}`}>
                       <span class="icon is-left">
                         <i class="fas fa-phone-flip fa-lg" aria-hidden="true" />
                       </span>
                     </a>
                   </td>
                   <td class="icon-col">
-                    <a class="icon-link" href={Pages.Feedback}>
+                    <a href={Pages.Feedback}>
                       <span class="icon is-left">
                         <i class="fas fa-circle-info fa-lg" aria-hidden="true" />
+                      </span>
+                    </a>
+                  </td>
+                  <td class="icon-col">
+                    <a href="#" onClick={() => Share(service)}>
+                      <span class="icon is-left">
+                        <i class="fas fa-share-nodes fa-lg" aria-hidden="true" />
                       </span>
                     </a>
                   </td>
@@ -118,8 +152,11 @@ export function Home() {
         </table>
       </div>
 
-      <div class="panel-block">
-        <button class="button is-link is-outlined is-fullwidth">
+      <div class="panel-block reset-filter">
+        <button
+          onClick={() => setFilter("")}
+          class="button is-link is-outlined is-fullwidth"
+        >
           Ver todos
         </button>
       </div>
