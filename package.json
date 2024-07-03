@@ -12,13 +12,11 @@
     "@solidjs/router": "^0.13.5",
     "@supabase/supabase-js": "^2.43.5",
     "@tanstack/solid-query": "^5.49.1",
-    "@vitejs/plugin-basic-ssl": "^1.1.0",
     "bulma": "^1.0.1",
     "dayjs": "^1.11.11",
     "eruda": "^3.0.1",
     "solid-js": "^1.8.17",
     "solid-motionone": "^1.0.0",
-    "solidjs-use": "^2.3.0",
     "supabase": "^1.178.2",
     "ts-pattern": "^5.1.2"
   },
@@ -27,6 +25,7 @@
     "@vite-pwa/assets-generator": "^0.2.4",
     "typescript": "^5.2.2",
     "vite": "^5.2.10",
+    "vite-plugin-purgecss-updated-v5": "^1.2.1",
     "vite-plugin-pwa": "^0.20.0",
     "vite-plugin-solid": "^2.10.2",
     "workbox-window": "^7.1.0"
