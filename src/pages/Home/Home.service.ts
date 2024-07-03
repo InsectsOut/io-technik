@@ -9,16 +9,16 @@ export type Service = NonNullable<QueryData<typeof query>[number]>
 const query = Database
     .from("Servicios")
     .select(`*, Clientes(*)`)
-    .order("fecha_servicio")
+    .order("horario_servicio")
     .limit(10);
 
 /**
  * Fetches insects out services and their related clients
  * @returns A `promise` the resolves to an array of `Servicios`, null otherwise
  */
-export async function fetchServices(showAll?: boolean, date?: Dayjs) {
+export async function fetchServices(date?: Dayjs) {
     /** TODO: Remove check here so we can check services by date */
-    if (date && !showAll) {
+    if (date) {
         const serviceDate = date.format("YYYY-MM-DD")
         query.eq("fecha_servicio", serviceDate);
     }

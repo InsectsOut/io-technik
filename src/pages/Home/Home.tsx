@@ -1,4 +1,4 @@
-import { For, createSignal } from "solid-js";
+import { For, Show, createSignal } from "solid-js";
 
 import { Locale } from "@/constants";
 import { createQuery } from "@tanstack/solid-query";
@@ -7,8 +7,23 @@ import { Service, fetchServices } from "./Home.service";
 import "./Home.css";
 import { Pages } from "..";
 import dayjs from "dayjs";
+import { match } from "ts-pattern";
 
 const [date, setDate] = createSignal(dayjs());
+const [infoShown, setInfoShown] = createSignal(NaN);
+
+function toggleShownService(service: Service) {
+  return setInfoShown(
+    id => id !== service.id
+      ? service.id
+      : NaN
+  );
+}
+
+function getSimpleTime({ fecha_servicio, horario_servicio }: Service) {
+  return dayjs(`${fecha_servicio}T${horario_servicio}`)
+    .format("hh:mm a");
+}
 
 const shortDate = () => date()
   .format("DD/MM/YY");
@@ -34,37 +49,40 @@ export function Home() {
 
   const [filter, setFilter] = createSignal("");
 
-  const setDay = (val: number) => {
+  const setDay = (val?: number) => {
+    if (val == null) {
+      return () => setDate(dayjs());
+    }
+
     return () => setDate(day => day.add(val, "day"));
   };
 
-  const filteredServices = () => servicesQuery
-    .data?.filter(({ Clientes: c }) => {
-      if (!filter()) {
-        return servicesQuery.data;
-      }
+  const filteredServices = () => servicesQuery.data?.filter(({ Clientes: c }) => {
+    if (!filter()) {
+      return servicesQuery.data;
+    }
 
-      return `${c?.nombre} ${c?.apellidos}`
-        .toLowerCase()
-        .includes(
-          filter().toLowerCase()
-        );
-    });
+    return `${c?.nombre} ${c?.apellidos}`
+      .toLowerCase()
+      .includes(
+        filter().toLowerCase()
+      );
+  });
 
   const servicesQuery = createQuery(() => ({
     queryKey: ["ServiceQuery"],
-    queryFn: () => fetchServices(true, date()),
+    queryFn: () => fetchServices(),
     staleTime: 1000 * 60 * 10,
     throwOnError: false
   }));
 
   return (
     <nav class="panel is-shadowless">
-      <p class="panel-heading io-heading">Servicios</p>
+      <p class="panel-heading io-heading">Mis Servicios</p>
       <div class="panel-block">
         <p class="control has-icons-left">
           <input onInput={(e) => setFilter(e.target.value)}
-            placeholder="Buscar servicio"
+            placeholder="Buscar por cliente..."
             value={filter()}
             class="input"
             type="text"
@@ -83,7 +101,7 @@ export function Home() {
             <i class="fas fa-chevron-left" aria-hidden="true" />
           </button>
 
-          <a class="is-active">Hoy</a>
+          <a class="is-active" onClick={setDay()}>Hoy</a>
 
           <button
             onClick={setDay(+1)}
@@ -104,48 +122,56 @@ export function Home() {
         <table class="table io-table">
           <thead>
             <tr>
-              <th><abbr title="Horario">Hora</abbr></th>
+              <th>Horario</th>
               <th>Cliente</th>
-              <th><abbr title="Dirección">Dir</abbr></th>
-              <th><abbr title="Teléfono">Tel</abbr></th>
-              <th><abbr title="Información">Info</abbr></th>
+              <th>Estatus</th>
             </tr>
           </thead>
           <tbody>
             <For each={filteredServices()}>
               {(service) => (
-                <tr>
-                  <th>{service.horario_servicio}</th>
-                  <td>{service.Clientes?.nombre} {service.Clientes?.apellidos}</td>
-                  <td class="icon-col">
-                    <a target="_blank" href="https://maps.app.goo.gl/kuAaMUd9x9qzMAP3A">
-                      <span class="icon is-left">
-                        <i class="fas fa-location-dot fa-lg" aria-hidden="true" />
-                      </span>
-                    </a>
-                  </td>
-                  <td class="icon-col">
-                    <a href={`tel:+${service.Clientes?.telefono}`}>
-                      <span class="icon is-left">
-                        <i class="fas fa-phone-flip fa-lg" aria-hidden="true" />
-                      </span>
-                    </a>
-                  </td>
-                  <td class="icon-col">
-                    <a href={Pages.Feedback}>
-                      <span class="icon is-left">
-                        <i class="fas fa-circle-info fa-lg" aria-hidden="true" />
-                      </span>
-                    </a>
-                  </td>
-                  <td class="icon-col">
-                    <a href="#" onClick={() => Share(service)}>
-                      <span class="icon is-left">
-                        <i class="fas fa-share-nodes fa-lg" aria-hidden="true" />
-                      </span>
-                    </a>
-                  </td>
-                </tr>
+                <>
+                  <tr class="is-pointer" onClick={() => toggleShownService(service)}>
+                    <th>{getSimpleTime(service)}</th>
+                    <td>{service.Clientes?.nombre} {service.Clientes?.apellidos}</td>
+                    <td class="icon-col has-text-centered">
+                      <a href="#" title={match(service)
+                        .with({ realizado: true }, () => "Realizado")
+                        .with({ cancelado: true }, () => "Cancelado")
+                        .otherwise(() => "Pendiente")
+                      }>
+                        {match(service)
+                          .with({ realizado: true }, () => "✔️")
+                          .with({ cancelado: true }, () => "❌")
+                          .otherwise(() => "⚒️")}
+                      </a>
+                    </td>
+                  </tr>
+
+                  <Show when={infoShown() === service.id}>
+                    <tr><td colSpan={4}>
+                      <div class="is-flex is-justify-content-space-around">
+                        <a title="Teléfono" href={`tel:+${service.Clientes?.telefono}`}>
+                          <span class="icon is-left">
+                            <i class="fas fa-phone-flip fa-lg" aria-hidden="true" />
+                          </span>
+                        </a>
+
+                        <a title="Información" href={Pages.Feedback}>
+                          <span class="icon is-left">
+                            <i class="fas fa-circle-info fa-lg" aria-hidden="true" />
+                          </span>
+                        </a>
+
+                        <a title="Compartir" href="#" onClick={() => Share(service)}>
+                          <span class="icon is-left">
+                            <i class="fas fa-share-nodes fa-lg" aria-hidden="true" />
+                          </span>
+                        </a>
+                      </div>
+                    </td></tr>
+                  </Show>
+                </>
               )}
             </For>
           </tbody>
