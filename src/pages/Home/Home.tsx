@@ -2,12 +2,13 @@ import { For, Show, createSignal } from "solid-js";
 
 import { Locale } from "@/constants";
 import { createQuery } from "@tanstack/solid-query";
-import { Service, fetchServices } from "./Home.service";
+import { Service, fetchServices } from "./Home.query";
+
+import { classNames } from "@/utils";
+import { match } from "ts-pattern";
+import dayjs from "dayjs";
 
 import "./Home.css";
-import { Pages } from "..";
-import dayjs from "dayjs";
-import { match } from "ts-pattern";
 
 const [date, setDate] = createSignal(dayjs());
 const [infoShown, setInfoShown] = createSignal(NaN);
@@ -17,6 +18,21 @@ function toggleShownService(service: Service) {
     id => id !== service.id
       ? service.id
       : NaN
+  );
+}
+
+function getStatusIcon(service: Service) {
+  const icon = match(service)
+    .with({ realizado: true }, () => "fa-check has-text-primary")
+    .with({ cancelado: true }, () => "fa-xmark has-text-danger")
+    .otherwise(() => "fa-hourglass-half has-text-warning");
+
+  const iconClass = classNames("fas fa-lg", icon);
+
+  return (
+    <span class="icon is-left">
+      <i class={iconClass} aria-hidden="true" />
+    </span>
   );
 }
 
@@ -70,9 +86,9 @@ export function Home() {
   });
 
   const servicesQuery = createQuery(() => ({
-    queryKey: ["ServiceQuery"],
+    queryKey: ["/service"],
     queryFn: () => fetchServices(),
-    staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 5,
     throwOnError: false
   }));
 
@@ -140,10 +156,7 @@ export function Home() {
                         .with({ cancelado: true }, () => "Cancelado")
                         .otherwise(() => "Pendiente")
                       }>
-                        {match(service)
-                          .with({ realizado: true }, () => "✔️")
-                          .with({ cancelado: true }, () => "❌")
-                          .otherwise(() => "⚒️")}
+                        {getStatusIcon(service)}
                       </a>
                     </td>
                   </tr>
@@ -153,13 +166,19 @@ export function Home() {
                       <div class="is-flex is-justify-content-space-around">
                         <a title="Teléfono" href={`tel:+${service.Clientes?.telefono}`}>
                           <span class="icon is-left">
-                            <i class="fas fa-phone-flip fa-lg" aria-hidden="true" />
+                            <i class="fas fa-phone-flip fa-lg has-text-primary" aria-hidden="true" />
                           </span>
                         </a>
 
-                        <a title="Información" href={Pages.Feedback}>
+                        <a title="Información" href={`/services/${service.id}`}>
                           <span class="icon is-left">
-                            <i class="fas fa-circle-info fa-lg" aria-hidden="true" />
+                            <i class="fas fa-circle-info fa-lg has-text-info" aria-hidden="true" />
+                          </span>
+                        </a>
+
+                        <a title="Ubicación" target="_blank" href="https://maps.app.goo.gl/5LwiK1t1HzdeLiiQ7">
+                          <span class="icon is-left">
+                            <i class="fas fa-map-pin fa-lg has-text-danger" aria-hidden="true" />
                           </span>
                         </a>
 
