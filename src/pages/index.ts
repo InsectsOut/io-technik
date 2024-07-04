@@ -5,6 +5,7 @@ export * from "./Home";
 export * from "./Login";
 export * from "./NotFound";
 export * from "./Profile";
+export * from "./Service";
 
 /**
  * Pages enum with all the app's pages
@@ -22,6 +23,8 @@ export const enum Pages {
     NotFound = "*404",
     /** Root page */
     Root = "/",
+    /** Service page */
+    Service = "/service",
     /** Profile page */
     User = "/user",
 }
