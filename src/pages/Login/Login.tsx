@@ -1,11 +1,11 @@
 import insectsImg from "@/assets/insects-out-med.png";
-import { Auth } from "@/supabase";
+import { Auth, currentSession } from "@/supabase";
 import { useNavigate } from "@solidjs/router";
-import { createSignal } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
+import { Pages } from "..";
 
 const [email, setEmail] = createSignal("");
 const [pass, setPass] = createSignal("");
-
 
 export function Login() {
     const navigate = useNavigate();
@@ -23,6 +23,12 @@ export function Login() {
             .catch(console.error)
             .then(() => "Sesión iniciada");
     }
+
+    createEffect(() => {
+        if (currentSession()) {
+            navigate(Pages.Home);
+        }
+    })
 
     return (
         <div class="field is-grouped is-flex-direction-column">
