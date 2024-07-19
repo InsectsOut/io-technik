@@ -140,7 +140,7 @@ export function Home() {
             <tr>
               <th>Horario</th>
               <th>Cliente</th>
-              <th>Estatus</th>
+              <th class="has-text-centered">Estatus</th>
             </tr>
           </thead>
           <tbody>
