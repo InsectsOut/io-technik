@@ -1,6 +1,6 @@
 .loginHead {
-    @media only screen and (min-width: 600px) {
-        
+    img {
+        max-width: max-content;
     }
 
     h2 {
@@ -24,9 +24,27 @@
 }
 
 .loginForm {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
     @media only screen and (min-width: 600px) {
         flex-direction: row !important;
         align-items: center;
         gap: unset !important;
+    }
+}
+
+.sign-in {
+    align-self: center !important;
+
+    @media only screen and (min-width: 600px) {
+        align-self: auto !important;
+    }
+
+    button {
+        margin-left: unset;
+        margin-right: unset;
     }
 }

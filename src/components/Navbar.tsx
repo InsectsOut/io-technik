@@ -70,7 +70,6 @@ export function Navbar() {
                             </A>
                         </Show>
 
-                        <A class="has-text-weight-semibold navbar-item" href="/home">Inicio</A>
                         <div class={navbarDropdownClass()}>
                             <div class="has-text-weight-semibold navbar-link" onClick={toggleDrop}>Más</div>
                             <Show when={isDropActive()}>

@@ -35,12 +35,10 @@ export function Login() {
             <div class={formClass}>
 
                 <div class={css.loginHead}>
-                    <figure class="image is-align-self-center">
-                        <img width={225} height={225}
-                            alt="Logo de Insects Out"
-                            src={insectsImg}
-                        />
-                    </figure>
+                    <img width={225} height={225}
+                        alt="Logo de Insects Out"
+                        src={insectsImg}
+                    />
 
                     <h2 class="title is-align-self-center">io-technik</h2>
                 </div>
@@ -73,7 +71,7 @@ export function Login() {
                         </span>
                     </p>
 
-                    <p class="control is-align-self-center">
+                    <p class={classNames("control", css['sign-in'])}>
                         <button type="button"
                             onClick={signIn}
                             class="button is-link"
