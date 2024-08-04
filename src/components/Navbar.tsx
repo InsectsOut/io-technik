@@ -2,9 +2,9 @@ import { classNames } from "../utils/CssHelpers";
 import { Show, createSignal } from "solid-js";
 
 import "./Navbar.module.css";
-import { userStore as user } from "@/state/User";
 import { A, useBeforeLeave } from "@solidjs/router";
 import { Auth, currentSession } from "@/supabase";
+import { userProfile } from "@/state/Profile";
 
 export function Navbar() {
     const [isMenuActive, setMenuActive] = createSignal(false);
@@ -66,7 +66,7 @@ export function Navbar() {
                     <div class="navbar-start">
                         <Show when={currentSession()}>
                             <A href="/user" class="has-text-link navbar-item">
-                                {user.firstname} {user.lastname}
+                                {userProfile()?.nombre}
                             </A>
                         </Show>
 
@@ -89,7 +89,7 @@ export function Navbar() {
                     <div class="navbar-end">
                         <div class="navbar-item">
                             <div class="buttons is-centered">
-                                <button onClick={closeSession} class="button is-link">
+                                <button type="button" onClick={closeSession} class="button is-link">
                                     <strong>Cerrar sesión</strong>
                                 </button>
                             </div>

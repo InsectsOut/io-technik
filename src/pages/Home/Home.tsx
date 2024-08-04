@@ -1,8 +1,10 @@
-import { For, Show, createSignal } from "solid-js";
-
-import { Locale } from "@/constants";
+import { For, JSX, Show, createSignal } from "solid-js";
+import { createWindowSize } from "@solid-primitives/resize-observer";
 import { createQuery } from "@tanstack/solid-query";
+
+import { DeviceType, getDeviceType } from "./Home.constants";
 import { Service, fetchServices } from "./Home.query";
+import { Locale } from "@/constants";
 
 import { classNames } from "@/utils";
 import { match } from "ts-pattern";
@@ -64,6 +66,7 @@ function Share(service: Service) {
 export function Home() {
 
   const [filter, setFilter] = createSignal("");
+  const size = createWindowSize();
 
   const setDay = (val?: number) => {
     if (val == null) {
@@ -109,8 +112,9 @@ export function Home() {
         </p>
       </div>
       <div class="panel-tabs is-align-items-center is-justify-content-space-between">
-        <p class="panel-tabs is-align-items-center">
+        <p class="panel-tabs is-align-items-center is-borderless">
           <button
+            type="button"
             onClick={setDay(-1)}
             class="button icon is-left"
           >
@@ -120,6 +124,7 @@ export function Home() {
           <a class="is-active" onClick={setDay()}>Hoy</a>
 
           <button
+            type="button"
             onClick={setDay(+1)}
             class="button icon is-left"
           >
@@ -128,12 +133,11 @@ export function Home() {
         </p>
 
         <div class="panel-tabs is-align-items-center">
-          <a class="has-text-grey-dark" title={fullDate()}>
+          <a class="has-text-grey-dark is-borderless" title={fullDate()}>
             {shortDate()}
           </a>
         </div>
       </div>
-
       <div class="table-container io-table-container">
         <table class="table io-table">
           <thead>
@@ -141,70 +145,91 @@ export function Home() {
               <th>Horario</th>
               <th>Cliente</th>
               <th class="has-text-centered">Estatus</th>
+              <Show when={getDeviceType(size.width) > DeviceType.Mobile}>
+                <th class="is-flex is-justify-content-space-around is-misaligned">
+                  <div class="has-text-centered">Teléfono</div>
+                  <div class="has-text-centered">Información</div>
+                  <div class="has-text-centered">Dirección</div>
+                  <div class="has-text-centered">Compartir</div>
+                </th>
+              </Show>
             </tr>
           </thead>
           <tbody>
             <For each={filteredServices()}>
-              {(service) => (
-                <>
-                  <tr class="is-pointer" onClick={() => toggleShownService(service)}>
-                    <th>{getSimpleTime(service)}</th>
-                    <td>{service.Clientes?.nombre} {service.Clientes?.apellidos}</td>
-                    <td class="icon-col has-text-centered">
-                      <a href="#" title={match(service)
-                        .with({ realizado: true }, () => "Realizado")
-                        .with({ cancelado: true }, () => "Cancelado")
-                        .otherwise(() => "Pendiente")
-                      }>
-                        {getStatusIcon(service)}
-                      </a>
-                    </td>
-                  </tr>
+              {service => {
+                const serviceStatus = match(service)
+                  .with({ realizado: true }, () => "Realizado")
+                  .with({ cancelado: true }, () => "Cancelado")
+                  .otherwise(() => "Pendiente");
 
-                  <Show when={infoShown() === service.id}>
-                    <tr><td colSpan={4}>
-                      <div class="is-flex is-justify-content-space-around">
-                        <a title="Teléfono" href={`tel:+${service.Clientes?.telefono}`}>
-                          <span class="icon is-left">
-                            <i class="fas fa-phone-flip fa-lg has-text-primary" aria-hidden="true" />
-                          </span>
-                        </a>
-
-                        <a title="Información" href={`/services/${service.id}`}>
-                          <span class="icon is-left">
-                            <i class="fas fa-circle-info fa-lg has-text-info" aria-hidden="true" />
-                          </span>
-                        </a>
-
-                        <a title="Ubicación" target="_blank" href="https://maps.app.goo.gl/5LwiK1t1HzdeLiiQ7">
-                          <span class="icon is-left">
-                            <i class="fas fa-map-pin fa-lg has-text-danger" aria-hidden="true" />
-                          </span>
-                        </a>
-
-                        <a title="Compartir" href="#" onClick={() => Share(service)}>
-                          <span class="icon is-left">
-                            <i class="fas fa-share-nodes fa-lg" aria-hidden="true" />
-                          </span>
-                        </a>
-                      </div>
-                    </td></tr>
-                  </Show>
-                </>
-              )}
+                return (
+                  <>
+                    <tr class="is-pointer" onClick={() => toggleShownService(service)}>
+                      <th>{getSimpleTime(service)}</th>
+                      <td>{service.Clientes?.nombre} {service.Clientes?.apellidos}</td>
+                      <td class="icon-col has-text-centered">
+                        <div title={serviceStatus}>
+                          {getDeviceType(size.width) > DeviceType.Tablet ? serviceStatus : getStatusIcon(service)}
+                        </div>
+                      </td>
+                      <Show when={getDeviceType(size.width) > DeviceType.Mobile}>
+                        <HomeActions service={service} />
+                      </Show>
+                    </tr>
+                    <Show when={infoShown() === service.id && getDeviceType(size.width) === DeviceType.Mobile}>
+                      <tr><HomeActions service={service} /></tr>
+                    </Show>
+                  </>
+                );
+              }}
             </For>
           </tbody>
         </table>
       </div>
-
-      <div class="panel-block reset-filter">
-        <button
-          onClick={() => setFilter("")}
-          class="button is-link is-outlined is-fullwidth"
-        >
-          Ver todos
-        </button>
-      </div>
+      <Show when={filter()}>
+        <div class="panel-block reset-filter">
+          <button
+            type="button"
+            onClick={() => setFilter("")}
+            class="button is-link is-outlined is-fullwidth"
+          >
+            Ver todos
+          </button>
+        </div>
+      </Show>
     </nav>
+  );
+}
+
+function HomeActions({ service }: { service: Service }): JSX.Element {
+  return (
+    <td colSpan={4}>
+      <div class="is-flex is-justify-content-space-around">
+        <a title="Teléfono" href={`tel:+${service.Clientes?.telefono}`}>
+          <span class="icon is-left">
+            <i class="fas fa-phone-flip fa-lg has-text-primary" aria-hidden="true" />
+          </span>
+        </a>
+
+        <a title="Información" href={`/services/${service.id}`}>
+          <span class="icon is-left">
+            <i class="fas fa-circle-info fa-lg has-text-info" aria-hidden="true" />
+          </span>
+        </a>
+
+        <a rel="noopener" title="Ubicación" target="_blank" href="https://maps.app.goo.gl/5LwiK1t1HzdeLiiQ7">
+          <span class="icon is-left">
+            <i class="fas fa-map-pin fa-lg has-text-danger" aria-hidden="true" />
+          </span>
+        </a>
+
+        <a title="Compartir" href="#" onClick={() => Share(service)}>
+          <span class="icon is-left">
+            <i class="fas fa-share-nodes fa-lg" aria-hidden="true" />
+          </span>
+        </a>
+      </div>
+    </td>
   )
 }

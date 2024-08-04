@@ -1,4 +1,4 @@
-import { Database } from "@/supabase";
+import { IO_Database } from "@/supabase";
 import { QueryData } from "@supabase/supabase-js";
 import { Dayjs } from "dayjs";
 
@@ -6,7 +6,7 @@ import { Dayjs } from "dayjs";
 export type Service = NonNullable<QueryData<typeof query>[number]>
 
 /** Base service query */
-const query = Database
+const query = IO_Database
     .from("Servicios")
     .select(`*, Clientes(*)`)
     .order("horario_servicio")
