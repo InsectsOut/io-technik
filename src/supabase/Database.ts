@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export type IO_Database = {
+export type Database = {
   public: {
     Tables: {
       Clientes: {
@@ -57,6 +57,7 @@ export type IO_Database = {
         Row: {
           calle: string
           ciudad: string
+          cliente_id: number
           codigo_postal: string
           colonia: string
           created_at: string
@@ -65,11 +66,13 @@ export type IO_Database = {
           numero_ext: string
           numero_int: string | null
           piso: string | null
+          ubicacion: string | null
           udpated_at: string
         }
         Insert: {
           calle: string
           ciudad: string
+          cliente_id: number
           codigo_postal: string
           colonia: string
           created_at?: string
@@ -78,11 +81,13 @@ export type IO_Database = {
           numero_ext: string
           numero_int?: string | null
           piso?: string | null
+          ubicacion?: string | null
           udpated_at?: string
         }
         Update: {
           calle?: string
           ciudad?: string
+          cliente_id?: number
           codigo_postal?: string
           colonia?: string
           created_at?: string
@@ -91,33 +96,78 @@ export type IO_Database = {
           numero_ext?: string
           numero_int?: string | null
           piso?: string | null
+          ubicacion?: string | null
           udpated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "Direcciones_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "Clientes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       Empleados: {
         Row: {
           activo: boolean
           created_at: string
+          curp: string | null
+          direccion: number | null
+          fecha_nacimiento: string | null
           id: number
+          imss: string | null
+          ine: string | null
           nombre: string
+          tipo_rol: Database["public"]["Enums"]["RolesEmpleado"] | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           activo?: boolean
           created_at?: string
+          curp?: string | null
+          direccion?: number | null
+          fecha_nacimiento?: string | null
           id?: number
+          imss?: string | null
+          ine?: string | null
           nombre: string
+          tipo_rol?: Database["public"]["Enums"]["RolesEmpleado"] | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           activo?: boolean
           created_at?: string
+          curp?: string | null
+          direccion?: number | null
+          fecha_nacimiento?: string | null
           id?: number
+          imss?: string | null
+          ine?: string | null
           nombre?: string
+          tipo_rol?: Database["public"]["Enums"]["RolesEmpleado"] | null
           updated_at?: string | null
+          user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "Empleados_direccion_fkey"
+            columns: ["direccion"]
+            isOneToOne: false
+            referencedRelation: "Direcciones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "Empleados_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       Plagas: {
         Row: {
@@ -325,6 +375,7 @@ export type IO_Database = {
           tipo_plaga_array_id: number[] | null
           tipo_plaga_id: number | null
           tipo_servicio: string | null
+          ubicacion: string | null
           updated_at: string | null
         }
         Insert: {
@@ -346,6 +397,7 @@ export type IO_Database = {
           tipo_plaga_array_id?: number[] | null
           tipo_plaga_id?: number | null
           tipo_servicio?: string | null
+          ubicacion?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -367,6 +419,7 @@ export type IO_Database = {
           tipo_plaga_array_id?: number[] | null
           tipo_plaga_id?: number | null
           tipo_servicio?: string | null
+          ubicacion?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -415,7 +468,7 @@ export type IO_Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      RolesEmpleado: "tecnico" | "administrador" | "superadmin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -423,19 +476,19 @@ export type IO_Database = {
   }
 }
 
-type PublicSchema = IO_Database[Extract<keyof IO_Database, "public">]
+type PublicSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
   PublicTableNameOrOptions extends
     | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
-    | { schema: keyof IO_Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof IO_Database }
-    ? keyof (IO_Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        IO_Database[PublicTableNameOrOptions["schema"]]["Views"])
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof IO_Database }
-  ? (IO_Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-      IO_Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -453,12 +506,12 @@ export type Tables<
 export type TablesInsert<
   PublicTableNameOrOptions extends
     | keyof PublicSchema["Tables"]
-    | { schema: keyof IO_Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof IO_Database }
-    ? keyof IO_Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof IO_Database }
-  ? IO_Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -474,12 +527,12 @@ export type TablesInsert<
 export type TablesUpdate<
   PublicTableNameOrOptions extends
     | keyof PublicSchema["Tables"]
-    | { schema: keyof IO_Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof IO_Database }
-    ? keyof IO_Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof IO_Database }
-  ? IO_Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -495,12 +548,12 @@ export type TablesUpdate<
 export type Enums<
   PublicEnumNameOrOptions extends
     | keyof PublicSchema["Enums"]
-    | { schema: keyof IO_Database },
-  EnumName extends PublicEnumNameOrOptions extends { schema: keyof IO_Database }
-    ? keyof IO_Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+    | { schema: keyof Database },
+  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = PublicEnumNameOrOptions extends { schema: keyof IO_Database }
-  ? IO_Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+> = PublicEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
     : never
