@@ -1,12 +1,10 @@
-import { IO_Database, Tables } from "@/supabase";
+import { IO_Database } from "@/supabase";
 
-/** Return type for a service query */
-export type Service = Tables<"Servicios">
 /**
  * Fetches insects out services and their related clients
  * @returns A `promise` the resolves to an array of `Servicios`, null otherwise
- */
-export async function fetchServiceById(id: string): Promise<Service | null> {
+*/
+export async function fetchServiceById(id: string) {
     if (!id) {
         return null;
     }
@@ -21,3 +19,6 @@ export async function fetchServiceById(id: string): Promise<Service | null> {
 
     return (await query).data;
 }
+
+/** Return type for a service query */
+export type Service = NonNullable<ReturnType<typeof fetchServiceById>>
