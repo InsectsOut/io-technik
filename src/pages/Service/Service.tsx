@@ -164,7 +164,7 @@ export function Service() {
                     </Match>
 
                     <Match when={servicio.data && isEdit()}>
-                        <h1 style={{ "text-align": "center", margin: "3rem", "font-size": "2.5rem" }}>WIP 👷‍♂️🚧</h1>
+                        <Loading />
                     </Match>
                 </Switch>
 
