@@ -11,6 +11,34 @@ button {
     font-size: 1.5rem;
 }
 
+form {
+    padding: 1rem 1rem;
+}
+
+div[class*='field'] {
+    &:has(label) {
+        gap: 0.5rem !important;
+    }
+
+    @media screen and (min-width: 550px) {
+        flex-wrap: wrap;
+        height: 42.5px;
+
+        &:has(label) {
+            height: 85px;
+        }
+    }
+}
+
+.full_height {
+    height: fit-content !important;
+}
+
+textarea {
+    height: auto !important;
+    resize: none;
+}
+
 .container {
     display: flex;
     flex-direction: column;
@@ -21,4 +49,9 @@ button {
     & button {
         min-width: 35%;
     }
+}
+
+.io-heading {
+    padding: 5px 15px;
+    background-color: transparent;
 }

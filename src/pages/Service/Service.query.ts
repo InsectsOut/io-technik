@@ -12,7 +12,7 @@ export async function fetchServiceById(id: string) {
     /** Base service query */
     const query = IO_Database
         .from("Servicios")
-        .select(`*, Clientes(*)`)
+        .select(`*, Clientes(*), Direcciones(*)`)
         .eq("id", parseInt(id, 10))
         .limit(1)
         .maybeSingle();

@@ -10,3 +10,29 @@
     align-items: center;
     height: 50vh;
 }
+
+h2 {
+    padding: 2rem;
+}
+
+progress {
+    width: clamp(75vw, 65vw, 700px) !important;
+}
+
+.spinner {
+    animation: loading 1s linear infinite;
+
+    i {
+        transform: scale(2);
+    }
+}
+
+@keyframes loading {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

@@ -1,4 +1,5 @@
 import { IO_Database } from "@/supabase";
+import { delay } from "@/utils";
 import { QueryData } from "@supabase/supabase-js";
 import { Dayjs } from "dayjs";
 
@@ -17,6 +18,8 @@ const query = IO_Database
  * @returns A `promise` the resolves to an array of `Servicios`, null otherwise
  */
 export async function fetchServices(date?: Dayjs) {
+    await delay(3000);
+
     /** TODO: Remove check here so we can check services by date */
     if (date) {
         const serviceDate = date.format("YYYY-MM-DD")

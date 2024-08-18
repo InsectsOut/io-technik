@@ -1,3 +1,8 @@
 .dropdown-expand .navbar-link:not(.is-arrowless)::after {
     transform: rotate(-225deg);
 }
+
+nav {
+    position: unset !important;
+    margin-bottom: 0.5rem;
+}

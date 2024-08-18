@@ -5,6 +5,7 @@ import "./Navbar.module.css";
 import { A, useBeforeLeave } from "@solidjs/router";
 import { Auth, currentSession } from "@/supabase";
 import { userProfile } from "@/state/Profile";
+import { Pages } from "@/pages";
 
 export function Navbar() {
     const [isMenuActive, setMenuActive] = createSignal(false);
@@ -47,7 +48,10 @@ export function Navbar() {
         <Show when={currentSession()}>
             <nav class="navbar is-transparent">
                 <div class="navbar-brand">
-                    <A href="/home" class="has-text-link navbar-item">
+                    <A href={Pages.Home} class="panel-block is-active has-text-link">
+                        <span class="panel-icon">
+                            <i class="fas fa-home" aria-hidden="true"></i>
+                        </span>
                         insects-out
                     </A>
 
