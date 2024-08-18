@@ -7,6 +7,9 @@ export * from "./NotFound";
 export * from "./Profile";
 export * from "./Service";
 
+/** Base URL for the io-technik application */
+export const BaseUrl = "https://io-technik-dev.netlify.app";
+
 /**
  * Pages enum with all the app's pages
  */
@@ -24,7 +27,7 @@ export const enum Pages {
     /** Root page */
     Root = "/",
     /** Service page */
-    Service = "/service",
+    Services = "/services",
     /** Profile page */
     User = "/user",
 }

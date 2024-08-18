@@ -2,23 +2,21 @@ import { IO_Database } from "@/supabase";
 
 /**
  * Fetches insects out services and their related clients
- * @returns A `promise` the resolves to an array of `Servicios`, null otherwise
+ * @param folio Unique key to reference the service
+ * @returns A `promise` that resolves to a `Servicio` object, null otherwise
 */
-export async function fetchServiceById(id: string) {
-    if (!id) {
+export async function getServiceByFolio(folio: string) {
+    if (!folio) {
         return null;
     }
 
     /** Base service query */
-    const query = IO_Database
+    const { data } = await IO_Database
         .from("Servicios")
         .select(`*, Clientes(*), Direcciones(*)`)
-        .eq("id", parseInt(id, 10))
+        .eq("folio", folio)
         .limit(1)
         .maybeSingle();
 
-    return (await query).data;
+    return data;
 }
-
-/** Return type for a service query */
-export type Service = NonNullable<ReturnType<typeof fetchServiceById>>

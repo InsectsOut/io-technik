@@ -1,24 +1,29 @@
+import { createSignal, Match, Suspense, Switch } from "solid-js";
 import { useNavigate, useParams } from "@solidjs/router";
-import { Pages } from "..";
 
-import { createQuery } from "@tanstack/solid-query";
-import { fetchServiceById } from "./Service.query";
-import { createEffect, createSignal, Match, Suspense, Switch } from "solid-js";
+import { getServiceByFolio } from "./Service.query";
 import { Loading } from "@/components/Loading";
 import { Tables } from "@/supabase";
 
-import { classNames } from "@/utils";
 import { getLocalTime } from "@/utils/Date";
+import { classNames } from "@/utils";
+import { Error, Pages } from "..";
+
+import { createQuery } from "@tanstack/solid-query";
 import { match } from "ts-pattern";
 
 import css from "./Service.module.css";
 
+type Tabs = "detalles" | "reporte";
+
 export function Service() {
-    const params = useParams();
+    const { folio } = useParams();
     const navigate = useNavigate();
     const goHome = () => navigate(Pages.Home);
-    const [isView, setView] = createSignal(true);
-    const isEdit = () => !isView();
+    
+    const [view, setView] = createSignal<Tabs>("detalles");
+    const isReport = () => view() === "reporte";
+    const isInfo = () => view() === "detalles";
 
     const getClientName = (cliente: Tables<"Clientes">) => {
         const { nombre, apellidos } = cliente;
@@ -26,8 +31,8 @@ export function Service() {
     }
 
     const servicio = createQuery(() => ({
-        queryKey: [`service/${params.id}`],
-        queryFn: () => fetchServiceById(params.id),
+        queryKey: [`service/${folio}`],
+        queryFn: () => getServiceByFolio(folio),
         staleTime: 1000 * 60 * 5,
         throwOnError: false
     }));
@@ -45,15 +50,6 @@ export function Service() {
         return `${calle} #${numero_ext}, ${colonia}. C.P. ${codigo_postal}, ${ciudad}, ${estado}`;
     };
 
-    createEffect(() => servicio.data?.Direcciones)
-
-    const ErrorLoading = () => (
-        <>
-            <div>Error cargando datos del servicio</div>
-            <div>{servicio.error?.message}</div>
-        </>
-    );
-
     return (
         <Suspense fallback={<Loading />}>
             <nav class="panel is-shadowless">
@@ -62,13 +58,13 @@ export function Service() {
                 </p>
 
                 <p class="panel-tabs is-justify-content-start">
-                    <a class={classNames(["is-active", isView()])}
-                        onClick={() => setView(true)}
+                    <a class={classNames(["is-active", isInfo()])}
+                        onClick={() => setView("detalles")}
                     >
                         Detalles
                     </a>
-                    <a class={classNames(["is-active", isEdit()])}
-                        onClick={() => setView(false)}
+                    <a class={classNames(["is-active", isReport()])}
+                        onClick={() => setView("reporte")}
                     >
                         Reporte de Servicio
                     </a>
@@ -76,23 +72,23 @@ export function Service() {
 
                 <Switch>
                     <Match when={servicio.error}>
-                        <ErrorLoading />
+                        <Error title="Error cargando el servicio 🚧" subtitle=" " />
                     </Match>
 
-                    <Match when={servicio.data && isView()}>
+                    <Match when={servicio.data && isInfo()}>
                         <form>
                             <label class="label">Datos del Cliente</label>
                             <div class="field is-grouped is-flex-direction-column">
                                 <p class="control has-icons-left">
-                                    <input disabled class="input" type="text" value={"Folio: " + servicio.data?.folio} />
+                                    <input disabled class="input" type="text" value={`Folio: ${servicio.data?.folio}`} />
                                     <span class="icon is-medium is-left">
-                                        <i class="fas fa-hashtag"></i>
+                                        <i class="fas fa-hashtag" />
                                     </span>
                                 </p>
                                 <p class="control has-icons-left">
                                     <input disabled class="input" value={getClientName(servicio.data?.Clientes!)} />
                                     <span class="icon is-small is-left">
-                                        <i class="fas fa-user"></i>
+                                        <i class="fas fa-user" />
                                     </span>
                                 </p>
                             </div>
@@ -100,9 +96,9 @@ export function Service() {
                             <div class={classNames("field", css.full_height)}>
                                 <label class="label">Dirección</label>
                                 <p class="control has-icons-left">
-                                    <textarea disabled={isView()} class="input" value={getDireccion(servicio.data?.Direcciones ?? undefined)} />
+                                    <textarea disabled class="input" value={getDireccion(servicio.data?.Direcciones ?? undefined)} />
                                     <span class="icon is-medium is-left">
-                                        <i class="fas fa-location-dot"></i>
+                                        <i class="fas fa-location-dot" />
                                     </span>
                                 </p>
                             </div>
@@ -110,16 +106,16 @@ export function Service() {
                             <div class="field is-grouped is-flex-direction-column">
                                 <label class="label">Fecha de Servicio</label>
                                 <p class="control has-icons-left">
-                                    <input disabled={isView()} class="input" type="text" value={servicio.data?.fecha_servicio} />
+                                    <input disabled class="input" type="text" value={servicio.data?.fecha_servicio} />
                                     <span class="icon is-medium is-left">
-                                        <i class="fas fa-calendar-days"></i>
+                                        <i class="fas fa-calendar-days" />
                                     </span>
                                 </p>
                                 <label class="label">Hora de Servicio</label>
                                 <p class="control has-icons-left">
-                                    <input disabled={isView()} class="input" value={getLocalTime(fechaServicio())} />
+                                    <input disabled class="input" value={getLocalTime(fechaServicio())} />
                                     <span class="icon is-small is-left">
-                                        <i class="fas fa-clock"></i>
+                                        <i class="fas fa-clock" />
                                     </span>
                                 </p>
                             </div>
@@ -127,16 +123,16 @@ export function Service() {
                             <div class="field is-grouped is-flex-direction-column">
                                 <label class="label">Frecuencia del Servicio</label>
                                 <p class="control has-icons-left">
-                                    <input disabled={isView()} class="input" type="text" value={servicio.data?.frecuencia_recomendada || ""} />
+                                    <input disabled class="input" type="text" value={servicio.data?.frecuencia_recomendada || ""} />
                                     <span class="icon is-medium is-left">
-                                        <i class="fas fa-clock-rotate-left"></i>
+                                        <i class="fas fa-clock-rotate-left" />
                                     </span>
                                 </p>
                                 <label class="label">Tipo de Servicio</label>
                                 <p class="control has-icons-left">
-                                    <input disabled={isView()} class="input" value={servicio.data?.tipo_servicio || ""} />
+                                    <input disabled class="input" value={servicio.data?.tipo_servicio || ""} />
                                     <span class="icon is-small is-left">
-                                        <i class="fas fa-warehouse"></i>
+                                        <i class="fas fa-warehouse" />
                                     </span>
                                 </p>
                             </div>
@@ -144,26 +140,26 @@ export function Service() {
                             <div class="field is-grouped is-flex-direction-column">
                                 <label class="label">Tipo de Folio</label>
                                 <p class="control has-icons-left">
-                                    <input disabled={isView()} class="input" type="text" value={servicio.data?.tipo_folio || ""} />
+                                    <input disabled class="input" type="text" value={servicio.data?.tipo_folio || ""} />
                                     <span class="icon is-medium is-left">
-                                        <i class="fas fa-file-pen"></i>
+                                        <i class="fas fa-file-pen" />
                                     </span>
                                 </p>
                                 <label class="label">Estado del Servicio</label>
                                 <p class="control has-icons-left">
-                                    <input disabled={isView()} class="input" value={match(servicio.data)
+                                    <input disabled class="input" value={match(servicio.data)
                                         .with({ realizado: true }, () => "Realizado")
                                         .with({ cancelado: true }, () => "Cancelado")
                                         .otherwise(() => "Pendiente")} />
                                     <span class="icon is-small is-left">
-                                        <i class="fas fa-circle-question"></i>
+                                        <i class="fas fa-circle-question" />
                                     </span>
                                 </p>
                             </div>
                         </form>
                     </Match>
 
-                    <Match when={servicio.data && isEdit()}>
+                    <Match when={servicio.data && isReport()}>
                         <Loading />
                     </Match>
                 </Switch>

@@ -4,8 +4,8 @@ import { createQuery } from "@tanstack/solid-query";
 
 import { DeviceType, getDeviceType } from "./Home.constants";
 import { Service, fetchServices } from "./Home.query";
+import { Error, Pages } from "@/pages";
 import { Locale } from "@/constants";
-import { Error } from "@/pages";
 
 import { classNames } from "@/utils";
 import { match } from "ts-pattern";
@@ -56,12 +56,12 @@ function Share(service: Service) {
     return;
   }
 
-  const { Clientes: c } = service;
+  const { Clientes: c, folio } = service;
 
   navigator.share({
-    title: "Servicio",
-    text: `Servicio de ${c.nombre} ${c.apellidos} - Fecha: ${service.fecha_servicio}`,
-    url: "https://insectsout.com.mx/"
+    title: `Servicio con folio #${folio}`,
+    text: `${c.nombre} ${c.apellidos} - ${service.fecha_servicio}`,
+    url: `${Pages.Services}/${folio}`
   });
 }
 
@@ -229,7 +229,7 @@ function HomeActions({ service }: { service: Service }): JSX.Element {
           </span>
         </a>
 
-        <a title="Información" href={`/services/${service.id}`}>
+        <a title="Información" href={`${Pages.Services}/${service.folio}`}>
           <span class="icon is-left">
             <i class="fas fa-circle-info fa-lg has-text-info" aria-hidden="true" />
           </span>

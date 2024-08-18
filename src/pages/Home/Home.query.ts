@@ -14,7 +14,7 @@ const query = IO_Database
 
 /**
  * Fetches insects out services and their related clients
- * @returns A `promise` the resolves to an array of `Servicios`, null otherwise
+ * @returns A `promise` that resolves to an array of `Servicios`, null otherwise
  */
 export async function fetchServices(date?: Dayjs) {
     /** TODO: Remove check here so we can check services by date */

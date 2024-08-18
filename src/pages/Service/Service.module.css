@@ -15,6 +15,10 @@ form {
     padding: 1rem 1rem;
 }
 
+textarea::-webkit-scrollbar {
+    display: none;
+}
+
 div[class*='field'] {
     &:has(label) {
         gap: 0.5rem !important;
