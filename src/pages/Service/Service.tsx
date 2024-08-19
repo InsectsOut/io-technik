@@ -13,8 +13,10 @@ import { createQuery } from "@tanstack/solid-query";
 import { match } from "ts-pattern";
 
 import css from "./Service.module.css";
+import { ServiceReport } from "./components";
+import { ContactDetails } from "./components/ContactDetails";
 
-type Tabs = "detalles" | "reporte";
+type Tabs = "detalles" | "reporte" | "contacto";
 
 export function Service() {
     const { folio } = useParams();
@@ -22,6 +24,7 @@ export function Service() {
     const goHome = () => navigate(Pages.Home);
     
     const [view, setView] = createSignal<Tabs>("detalles");
+    const isContact = () => view() === "contacto";
     const isReport = () => view() === "reporte";
     const isInfo = () => view() === "detalles";
 
@@ -62,6 +65,11 @@ export function Service() {
                         onClick={() => setView("detalles")}
                     >
                         Detalles
+                    </a>
+                    <a class={classNames(["is-active", isContact()])}
+                        onClick={() => setView("contacto")}
+                    >
+                        Contacto
                     </a>
                     <a class={classNames(["is-active", isReport()])}
                         onClick={() => setView("reporte")}
@@ -160,7 +168,12 @@ export function Service() {
                     </Match>
 
                     <Match when={servicio.data && isReport()}>
-                        <Loading />
+                        {/* <Loading /> */}
+                        <ServiceReport />
+                    </Match>
+
+                    <Match when={servicio.data && isContact()}>
+                        <ContactDetails responsable={servicio.data?.Responsables ?? undefined} />
                     </Match>
                 </Switch>
 

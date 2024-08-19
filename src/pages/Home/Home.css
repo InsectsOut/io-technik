@@ -58,6 +58,17 @@ h1 {
     top: 1px;
 }
 
+.no-services {
+    padding: 2rem;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.empty-icon {
+    text-align: center;
+    font-size: 3rem;
+}
+
 .reset-filter {
     padding: unset;
 }

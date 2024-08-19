@@ -65,6 +65,17 @@ function Share(service: Service) {
   });
 }
 
+function NoServices() {
+  return (
+    <>
+      <h1 class="is-centered no-services">No hay servicios para hoy</h1>
+      <div class="is-flex is-justify-content-center">
+        <i class="fa-solid fa-beer-mug-empty empty-icon"></i>
+      </div>
+    </>
+  )
+}
+
 export function Home() {
 
   const [filter, setFilter] = createSignal("");
@@ -105,11 +116,7 @@ export function Home() {
           <Error title="Error cargando servicios 🚧" subtitle=" " link_txt="Reintentar" />
         </Match>
 
-        <Match when={!services.data?.length}>
-          <div>No hay servicios registrados</div>
-        </Match>
-
-        <Match when={!!(services.data?.length)}>
+        <Match when={services.data}>
           <nav class="panel is-shadowless">
             <p class="panel-heading io-heading">Mis Servicios</p>
             <div class="panel-block">
@@ -152,55 +159,59 @@ export function Home() {
                 </a>
               </div>
             </div>
-            <div class="table-container io-table-container">
-              <table class="table io-table">
-                <thead>
-                  <tr>
-                    <th>Horario</th>
-                    <th>Cliente</th>
-                    <th class="has-text-centered">Estatus</th>
-                    <Show when={getDeviceType(size.width) > DeviceType.Mobile}>
-                      <th class="is-flex is-justify-content-space-around is-misaligned">
-                        <div class="has-text-centered">Teléfono</div>
-                        <div class="has-text-centered">Información</div>
-                        <div class="has-text-centered">Dirección</div>
-                        <div class="has-text-centered">Compartir</div>
-                      </th>
-                    </Show>
-                  </tr>
-                </thead>
-                <tbody>
-                  <For each={filteredServices()}>
-                    {service => {
-                      const serviceStatus = match(service)
-                        .with({ realizado: true }, () => "Realizado")
-                        .with({ cancelado: true }, () => "Cancelado")
-                        .otherwise(() => "Pendiente");
 
-                      return (
-                        <>
-                          <tr class="is-pointer" onClick={() => toggleShownService(service)}>
-                            <th>{getSimpleTime(service)}</th>
-                            <td>{service.Clientes?.nombre} {service.Clientes?.apellidos}</td>
-                            <td class="icon-col has-text-centered">
-                              <div title={serviceStatus}>
-                                {getDeviceType(size.width) > DeviceType.Tablet ? serviceStatus : getStatusIcon(service)}
-                              </div>
-                            </td>
-                            <Show when={getDeviceType(size.width) > DeviceType.Mobile}>
-                              <HomeActions service={service} />
+            <Show when={services.data?.length} fallback={<NoServices />}>
+              <div class="table-container io-table-container">
+                <table class="table io-table">
+                  <thead>
+                    <tr>
+                      <th>Horario</th>
+                      <th>Cliente</th>
+                      <th class="has-text-centered">Estatus</th>
+                      <Show when={getDeviceType(size.width) > DeviceType.Mobile}>
+                        <th class="is-flex is-justify-content-space-around is-misaligned">
+                          <div class="has-text-centered">Teléfono</div>
+                          <div class="has-text-centered">Información</div>
+                          <div class="has-text-centered">Dirección</div>
+                          <div class="has-text-centered">Compartir</div>
+                        </th>
+                      </Show>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <For each={filteredServices()}>
+                      {service => {
+                        const serviceStatus = match(service)
+                          .with({ realizado: true }, () => "Realizado")
+                          .with({ cancelado: true }, () => "Cancelado")
+                          .otherwise(() => "Pendiente");
+
+                        return (
+                          <>
+                            <tr class="is-pointer" onClick={() => toggleShownService(service)}>
+                              <th>{getSimpleTime(service)}</th>
+                              <td>{service.Clientes?.nombre} {service.Clientes?.apellidos}</td>
+                              <td class="icon-col has-text-centered">
+                                <div title={serviceStatus}>
+                                  {getDeviceType(size.width) > DeviceType.Tablet ? serviceStatus : getStatusIcon(service)}
+                                </div>
+                              </td>
+                              <Show when={getDeviceType(size.width) > DeviceType.Mobile}>
+                                <HomeActions service={service} />
+                              </Show>
+                            </tr>
+                            <Show when={infoShown() === service.id && getDeviceType(size.width) === DeviceType.Mobile}>
+                              <tr><HomeActions service={service} /></tr>
                             </Show>
-                          </tr>
-                          <Show when={infoShown() === service.id && getDeviceType(size.width) === DeviceType.Mobile}>
-                            <tr><HomeActions service={service} /></tr>
-                          </Show>
-                        </>
-                      );
-                    }}
-                  </For>
-                </tbody>
-              </table>
-            </div>
+                          </>
+                        );
+                      }}
+                    </For>
+                  </tbody>
+                </table>
+              </div>
+            </Show>
+
             <Show when={filter()}>
               <div class="panel-block reset-filter">
                 <button

@@ -10,6 +10,7 @@
     "update-types": "pwsh -File ./update-types.ps1"
   },
   "dependencies": {
+    "@solid-primitives/destructure": "^0.1.17",
     "@solid-primitives/resize-observer": "^2.0.26",
     "@solidjs/router": "^0.13.5",
     "@supabase/supabase-js": "^2.43.5",
