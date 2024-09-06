@@ -1,4 +1,4 @@
-import { createSignal, Match, Suspense, Switch } from "solid-js";
+import { createSignal, Match, Show, Suspense, Switch } from "solid-js";
 import { useNavigate, useParams } from "@solidjs/router";
 
 import { getServiceByFolio } from "./Service.query";
@@ -74,7 +74,7 @@ export function Service() {
                     <a class={classNames(["is-active", isReport()])}
                         onClick={() => setView("reporte")}
                     >
-                        Reporte de Servicio
+                        Reporte
                     </a>
                 </p>
 
@@ -86,7 +86,7 @@ export function Service() {
                     <Match when={servicio.data && isInfo()}>
                         <form>
                             <label class="label">Datos del Cliente</label>
-                            <div class="field is-grouped is-flex-direction-column">
+                            <div class="field io-field is-grouped is-flex-direction-column">
                                 <p class="control has-icons-left">
                                     <input disabled class="input" type="text" value={`Folio: ${servicio.data?.folio}`} />
                                     <span class="icon is-medium is-left">
@@ -101,7 +101,7 @@ export function Service() {
                                 </p>
                             </div>
 
-                            <div class={classNames("field", css.full_height)}>
+                            <div class={classNames("field io-field", css.full_height)}>
                                 <label class="label">Dirección</label>
                                 <p class="control has-icons-left">
                                     <textarea disabled class="input" value={getDireccion(servicio.data?.Direcciones ?? undefined)} />
@@ -111,7 +111,7 @@ export function Service() {
                                 </p>
                             </div>
 
-                            <div class="field is-grouped is-flex-direction-column">
+                            <div class="field io-field is-grouped is-flex-direction-column">
                                 <label class="label">Fecha de Servicio</label>
                                 <p class="control has-icons-left">
                                     <input disabled class="input" type="text" value={servicio.data?.fecha_servicio} />
@@ -128,7 +128,7 @@ export function Service() {
                                 </p>
                             </div>
 
-                            <div class="field is-grouped is-flex-direction-column">
+                            <div class="field io-field is-grouped is-flex-direction-column">
                                 <label class="label">Frecuencia del Servicio</label>
                                 <p class="control has-icons-left">
                                     <input disabled class="input" type="text" value={servicio.data?.frecuencia_recomendada || ""} />
@@ -145,7 +145,7 @@ export function Service() {
                                 </p>
                             </div>
 
-                            <div class="field is-grouped is-flex-direction-column">
+                            <div class="field io-field is-grouped is-flex-direction-column">
                                 <label class="label">Tipo de Folio</label>
                                 <p class="control has-icons-left">
                                     <input disabled class="input" type="text" value={servicio.data?.tipo_folio || ""} />
@@ -168,8 +168,7 @@ export function Service() {
                     </Match>
 
                     <Match when={servicio.data && isReport()}>
-                        {/* <Loading /> */}
-                        <ServiceReport />
+                        <ServiceReport service={servicio.data ?? undefined} />
                     </Match>
 
                     <Match when={servicio.data && isContact()}>
@@ -177,11 +176,13 @@ export function Service() {
                     </Match>
                 </Switch>
 
-                <div class="panel-block is-justify-content-center">
-                    <button type="button" class="button is-link is-outlined is-half" onClick={goHome}>
-                        Regresar a servicios
-                    </button>
-                </div>
+                <Show when={!isReport()}>
+                    <div class="panel-block is-justify-content-center">
+                        <button type="button" class="button is-link is-outlined is-half" onClick={goHome}>
+                            Regresar a servicios
+                        </button>
+                    </div>
+                </Show>
             </nav>
         </Suspense>
     );

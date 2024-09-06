@@ -1,3 +1,5 @@
+import { createWindowSize } from "@solid-primitives/resize-observer";
+
 /** Types of devices by their max width */
 export const enum DeviceType {
     /** Max width size for a mobile device */
@@ -9,6 +11,12 @@ export const enum DeviceType {
     /** Max width size for a ultrawide device */
     Ultrawide = 2000
 }
+
+/**
+ * Readonly signal that returns the current device type
+ * @returns An Accesor<DeviceType> with the current type
+ */
+export const deviceType = () => getDeviceType((createWindowSize()).width);
 
 /**
  * Gets the current device type by screen width 
@@ -28,18 +36,22 @@ export function getDeviceType(width: number): DeviceType {
     }
 }
 
-export function isMobile(width: number) {
-    return getDeviceType(width) === DeviceType.Mobile;
+/** Returns if the current device type is a mobile device */
+export function isMobile() {
+    return deviceType() === DeviceType.Mobile;
 }
 
-export function isTablet(width: number) {
-    return getDeviceType(width) === DeviceType.Tablet;
+/** Returns if the current device type is a tablet */
+export function isTablet() {
+    return deviceType() === DeviceType.Tablet;
 }
 
-export function isLaptop(width: number) {
-    return getDeviceType(width) === DeviceType.Laptop;
+/** Returns if the current device type is a laptop */
+export function isLaptop() {
+    return deviceType() === DeviceType.Laptop;
 }
 
-export function isUltrawide(width: number) {
-    return getDeviceType(width) === DeviceType.Ultrawide;
+/** Returns if the current device type is ultrawide */
+export function isUltrawide() {
+    return deviceType() === DeviceType.Ultrawide;
 }

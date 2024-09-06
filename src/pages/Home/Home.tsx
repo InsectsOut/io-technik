@@ -1,9 +1,8 @@
 import { For, JSX, Match, Show, Suspense, Switch, createSignal } from "solid-js";
-import { createWindowSize } from "@solid-primitives/resize-observer";
 import { createQuery } from "@tanstack/solid-query";
 
-import { DeviceType, getDeviceType } from "./Home.constants";
 import { Service, fetchServices } from "./Home.query";
+import { deviceType, DeviceType } from "@/utils";
 import { Error, Pages } from "@/pages";
 import { Locale } from "@/constants";
 
@@ -79,7 +78,6 @@ function NoServices() {
 export function Home() {
 
   const [filter, setFilter] = createSignal("");
-  const size = createWindowSize();
 
   const setDay = (val?: number) => {
     if (val == null) {
@@ -168,7 +166,7 @@ export function Home() {
                       <th>Horario</th>
                       <th>Cliente</th>
                       <th class="has-text-centered">Estatus</th>
-                      <Show when={getDeviceType(size.width) > DeviceType.Mobile}>
+                      <Show when={deviceType() > DeviceType.Mobile}>
                         <th class="is-flex is-justify-content-space-around is-misaligned">
                           <div class="has-text-centered">Teléfono</div>
                           <div class="has-text-centered">Información</div>
@@ -190,17 +188,25 @@ export function Home() {
                           <>
                             <tr class="is-pointer" onClick={() => toggleShownService(service)}>
                               <th>{getSimpleTime(service)}</th>
-                              <td>{service.Clientes?.nombre} {service.Clientes?.apellidos}</td>
+                              <td>
+                                <Show when={deviceType() > DeviceType.Mobile} fallback={
+                                  <span>{service.Clientes?.nombre} {service.Clientes?.apellidos}</span>
+                                }>
+                                  <a href={`${Pages.Services}/${service.folio}`}>
+                                    {service.Clientes?.nombre} {service.Clientes?.apellidos}
+                                  </a>
+                                </Show>
+                              </td>
                               <td class="icon-col has-text-centered">
                                 <div title={serviceStatus}>
-                                  {getDeviceType(size.width) > DeviceType.Tablet ? serviceStatus : getStatusIcon(service)}
+                                  {deviceType() > DeviceType.Tablet ? serviceStatus : getStatusIcon(service)}
                                 </div>
                               </td>
-                              <Show when={getDeviceType(size.width) > DeviceType.Mobile}>
+                              <Show when={deviceType() > DeviceType.Mobile}>
                                 <HomeActions service={service} />
                               </Show>
                             </tr>
-                            <Show when={infoShown() === service.id && getDeviceType(size.width) === DeviceType.Mobile}>
+                            <Show when={infoShown() === service.id && deviceType() === DeviceType.Mobile}>
                               <tr><HomeActions service={service} /></tr>
                             </Show>
                           </>

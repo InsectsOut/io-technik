@@ -1,5 +1,5 @@
-import { destructure } from "@solid-primitives/destructure";
 import { Tables } from "@/supabase";
+import { destructure } from "@solid-primitives/destructure";
 import { Show } from "solid-js";
 
 type ContactProps = {
@@ -11,16 +11,19 @@ export function ContactDetails(props: ContactProps) {
         return null;
     }
 
-    const { responsable } = destructure(props);
-    const contacto = () => responsable?.()!;
+    const {
+        nombre,
+        puesto,
+        email,
+        telefono
+    } = destructure(props.responsable!);
 
     return (
         <form>
-            <label class="label">Datos del Contacto</label>
             <div class="field is-grouped is-flex-direction-column">
-                <label class="label">Nombre</label>
+                <label class="label">Responsable</label>
                 <p class="control has-icons-left">
-                    <input disabled class="input" type="text" value={contacto().nombre} />
+                    <input disabled class="input" type="text" value={nombre()} />
                     <span class="icon is-medium is-left">
                         <i class="fas fa-address-card" />
                     </span>
@@ -28,7 +31,7 @@ export function ContactDetails(props: ContactProps) {
 
                 <label class="label">Puesto</label>
                 <p class="control has-icons-left">
-                    <input disabled class="input" value={contacto().puesto} />
+                    <input disabled class="input" value={puesto()} />
                     <span class="icon is-medium is-left">
                         <i class="fas fa-briefcase" />
                     </span>
@@ -36,11 +39,11 @@ export function ContactDetails(props: ContactProps) {
             </div>
 
             <div class="field is-grouped is-flex-direction-column">
-                <Show when={contacto().email && contacto().telefono}>
+                <Show when={email() && telefono()}>
                     <label class="label">Correo</label>
                     <p class="control has-icons-left">
-                        <a class="input" type="email" href={"mailto:" + contacto().email}>
-                            {contacto().email}
+                        <a class="input" type="email" href={"mailto:" + email()}>
+                            {email()}
                         </a>
                         <span class="icon is-small is-left">
                             <i class="fas fa-envelope" />
@@ -49,8 +52,8 @@ export function ContactDetails(props: ContactProps) {
 
                     <label class="label">Teléfono</label>
                     <p class="control has-icons-left">
-                        <a class="input" type="phone" href={`tel:+${contacto().telefono ?? ""}`}>
-                            {contacto().telefono ?? ""}
+                        <a class="input" type="phone" href={`tel:+${telefono() ?? ""}`}>
+                            {telefono() ?? ""}
                         </a>
                         <span class="icon is-small is-left">
                             <i class="fas fa-phone" />

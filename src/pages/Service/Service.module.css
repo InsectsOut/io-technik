@@ -19,7 +19,7 @@ textarea::-webkit-scrollbar {
     display: none;
 }
 
-div[class*='field'] {
+[class*='io-field'] {
     &:has(label) {
         gap: 0.5rem !important;
     }
@@ -58,4 +58,14 @@ textarea {
 .io-heading {
     padding: 5px 15px;
     background-color: transparent;
+}
+
+[class*='gapless'] {
+    gap: 0 !important;
+}
+
+[class*='io-signature'] {
+    flex-direction: column;
+    justify-content: center;
+    display: flex;
 }

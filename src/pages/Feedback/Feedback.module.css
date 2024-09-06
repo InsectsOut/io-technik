@@ -1,0 +1,21 @@
+section {
+    padding: 0px clamp(0px, calc(10vw - 75px), 30%);
+}
+
+[class*='is-column'] {
+    @media screen and (max-width: 785px) {
+        flex-direction: column;
+    }
+
+    [class='select'], select {
+        width: 100%;
+    }
+}
+
+[class*='flex-center-mobile'] {
+    @media screen and (max-width: 600px) {
+        justify-content: center !important;
+        gap: 0 !important;
+        display: flex;
+    }
+}

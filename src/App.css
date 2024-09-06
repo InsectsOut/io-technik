@@ -4,3 +4,8 @@
   margin: 0 auto;
   padding: 1rem;
 }
+
+main {
+  display: flex;
+  flex-direction: column;
+}

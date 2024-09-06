@@ -48,7 +48,7 @@ export function Navbar() {
         <Show when={currentSession()}>
             <nav class="navbar is-transparent">
                 <div class="navbar-brand">
-                    <A href={Pages.Home} class="panel-block is-active has-text-link">
+                    <A href={Pages.Home} class="panel-block is-active has-text-link no-padding">
                         <span class="panel-icon">
                             <i class="fas fa-home" aria-hidden="true"></i>
                         </span>

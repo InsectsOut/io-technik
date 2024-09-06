@@ -1,4 +1,5 @@
 export * from "./CssHelpers";
+export * from "./DeviceType";
 
 /** Helper that returns a union of `T | undefined` */
 export type Some<T> = T | undefined;

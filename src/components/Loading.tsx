@@ -1,4 +1,3 @@
-import { classNames } from "@/utils";
 import css from "./Loading.module.css";
 
 type LoadingProps = {
@@ -12,9 +11,6 @@ export function Loading(props: LoadingProps) {
             <h2>Por favor espere un momento</h2>
 
             <progress class="progress is-medium is-info" max="100" />
-            <span class={classNames("icon is-large is-left", css.spinner)}>
-                <i class="fas fa-spinner"></i>
-            </span>
         </div>
     );
 }
