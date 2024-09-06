@@ -78,12 +78,12 @@ export function Navbar() {
                             <div class="has-text-weight-semibold navbar-link" onClick={toggleDrop}>Más</div>
                             <Show when={isDropActive()}>
                                 <div class="navbar-dropdown is-boxed is-hoverable">
-                                    <A href="/about" class="navbar-item">
-                                        Información
-                                    </A>
-                                    <hr class="navbar-divider" />
                                     <A href="/feedback" class="navbar-item">
                                         Reporta un problema
+                                    </A>
+                                    <hr class="navbar-divider" />
+                                    <A href="/about" class="navbar-item">
+                                        Información
                                     </A>
                                 </div>
                             </Show>

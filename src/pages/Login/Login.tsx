@@ -1,8 +1,7 @@
 import insectsImg from "@/assets/insects-out-med.png";
 import { Auth, currentSession } from "@/supabase";
-import { Navigate, useNavigate } from "@solidjs/router";
-import { createSignal, Show } from "solid-js";
-import { Pages } from "..";
+import { useLocation, useNavigate } from "@solidjs/router";
+import { createEffect, createSignal, Show } from "solid-js";
 
 import css from "./Login.module.css";
 import { classNames } from "@/utils";
@@ -11,7 +10,9 @@ const [email, setEmail] = createSignal("");
 const [pass, setPass] = createSignal("");
 
 export function Login() {
+    const location = useLocation<{ from: string }>();
     const navigate = useNavigate();
+
     const signIn = (): Promise<string> => Auth
         .signIn(email(), pass())
         .then(({ data, error }) => {
@@ -24,6 +25,15 @@ export function Login() {
         .catch(console.error)
         .then(() => "Sesión iniciada");
 
+    createEffect(() => {
+        if (currentSession()) {
+            // After successful login, redirect to the original intended destination
+            const { from = "/login" } = location.state || {};
+            const page = from === "/login" ? "/home" : from;
+            navigate(page, { replace: true });
+        }
+    });
+
     const formClass = classNames(
         "field is-grouped",
         "is-flex-direction-column",
@@ -31,7 +41,7 @@ export function Login() {
     );
 
     return (
-        <Show when={!currentSession()} fallback={<Navigate href={Pages.Home} />}>
+        <Show when={!currentSession()}>
             <div class={formClass}>
 
                 <div class={css.loginHead}>

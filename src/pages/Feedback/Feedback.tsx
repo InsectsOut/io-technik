@@ -3,6 +3,7 @@ import "./Feedback.module.css";
 export function Feedback() {
     return (
         <section>
+            <h1 class="title no-padding">Reportar un Problema</h1>
             <div class="field">
                 <label class="label">Nombre</label>
                 <div class="control">

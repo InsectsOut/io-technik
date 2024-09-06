@@ -104,7 +104,7 @@ export function Service() {
                             <div class={classNames("field io-field", css.full_height)}>
                                 <label class="label">Dirección</label>
                                 <p class="control has-icons-left">
-                                    <textarea disabled class="input" value={getDireccion(servicio.data?.Direcciones ?? undefined)} />
+                                    <textarea disabled class="input" value={getDireccion(servicio.data?.Direcciones ?? undefined) || "Sin dirección"} />
                                     <span class="icon is-medium is-left">
                                         <i class="fas fa-location-dot" />
                                     </span>
@@ -114,14 +114,14 @@ export function Service() {
                             <div class="field io-field is-grouped is-flex-direction-column">
                                 <label class="label">Fecha de Servicio</label>
                                 <p class="control has-icons-left">
-                                    <input disabled class="input" type="text" value={servicio.data?.fecha_servicio} />
+                                    <input disabled class="input" type="text" value={servicio.data?.fecha_servicio ?? "No asignada"} />
                                     <span class="icon is-medium is-left">
                                         <i class="fas fa-calendar-days" />
                                     </span>
                                 </p>
                                 <label class="label">Hora de Servicio</label>
                                 <p class="control has-icons-left">
-                                    <input disabled class="input" value={getLocalTime(fechaServicio())} />
+                                    <input disabled class="input" value={getLocalTime(fechaServicio()) || "No asignada"} />
                                     <span class="icon is-small is-left">
                                         <i class="fas fa-clock" />
                                     </span>
@@ -131,14 +131,14 @@ export function Service() {
                             <div class="field io-field is-grouped is-flex-direction-column">
                                 <label class="label">Frecuencia del Servicio</label>
                                 <p class="control has-icons-left">
-                                    <input disabled class="input" type="text" value={servicio.data?.frecuencia_recomendada || ""} />
+                                    <input disabled class="input" type="text" value={servicio.data?.frecuencia_recomendada || "No asignada"} />
                                     <span class="icon is-medium is-left">
                                         <i class="fas fa-clock-rotate-left" />
                                     </span>
                                 </p>
                                 <label class="label">Tipo de Servicio</label>
                                 <p class="control has-icons-left">
-                                    <input disabled class="input" value={servicio.data?.tipo_servicio || ""} />
+                                    <input disabled class="input" value={servicio.data?.tipo_servicio || "Sin tipo"} />
                                     <span class="icon is-small is-left">
                                         <i class="fas fa-warehouse" />
                                     </span>
@@ -148,7 +148,7 @@ export function Service() {
                             <div class="field io-field is-grouped is-flex-direction-column">
                                 <label class="label">Tipo de Folio</label>
                                 <p class="control has-icons-left">
-                                    <input disabled class="input" type="text" value={servicio.data?.tipo_folio || ""} />
+                                    <input disabled class="input" type="text" value={servicio.data?.tipo_folio || "Sin tipo"} />
                                     <span class="icon is-medium is-left">
                                         <i class="fas fa-file-pen" />
                                     </span>

@@ -2,12 +2,17 @@ section {
     padding: 0px clamp(0px, calc(10vw - 75px), 30%);
 }
 
+h1 {
+    font-weight: 500 !important;
+}
+
 [class*='is-column'] {
     @media screen and (max-width: 785px) {
         flex-direction: column;
     }
 
-    [class='select'], select {
+    [class='select'],
+    select {
         width: 100%;
     }
 }

@@ -8,7 +8,12 @@ type ContactProps = {
 
 export function ContactDetails(props: ContactProps) {
     if (!props.responsable) {
-        return null;
+        return (
+            <section class="no-contact">
+                <h1 class="title has-text-centered">Sin contacto 🔎</h1>
+                <h2 class="subtitle has-text-centered">No se encontraron datos de contacto para este servicio.</h2>
+            </section>
+        );
     }
 
     const {
@@ -23,7 +28,7 @@ export function ContactDetails(props: ContactProps) {
             <div class="field is-grouped is-flex-direction-column">
                 <label class="label">Responsable</label>
                 <p class="control has-icons-left">
-                    <input disabled class="input" type="text" value={nombre()} />
+                    <input disabled class="input" type="text" value={nombre() || "Sin información"} />
                     <span class="icon is-medium is-left">
                         <i class="fas fa-address-card" />
                     </span>
@@ -31,7 +36,7 @@ export function ContactDetails(props: ContactProps) {
 
                 <label class="label">Puesto</label>
                 <p class="control has-icons-left">
-                    <input disabled class="input" value={puesto()} />
+                    <input disabled class="input" value={puesto() || "Sin información"} />
                     <span class="icon is-medium is-left">
                         <i class="fas fa-briefcase" />
                     </span>

@@ -43,6 +43,10 @@ textarea {
     resize: none;
 }
 
+canvas {
+    border-radius: 0.375rem;
+}
+
 .container {
     display: flex;
     flex-direction: column;
@@ -58,6 +62,11 @@ textarea {
 .io-heading {
     padding: 5px 15px;
     background-color: transparent;
+    font-size: xx-large;
+}
+
+[class*='sign-btn'] {
+    margin: 1rem 0.5rem !important;
 }
 
 [class*='gapless'] {
@@ -68,4 +77,12 @@ textarea {
     flex-direction: column;
     justify-content: center;
     display: flex;
+}
+
+[class*='no-contact'] {
+    justify-content: center;
+    flex-direction: column;
+    display: flex;
+    padding: 1rem;
+    height: 30vh;
 }

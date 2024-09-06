@@ -54,7 +54,7 @@ export function ServiceReport(props: ReportProps) {
             return;
         }
 
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        const ratio = Math.max(window.devicePixelRatio || 1, 1) * 0.75;
         canvas.width = canvas.offsetWidth * ratio;
         canvas.height = 450;
         canvas.getContext("2d")?.scale(ratio, ratio);
@@ -152,19 +152,19 @@ export function ServiceReport(props: ReportProps) {
                 <label class="label">Firma del cliente</label>
                 <canvas width={400} height={450} />
 
-                <div class="field is-grouped is-justify-content-center">
+                <div class="field is-grouped is-justify-content-center gapless">
                     <div class="control">
-                        <button type="button" class="button is-warning" onClick={clearSignature}>
+                        <button type="button" class="button sign-btn is-warning" onClick={clearSignature}>
                             Limpiar
                         </button>
                     </div>
                     <div class="control">
-                        <button type="button" class="button is-info is-light" onClick={downloadSignature}>
+                        <button type="button" class="button sign-btn is-info is-light" onClick={downloadSignature}>
                             Descargar
                         </button>
                     </div>
                     <div class="control">
-                        <button type="button" class="button is-link is-light" onClick={saveSignature}>
+                        <button type="button" class="button sign-btn is-link is-light" onClick={saveSignature}>
                             Aceptar
                         </button>
                     </div>
