@@ -56,7 +56,7 @@ export function Service() {
     return (
         <Suspense fallback={<Loading />}>
             <nav class="panel is-shadowless">
-                <p class={classNames("panel-heading", css['io-heading'])}>
+                <p class={classNames("panel-heading", css.io_heading)}>
                     Datos del Servicio
                 </p>
 
@@ -86,7 +86,7 @@ export function Service() {
                     <Match when={servicio.data && isInfo()}>
                         <form>
                             <label class="label">Datos del Cliente</label>
-                            <div class="field io-field is-grouped is-flex-direction-column">
+                            <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                 <p class="control has-icons-left">
                                     <input disabled class="input" type="text" value={`Folio: ${servicio.data?.folio}`} />
                                     <span class="icon is-medium is-left">
@@ -101,7 +101,7 @@ export function Service() {
                                 </p>
                             </div>
 
-                            <div class={classNames("field io-field", css.full_height)}>
+                            <div class={classNames("field", css.full_height, css.io_field)}>
                                 <label class="label">Dirección</label>
                                 <p class="control has-icons-left">
                                     <textarea disabled class="input" value={getDireccion(servicio.data?.Direcciones ?? undefined) || "Sin dirección"} />
@@ -111,7 +111,7 @@ export function Service() {
                                 </p>
                             </div>
 
-                            <div class="field io-field is-grouped is-flex-direction-column">
+                            <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                 <label class="label">Fecha de Servicio</label>
                                 <p class="control has-icons-left">
                                     <input disabled class="input" type="text" value={servicio.data?.fecha_servicio ?? "No asignada"} />
@@ -128,7 +128,7 @@ export function Service() {
                                 </p>
                             </div>
 
-                            <div class="field io-field is-grouped is-flex-direction-column">
+                            <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                 <label class="label">Frecuencia del Servicio</label>
                                 <p class="control has-icons-left">
                                     <input disabled class="input" type="text" value={servicio.data?.frecuencia_recomendada || "No asignada"} />
@@ -145,7 +145,7 @@ export function Service() {
                                 </p>
                             </div>
 
-                            <div class="field io-field is-grouped is-flex-direction-column">
+                            <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                 <label class="label">Tipo de Folio</label>
                                 <p class="control has-icons-left">
                                     <input disabled class="input" type="text" value={servicio.data?.tipo_folio || "Sin tipo"} />

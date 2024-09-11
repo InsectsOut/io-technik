@@ -1,29 +1,17 @@
-import { Tables } from "@/supabase";
-import { DeviceType, deviceType } from "@/utils";
 import { destructure } from "@solid-primitives/destructure";
+import { createEffect } from "solid-js";
+
+import { SuggestionPicker } from "./SuggestionPicker";
 import SignaturePad from "signature_pad";
-import { createEffect, Index } from "solid-js";
+
+import { Tables } from "@/supabase";
+import { classNames } from "@/utils";
+
+import css from "../Service.module.css";
 
 type ReportProps = {
     service?: Tables<"Servicios">
 }
-
-const recomendaciones = [
-    "Tapar coladeras",
-    "Instalar guardapolvo en puertas",
-    "Mantener corto el pasto",
-    "Reparar fugas de agua",
-    "Recoger alimentos y trastes sucios",
-    "Sellar orificios, grietas o hendiduras",
-    "No trapear cerca de la pared a 15cm",
-    "Instalar mosquiteros",
-    "Limpiar derrames en piso y paredes",
-    "No dejar alimento de mascota expuesto",
-    "Revisión de contenedores de alimento",
-    "Almacenar a 15cm del piso y la pared",
-    "Utilizar cubre colchón y lavar ropa con agua caliente"
-];
-
 
 export function ServiceReport(props: ReportProps) {
     if (!props.service) {
@@ -90,7 +78,7 @@ export function ServiceReport(props: ReportProps) {
 
     return (
         <form>
-            <div class="field io-field is-grouped is-flex-direction-column">
+            <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                 <label class="label">Hora de Entrada</label>
                 <p class="control has-icons-left">
                     <input required class="input" type="time" value={horario_servicio()} />
@@ -109,7 +97,7 @@ export function ServiceReport(props: ReportProps) {
 
             </div>
 
-            <div class="field io-field is-flex-direction-column">
+            <div class={classNames("field is-flex-direction-column", css.io_field)}>
                 <label class="label">Frecuencia sugerida de servicio</label>
                 <div class="control is-grouped has-icons-left is-expanded">
                     <div class="select is-fullwidth">
@@ -128,25 +116,8 @@ export function ServiceReport(props: ReportProps) {
                 </div>
             </div>
 
-            <div class="field is-flex-direction-column">
-                <label class="label">Inspección y recomendaciones</label>
-                <div class="control has-icons-left is-expanded">
-                    <div class="select is-fullwidth is-multiple">
-                        <select multiple name="recomendaciones" size={deviceType() > DeviceType.Mobile ? 5 : 3}>
-                            <Index each={recomendaciones}>
-                                {(recomendacion) => (
-                                    <option value={recomendacion()}>
-                                        {recomendacion()}
-                                    </option>
-                                )}
-                            </Index>
-                        </select>
-                    </div>
-                    <div class="icon is-small is-left">
-                        <i class="fas fa-bug"></i>
-                    </div>
-                </div>
-            </div>
+            { /* Component for service suggestions and photo reports */
+                <SuggestionPicker />}
 
             <div class="field io-signature">
                 <label class="label">Firma del cliente</label>

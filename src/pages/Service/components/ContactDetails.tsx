@@ -1,6 +1,9 @@
-import { Tables } from "@/supabase";
 import { destructure } from "@solid-primitives/destructure";
+import { Tables } from "@/supabase";
+import { classNames } from "@/utils";
 import { Show } from "solid-js";
+
+import css from "../Service.module.css";
 
 type ContactProps = {
     responsable?: Tables<"Responsables">
@@ -25,7 +28,7 @@ export function ContactDetails(props: ContactProps) {
 
     return (
         <form>
-            <div class="field is-grouped is-flex-direction-column">
+            <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                 <label class="label">Responsable</label>
                 <p class="control has-icons-left">
                     <input disabled class="input" type="text" value={nombre() || "Sin información"} />
@@ -43,7 +46,7 @@ export function ContactDetails(props: ContactProps) {
                 </p>
             </div>
 
-            <div class="field is-grouped is-flex-direction-column">
+            <div class={classNames("field is-flex-direction-column", css.two_col_grid)}>
                 <Show when={email() && telefono()}>
                     <label class="label">Correo</label>
                     <p class="control has-icons-left">

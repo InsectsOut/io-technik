@@ -53,7 +53,7 @@ export function Login() {
                     <h2 class="title is-align-self-center">io-technik</h2>
                 </div>
 
-                <div class={css.loginBody}>
+                <form class={css.loginBody}>
                     <p class="control has-icons-left has-icons-right">
                         <input type="email"
                             onInput={(e) => setEmail(e.target.value)}
@@ -74,6 +74,7 @@ export function Login() {
                             onInput={(e) => setPass(e.target.value)}
                             class="input is-rounded"
                             placeholder="Contraseña"
+                            autocomplete="on"
                             required={true}
                         />
                         <span class="icon is-small is-left">
@@ -90,7 +91,7 @@ export function Login() {
                         </button>
                     </p>
 
-                </div>
+                </form>
             </div>
         </Show>
     );

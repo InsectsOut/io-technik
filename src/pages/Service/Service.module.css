@@ -19,7 +19,25 @@ textarea::-webkit-scrollbar {
     display: none;
 }
 
-[class*='io-field'] {
+.two_col_grid {
+    gap: 0.375rem;
+
+    @media screen and (width > 550px) {
+        grid-template-columns: 50% 50%;
+        grid-template-rows: auto auto;
+        grid-auto-flow: column;
+        display: grid;
+        width: auto;
+    }
+}
+
+.file_input_width {
+    & > * {
+        width: 96%;
+    }
+}
+
+.io_field {
     &:has(label) {
         gap: 0.5rem !important;
     }
@@ -59,7 +77,7 @@ canvas {
     }
 }
 
-.io-heading {
+.io_heading {
     padding: 5px 15px;
     background-color: transparent;
     font-size: xx-large;
@@ -71,6 +89,10 @@ canvas {
 
 [class*='gapless'] {
     gap: 0 !important;
+}
+
+[class*='marginless'] {
+    margin: unset !important;
 }
 
 [class*='io-signature'] {
