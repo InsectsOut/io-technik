@@ -12,11 +12,14 @@ export const enum DeviceType {
     Ultrawide = 2000
 }
 
+/** Signal that tracks the current window size */
+export const windowSize = createWindowSize();
+
 /**
  * Readonly signal that returns the current device type
  * @returns An Accesor<DeviceType> with the current type
  */
-export const deviceType = () => getDeviceType((createWindowSize()).width);
+export const deviceType = () => getDeviceType(windowSize.width);
 
 /**
  * Gets the current device type by screen width 
