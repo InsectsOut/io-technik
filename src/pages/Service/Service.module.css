@@ -108,3 +108,7 @@ canvas {
     padding: 1rem;
     height: 30vh;
 }
+
+[class*='modal-background'] {
+    cursor: pointer;
+}
