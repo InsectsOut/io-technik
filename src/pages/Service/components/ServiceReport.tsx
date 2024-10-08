@@ -69,7 +69,6 @@ export function ServiceReport(props: ReportProps) {
         }
 
         const data = signPad!.toDataURL("image/png");
-        console.log(data);
         window.open(data);
     }
 
@@ -111,13 +110,13 @@ export function ServiceReport(props: ReportProps) {
                         </select>
                     </div>
                     <div class="icon is-small is-left">
-                        <i class="fas fa-clock-rotate-left"></i>
+                        <i class="fas fa-clock-rotate-left" />
                     </div>
                 </div>
             </div>
 
-            { /* Component for service suggestions and photo reports */
-                <SuggestionPicker />}
+            { /* Component for service suggestions and photo reports */ }
+            <SuggestionPicker />
 
             <div class="field io-signature">
                 <label class="label">Firma del cliente</label>
@@ -147,7 +146,7 @@ export function ServiceReport(props: ReportProps) {
                     <button class="button is-success is-outlined">
                         <span>Guardar Reporte</span>
                         <span class="icon">
-                            <i class="fas fa-cloud-arrow-up"></i>
+                            <i class="fas fa-cloud-arrow-up" />
                         </span>
                     </button>
                 </div>

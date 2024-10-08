@@ -159,7 +159,7 @@ function SuggestionEntry(report: Sugerencia, index: number) {
 }
 
 /** Component picker to add multiple suggestion reports */
-export function SuggestionPicker(_props: any) {
+export function SuggestionPicker() {
     /** Active report being edited */
     const report = createMutable<Sugerencia>({
         recomendaciones: [],
@@ -288,6 +288,7 @@ export function SuggestionPicker(_props: any) {
                                     <select ref={suggestionsRef}
                                         onChange={(e => setSuggestions(e.target.selectedOptions))}
                                         multiple name="recomendaciones" size="3"
+                                        required
                                     >
                                         <Index each={recomendaciones}>
                                             {(recomendacion) => (
