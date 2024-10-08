@@ -1,8 +1,15 @@
 export * from "./CssHelpers";
 export * from "./DeviceType";
 
-/** Helper that returns a union of `T | undefined` */
-export type Some<T> = T | undefined;
+/** Image file extension */
+export type ImgFile = {
+    /** The file blob to be uploaded */
+    file: File;
+    /** The image extension */
+    extension: string;
+    /** A unique img id */
+    id: string;
+}
 
 /**
  * Delays a `Promise` by the provided miliseconds

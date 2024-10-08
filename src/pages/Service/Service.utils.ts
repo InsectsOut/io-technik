@@ -15,3 +15,8 @@ export function getServiceDate(fecha: string, hora: string, useDayJs = false): D
         return null;
     }
 }
+
+/** Generates a unique `id/timestamp` for an img upload */
+export function getImageId() {
+    return `reporte-${dayjs().format("YYYY-MM-DDTHH:mm:ss")}`;
+}

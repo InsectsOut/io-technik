@@ -112,3 +112,11 @@ canvas {
 [class*='modal-background'] {
     cursor: pointer;
 }
+
+[class*='no-pad-left'] {
+    padding-left: 0 !important;
+}
+
+th {
+    padding-left: 0 !important;
+}

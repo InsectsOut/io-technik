@@ -125,17 +125,17 @@ export function ServiceReport(props: ReportProps) {
 
                 <div class="field is-grouped is-justify-content-center gapless">
                     <div class="control">
-                        <button type="button" class="button sign-btn is-warning" onClick={clearSignature}>
+                        <button type="button" class="button sign-btn is-danger is-dark" onClick={clearSignature}>
                             Limpiar
                         </button>
                     </div>
                     <div class="control">
-                        <button type="button" class="button sign-btn is-info is-light" onClick={downloadSignature}>
+                        <button type="button" class="button sign-btn is-info is-dark" onClick={downloadSignature}>
                             Descargar
                         </button>
                     </div>
                     <div class="control">
-                        <button type="button" class="button sign-btn is-link is-light" onClick={saveSignature}>
+                        <button type="button" class="button sign-btn is-success is-dark" onClick={saveSignature}>
                             Aceptar
                         </button>
                     </div>
