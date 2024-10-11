@@ -4,7 +4,7 @@ import { createQuery } from "@tanstack/solid-query";
 import { Service, fetchServices } from "./Home.query";
 import { deviceType, DeviceType } from "@/utils";
 import { Error, Pages } from "@/pages";
-import { Locale } from "@/constants";
+import { LocaleMX } from "@/constants";
 
 import { classNames } from "@/utils";
 import { match } from "ts-pattern";
@@ -48,7 +48,7 @@ const shortDate = () => date()
   .format("DD/MM/YY");
 
 const fullDate = () => date().toDate()
-  .toLocaleDateString(Locale, { dateStyle: "full" });
+  .toLocaleDateString(LocaleMX, { dateStyle: "full" });
 
 function Share(service: Service) {
   if (!service.Clientes) {
@@ -116,7 +116,7 @@ export function Home() {
 
         <Match when={services.data}>
           <nav class="panel is-shadowless">
-            <p class="panel-heading io-heading">Mis Servicios</p>
+            <h1 class="title no-padding">Mis Servicios</h1>
             <div class="panel-block">
               <p class="control has-icons-left">
                 <input onInput={(e) => setFilter(e.target.value)}
@@ -170,7 +170,7 @@ export function Home() {
                         <th class="is-flex is-justify-content-space-around is-misaligned">
                           <div class="has-text-centered">Teléfono</div>
                           <div class="has-text-centered">Información</div>
-                          <div class="has-text-centered">Dirección</div>
+                          <div class="has-text-centered">Ubicación</div>
                           <div class="has-text-centered">Compartir</div>
                         </th>
                       </Show>
@@ -237,24 +237,30 @@ export function Home() {
 }
 
 function HomeActions({ service }: { service: Service }): JSX.Element {
+  const { ubicacion, folio, Clientes } = service;
+  const mapClasses = classNames(
+    "fas fa-lg has-text-danger",
+    ubicacion ? "fa-map-pin" : "fa-ban"
+  );
+
   return (
     <td colSpan={4}>
       <div class="is-flex is-justify-content-space-around">
-        <a title="Teléfono" href={`tel:+${service.Clientes?.telefono}`}>
+        <a title="Teléfono" href={`tel:+${Clientes?.telefono}`}>
           <span class="icon is-left">
             <i class="fas fa-phone-flip fa-lg has-text-primary" aria-hidden="true" />
           </span>
         </a>
 
-        <a title="Información" href={`${Pages.Services}/${service.folio}`}>
+        <a title="Información" href={`${Pages.Services}/${folio}`}>
           <span class="icon is-left">
             <i class="fas fa-circle-info fa-lg has-text-info" aria-hidden="true" />
           </span>
         </a>
 
-        <a rel="noopener" title="Ubicación" target="_blank" href="https://maps.app.goo.gl/5LwiK1t1HzdeLiiQ7">
+        <a classList={{ "disabled": !ubicacion }} rel="noopener" title="Ubicación" target="_blank" href={ubicacion ?? "#"}>
           <span class="icon is-left">
-            <i class="fas fa-map-pin fa-lg has-text-danger" aria-hidden="true" />
+            <i class={mapClasses} aria-hidden="true" />
           </span>
         </a>
 

@@ -1,17 +1,34 @@
 import { destructure } from "@solid-primitives/destructure";
-import { createEffect } from "solid-js";
+import { createMutable } from "solid-js/store";
+import { createEffect, For } from "solid-js";
 
 import { SuggestionPicker } from "./SuggestionPicker";
 import SignaturePad from "signature_pad";
 
+import { FrecuenciaServicio, Sugerencia } from "../Service.types";
+import { classNames, ImgFile } from "@/utils";
+import { getLocalTime } from "@/utils/Date";
 import { Tables } from "@/supabase";
-import { classNames } from "@/utils";
 
 import css from "../Service.module.css";
 
+/** Store de un reporte de servicio llenado por un técnico */
+export const ReporteServicio = createMutable({
+    frecuencia: FrecuenciaServicio.Ninguna,
+    sugerencias: [] as Sugerencia[],
+    firma: {} as ImgFile,
+    horaInicio: "",
+    horaSalida: "",
+});
+
 type ReportProps = {
     service?: Tables<"Servicios">
-}
+};
+
+type InputEvent = Event & {
+    currentTarget: HTMLInputElement;
+    target: HTMLInputElement;
+};
 
 export function ServiceReport(props: ReportProps) {
     if (!props.service) {
@@ -72,6 +89,10 @@ export function ServiceReport(props: ReportProps) {
         window.open(data);
     }
 
+    function onHoraEntradaChange(event: InputEvent) {
+        console.log(getLocalTime(event.target.valueAsDate));
+    }
+
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
@@ -80,7 +101,7 @@ export function ServiceReport(props: ReportProps) {
             <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                 <label class="label">Hora de Entrada</label>
                 <p class="control has-icons-left">
-                    <input required class="input" type="time" value={horario_servicio()} />
+                    <input required onChange={onHoraEntradaChange} class="input" type="time" value={horario_servicio()} />
                     <span class="icon is-medium is-left">
                         <i class="fas fa-door-open" />
                     </span>
@@ -88,7 +109,7 @@ export function ServiceReport(props: ReportProps) {
 
                 <label class="label">Hora de Salida</label>
                 <p class="control has-icons-left">
-                    <input required class="input" type="time" min={horario_servicio()} />
+                    <input required onChange={onHoraEntradaChange} class="input" type="time" />
                     <span class="icon is-medium is-left">
                         <i class="fas fa-door-closed" />
                     </span>
@@ -96,27 +117,30 @@ export function ServiceReport(props: ReportProps) {
 
             </div>
 
-            <div class={classNames("field is-flex-direction-column", css.io_field)}>
+            <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                 <label class="label">Frecuencia sugerida de servicio</label>
                 <div class="control is-grouped has-icons-left is-expanded">
                     <div class="select is-fullwidth">
                         <select name="frecuencia">
-                            <option selected>7 días</option>
-                            <option>15 días</option>
-                            <option>30 días</option>
-                            <option>60 días</option>
-                            <option>90 días</option>
-                            <option>180 días</option>
+                            <For each={Object.entries(FrecuenciaServicio)}>
+                                {([frequencia, valor], index) => (
+                                    <option value={valor} selected={index() === 0}>
+                                        {`${frequencia} / ${valor} días`}
+                                    </option>
+                                )}
+                            </For>
                         </select>
                     </div>
                     <div class="icon is-small is-left">
                         <i class="fas fa-clock-rotate-left" />
                     </div>
                 </div>
+                
+                <label class="label">Agregar Recomendaciones</label>
+                <SuggestionPicker />
             </div>
 
-            { /* Component for service suggestions and photo reports */ }
-            <SuggestionPicker />
+            { /* Component for service suggestions and photo reports */}
 
             <div class="field io-signature">
                 <label class="label">Firma del cliente</label>

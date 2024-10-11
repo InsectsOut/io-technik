@@ -5,7 +5,7 @@ import { userProfile } from "@/state/Profile";
 export function Profile() {
     return (
         <div class={css.container}>
-            <h1>User profile</h1>
+            <h1 class="title no-padding">User profile</h1>
             <div class={css.username}>
                 <br />
                 <Show when={userProfile()}>

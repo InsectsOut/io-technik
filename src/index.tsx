@@ -1,12 +1,14 @@
-/* @refresh reload */
-import { render } from "solid-js/web"
+import "solid-devtools";
 
-import "./index.css"
-import App from "./App"
-import { Route, Router } from "@solidjs/router";
-import { AuthGuard } from "@/components";
-import { Login, Home, About, Profile, NotFound, Feedback, Service } from "@/pages";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import { Route, Router } from "@solidjs/router";
+import { render } from "solid-js/web";
+
+import { Login, Home, About, Profile, NotFound, Feedback, Service } from "@/pages";
+import { AuthGuard } from "@/components";
+import App from "./App";
+
+import "./index.css";
 
 const client = new QueryClient();
 

@@ -1,19 +1,10 @@
 import { createMutable } from "solid-js/store";
 import { For, Index, Show } from "solid-js";
 
-import { classNames, ImgFile, windowSize } from "@/utils";
-import { Modal } from "@/components";
+import { classNames, windowSize } from "@/utils";
 import { getImageId } from "../Service.utils"
-
-/** Tipo para una sugerencia de servicio */
-type Sugerencia = {
-    /** Recomendaciones de esta sugerencia */
-    recomendaciones: string[];
-    /** Problema encontrado en el servicio */
-    problema: string;
-    /** Imagen opcional adjunta al reporte */
-    imagen?: ImgFile;
-}
+import { Sugerencia } from "../Service.types";
+import { Modal } from "@/components";
 
 /** Extends the `InputEvent` with its target set to an `HTMLInputElement` */
 type FileInputEvent = InputEvent & {
@@ -227,8 +218,8 @@ export function SuggestionPicker() {
             {/* Modal element to show add or modify a report */}
             <Modal show={picker.showModal} onClose={() => picker.showModal = false}>
                 <form class="form fixed-grid has-3-cols marginless paddingless">
-                    <div style={{ display: "flex", "align-items": "center" }}>
-                        <h2 class="subtitle marginless" style={{ "padding-left": 0 }}>
+                    <div class="is-flex is-justify-content-space-between">
+                        <h2 class="subtitle" style={{ "padding-left": 0 }}>
                             Nueva Recomendación
                         </h2>
                         <span class="icon is-left">
@@ -365,9 +356,9 @@ export function SuggestionPicker() {
             </Show>
 
             {/* Button to add a new report */}
-            <div class="field is-grouped is-justify-content-center marginless">
+            <div class="field">
                 <div class="control">
-                    <button type="button" class="button" onClick={() => picker.showModal = true}>
+                    <button type="button" class="button is-fullwidth" onClick={() => picker.showModal = true}>
                         <span>Nueva recomendación</span>
                         <span class="icon">
                             <i class="fas fa-circle-plus" />

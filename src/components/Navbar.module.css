@@ -6,7 +6,3 @@ nav {
     position: unset !important;
     margin-bottom: 0.5rem;
 }
-
-[class*='no-padding'] {
-    padding: 0;
-}

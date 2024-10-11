@@ -56,7 +56,7 @@ export function Service() {
     return (
         <Suspense fallback={<Loading />}>
             <nav class="panel is-shadowless">
-                <p class={classNames("panel-heading", css.io_heading)}>
+                <p class={classNames("panel-heading io-heading", css.io_heading)}>
                     Datos del Servicio
                 </p>
 

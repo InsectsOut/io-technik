@@ -83,40 +83,6 @@ canvas {
     font-size: xx-large;
 }
 
-[class*='sign-btn'] {
-    margin: 1rem 0.5rem !important;
-}
-
-[class*='gapless'] {
-    gap: 0 !important;
-}
-
-[class*='marginless'] {
-    margin: unset !important;
-}
-
-[class*='io-signature'] {
-    flex-direction: column;
-    justify-content: center;
-    display: flex;
-}
-
-[class*='no-contact'] {
-    justify-content: center;
-    flex-direction: column;
-    display: flex;
-    padding: 1rem;
-    height: 30vh;
-}
-
-[class*='modal-background'] {
-    cursor: pointer;
-}
-
-[class*='no-pad-left'] {
-    padding-left: 0 !important;
-}
-
 th {
     padding-left: 0 !important;
 }

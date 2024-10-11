@@ -14,11 +14,6 @@ h1 {
     vertical-align: middle !important;
 }
 
-.io-heading {
-    padding: 5px 15px;
-    background-color: transparent;
-}
-
 .io-table-container {
     height: 55vh;
     overflow-y: auto;

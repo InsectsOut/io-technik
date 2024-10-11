@@ -19,8 +19,13 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
+}
+
+a.disabled {
+  pointer-events: none;
 }
 
 body {
@@ -29,7 +34,7 @@ body {
   min-height: 100vh;
   overflow: hidden;
 
-  @media only screen and (min-width: 600px)  {
+  @media only screen and (min-width: 600px) {
     display: flex;
   }
 }
@@ -50,9 +55,11 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -63,10 +70,75 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
+  }
+}
+
+/* Insects Out Overrides */
+[class*=io-heading] {
+  padding: 5px 15px !important;
+  background-color: transparent !important;
+}
+
+[class*='sign-btn'] {
+  margin: 1rem 0.5rem !important;
+}
+
+[class*='gapless'] {
+  gap: 0 !important;
+}
+
+[class*='marginless'] {
+  margin: unset !important;
+}
+
+[class*='no-padding'] {
+  padding: 0;
+}
+
+[class*='io-signature'] {
+  flex-direction: column;
+  justify-content: center;
+  display: flex;
+}
+
+[class*='no-contact'] {
+  justify-content: center;
+  flex-direction: column;
+  display: flex;
+  padding: 1rem;
+  height: 30vh;
+}
+
+[class*='modal-background'] {
+  cursor: pointer;
+}
+
+[class*='no-pad-left'] {
+  padding-left: 0 !important;
+}
+
+[class*='is-column'] {
+  @media screen and (max-width: 785px) {
+    flex-direction: column;
+  }
+
+  [class='select'],
+  select {
+    width: 100%;
+  }
+}
+
+[class*='flex-center-mobile'] {
+  @media screen and (max-width: 600px) {
+    justify-content: center !important;
+    gap: 1rem !important;
+    display: flex;
   }
 }

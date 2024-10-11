@@ -1,2 +1,2 @@
 /** Locale used throught the app */
-export const Locale: string = "es-mx"
+export const LocaleMX = "es-mx" as const;
