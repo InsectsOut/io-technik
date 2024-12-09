@@ -1,0 +1,17 @@
+li {
+    padding: 0.75rem 0;
+}
+
+ul {
+    list-style: circle;
+    margin-left: 1rem;
+}
+
+.pad-rounded {
+    padding: 1rem;
+    border-radius: 6px;
+}
+
+.outlined {
+    outline: 1px solid;
+}
