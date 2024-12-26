@@ -15,9 +15,8 @@ h1 {
 }
 
 .io-table-container {
-    height: 55vh;
-    overflow-y: auto;
-    margin: unset !important;
+    overflow-y: auto !important;
+    height: calc(70vh - 1rem);
 
     &::-webkit-scrollbar {
         display: none;
@@ -25,12 +24,13 @@ h1 {
 }
 
 .io-table {
+    overflow-y: scroll !important;
     position: relative;
     width: 100%;
 
     thead {
         text-align: center;
-        background-color: var(--bulma-scheme-main);
+        background-color: inherit !important;
         position: sticky;
         top: 0;
     }
