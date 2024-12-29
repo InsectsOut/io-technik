@@ -180,12 +180,14 @@ export function ServiceReport(props: ReportProps) {
 
     async function onReportSubmit() {
         const imagesUploaded = new Map<string, string>();
-        const serviceId = props.service?.id ?? 'temp';
+        const serviceId = props.service?.id ?? NaN;
 
-        function getImagePath(recomendacion: Recomendacion) {
-            const bucketPath = `${serviceId}/${recomendacion.imagen!.id}.${recomendacion.imagen!.extension}`;
-            const path = `${serviceId}/${bucketPath}`;
-            imagesUploaded.set(recomendacion.imagen!.id, path);
+        function getImagePath(image: ImgFile) {
+            const path = !image.id.startsWith(serviceId.toString())
+                ? `${serviceId}/${image.id}`
+                : image.id;
+
+            imagesUploaded.set(image.id, path);
             return path;
         }
 
@@ -194,7 +196,11 @@ export function ServiceReport(props: ReportProps) {
             .delete()
             .eq("servicio_id", serviceId);
 
-        if (deleteRecomedations.error) {
+        const deleteImages = await supabase.storage
+            .from("imagenes_servicios")
+            .remove([firma_cliente() ?? ""]);
+
+        if (deleteRecomedations.error || deleteImages.error) {
             return;
         }
 
@@ -204,12 +210,12 @@ export function ServiceReport(props: ReportProps) {
             .map((recomendacion) => supabase.storage
                 .from("imagenes_servicios")
                 .upload(
-                    getImagePath(recomendacion),
+                    getImagePath(recomendacion.imagen!),
                     recomendacion!.imagen!.file,
                     { upsert: true }
                 ));
 
-        const signPath = `${serviceId}/${reporte.firma.id}.${reporte.firma.extension}`;
+        const signPath = getImagePath(reporte.firma);
         const signUpload = await supabase.storage
             .from("imagenes_servicios")
             .upload(

@@ -1,5 +1,5 @@
 import { createMutable, createStore } from "solid-js/store";
-import { createEffect, For, Index, Show } from "solid-js";
+import { createEffect, createSignal, For, Index, Show } from "solid-js";
 
 import { classNames, getFileExtension, windowSize } from "@/utils";
 import { getImageId } from "../Service.utils"
@@ -104,8 +104,7 @@ export function SuggestionPicker(props: PickerProps) {
     const picker = createMutable({
         editIndex: NaN,
         isEditing: false,
-        showModal: false,
-        showImg: false
+        showModal: false
     });
 
     /** Active report being edited */
@@ -121,6 +120,7 @@ export function SuggestionPicker(props: PickerProps) {
      * @returns A JSX rendered suggestion entry
     */
     function SuggestionEntry(entry: Recomendacion, index: number) {
+        const [showPreview, setShowPreview] = createSignal(false);
         return (
             <>
                 <tr>
@@ -138,18 +138,18 @@ export function SuggestionPicker(props: PickerProps) {
                     <Show when={windowSize.width > 550}>
                         <td>
                             <div class="has-text-link"
-                                onClick={() => { if (entry.imagen) picker.showImg = true }}
+                                onClick={() => entry.imagen && setShowPreview(true)}
                                 style={{ cursor: "pointer" }}
                             >
                                 {entry.imagen?.id ?? "N/A"}
                             </div>
-                            <Show when={entry.imagen && picker.showImg}>
-                                <Modal show={true} onClose={() => picker.showImg = false}>
+                            <Show when={entry.imagen && showPreview()}>
+                                <Modal show={true} onClose={() => setShowPreview(false)}>
                                     <img alt={`${entry.imagen!.id} preview`}
                                         src={URL.createObjectURL(entry.imagen!.file)}
                                     />
 
-                                    <button type="button" onClick={() => picker.showImg = false}>
+                                    <button type="button" onClick={() => setShowPreview(false)}>
                                         Cerrar
                                     </button>
                                 </Modal>
@@ -158,7 +158,7 @@ export function SuggestionPicker(props: PickerProps) {
 
                         <td>
                             <div title="Editar" onClick={() => editSugerencia(index)}>
-                                <span class="icon is-left">
+                                <span class="icon is-left" style={{ cursor: "pointer" }}>
                                     <i class="fas fa-edit fa-lg has-text-warning" aria-hidden="true" />
                                 </span>
                             </div>
@@ -167,7 +167,7 @@ export function SuggestionPicker(props: PickerProps) {
 
                         <td>
                             <div title="Borrar" onClick={() => deleteSuggestion(index)}>
-                                <span class="icon is-left">
+                                <span class="icon is-left" style={{ cursor: "pointer" }}>
                                     <i class="fas fa-trash-can fa-lg has-text-danger" aria-hidden="true" />
                                 </span>
                             </div>
@@ -180,19 +180,19 @@ export function SuggestionPicker(props: PickerProps) {
                         <td colSpan={3}>
                             <div class="is-flex is-justify-content-space-around">
                                 <div title="Editar" onClick={() => editSugerencia(index)}>
-                                    <span class="icon is-left">
+                                    <span class="icon is-left" style={{ cursor: "pointer" }}>
                                         <i class="fas fa-edit fa-lg has-text-warning" aria-hidden="true" />
                                     </span>
                                 </div>
 
                                 <div title="Borrar" onClick={() => deleteSuggestion(index)}>
-                                    <span class="icon is-left">
+                                    <span class="icon is-left" style={{ cursor: "pointer" }}>
                                         <i class="fas fa-trash-can fa-lg has-text-danger" aria-hidden="true" />
                                     </span>
                                 </div>
 
-                                <div title="Foto" onClick={() => picker.showImg = true}>
-                                    <span class="icon is-left">
+                                <div title="Foto" onClick={() => setShowPreview(true)}>
+                                    <span class="icon is-left" style={{ cursor: "pointer" }}>
                                         <i class={classNames("fas fa-lg",
                                             entry.imagen ? "fa-image" : "fa-eye-slash",
                                             entry.imagen ? "has-text-info" : "has-text-grey"
@@ -203,14 +203,14 @@ export function SuggestionPicker(props: PickerProps) {
                                 </div>
                             </div>
 
-                            <Show when={entry.imagen && picker.showImg}>
-                                <Modal show={true} onClose={() => picker.showImg = false}>
+                            <Show when={entry.imagen && showPreview()}>
+                                <Modal show={true} onClose={() => setShowPreview(false)}>
                                     <img alt={`${entry.imagen!.id} preview`}
                                         src={URL.createObjectURL(entry.imagen!.file)}
                                     />
 
                                     <button
-                                        onClick={() => picker.showImg = false}
+                                        onClick={() => setShowPreview(false)}
                                         style={{ "margin-top": "1rem" }}
                                         type="button"
                                     >
