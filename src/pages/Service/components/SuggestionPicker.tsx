@@ -1,10 +1,14 @@
-import { createMutable } from "solid-js/store";
-import { For, Index, Show } from "solid-js";
+import { createMutable, createStore } from "solid-js/store";
+import { createEffect, For, Index, Show } from "solid-js";
 
-import { classNames, windowSize } from "@/utils";
+import { classNames, getFileExtension, windowSize } from "@/utils";
 import { getImageId } from "../Service.utils"
-import { Sugerencia } from "../Service.types";
+import { Recomendacion } from "../Service.types";
 import { Modal } from "@/components";
+import { AccionesRecomendadas } from "./Suggestion.constants";
+import { createQuery } from "@tanstack/solid-query";
+import { getRecomendaciones } from "./Suggestion.query";
+import { IO_Database, supabase } from "@/supabase";
 
 /** Extends the `InputEvent` with its target set to an `HTMLInputElement` */
 type FileInputEvent = InputEvent & {
@@ -12,150 +16,214 @@ type FileInputEvent = InputEvent & {
     target: HTMLInputElement;
 };
 
-/** Lista de sugerencias para un reporte de servicio */
-const sugerencias = createMutable<Sugerencia[]>([]);
+/** Props for the suggestion picker component */
+type PickerProps = {
+    /** Id for a service to fetch its recommendations */
+    servicioId: number;
+    /** Callback that exposes the suggestions array on change */
+    onSuggestionAdd: (suggestions: Recomendacion[]) => void;
+};
 
-/** Reactive state for the suggestions picker component */
-const picker = createMutable({
-    showModal: false,
-    showImg: false
-});
+/** Component picker to add multiple suggestion reports */
+export function SuggestionPicker(props: PickerProps) {
+    const recomendacionesQuery = createQuery(() => ({
+        queryKey: [`recomendaciones/${props.servicioId}`],
+        queryFn: () => getRecomendaciones(props.servicioId.toString()),
+        throwOnError: false
+    }));
 
-/** Recomendaciones para una sugerencia de servicio */
-const recomendaciones = [
-    "Tapar coladeras",
-    "Instalar guardapolvo en puertas",
-    "Mantener corto el pasto",
-    "Reparar fugas de agua",
-    "Recoger alimentos y trastes sucios",
-    "Sellar orificios, grietas o hendiduras",
-    "No trapear cerca de la pared a 15cm",
-    "Instalar mosquiteros",
-    "Limpiar derrames en piso y paredes",
-    "No dejar alimento de mascota expuesto",
-    "Revisión de contenedores de alimento",
-    "Almacenar a 15cm del piso y la pared",
-    "Utilizar cubre colchón y lavar ropa con agua caliente"
-];
+    /** Lista de sugerencias para un reporte de servicio */
+    const [sugerencias, setSugerencias] = createStore<Recomendacion[]>([]);
 
-/**
- * Render function for a suggestion entry
- * @param report The report to be rendered
- * @param index The index for the report
- * @returns A JSX rendered suggestion entry
- */
-function SuggestionEntry(report: Sugerencia, index: number) {
-    return (
-        <>
-            <tr>
-                <td>{report.problema}</td>
-                <td>
-                    <ol>
-                        <Index each={report.recomendaciones}>
-                            {(suggestion) => (
-                                <li>{suggestion()}</li>
-                            )}
-                        </Index>
+    let suggestionsRef: HTMLSelectElement | undefined;
+    const isWideScreen = () => windowSize.width > 900;
+    const inputHeight = { height: "115px" };
 
-                    </ol>
-                </td>
+    // Load the suggestions from the DB and maps them to the local state
+    createEffect(() => {
+        const loadedData = recomendacionesQuery.data;
 
-                <Show when={windowSize.width > 550}>
+        if (!loadedData) {
+            return;
+        }
+
+        // Maps the loaded data to the local state, including the image file
+        const mappedEntries = loadedData.map(async item => {
+            const { data } = await supabase.storage
+                .from("imagenes_servicios")
+                .download(item.imagen ?? "")
+                .catch(_ => ({ data: null }));
+
+            const hasImage = Boolean(item.imagen && data);
+            const imgFile = hasImage
+                ? new File([data!], item.imagen!, { type: data!.type })
+                : undefined;
+
+            return {
+                id: item.id.toString(),
+                acciones: item.acciones,
+                problema: item.problema,
+                imagen: {
+                    extension: getFileExtension(item.imagen ?? ""),
+                    id: item.imagen ?? "",
+                    file: imgFile
+                }
+            } as Recomendacion;
+        });
+
+        if (mappedEntries) {
+            Promise.all(mappedEntries).then(r => {
+                setSugerencias(r);
+            });
+        }
+    });
+
+    /** Deletes a suggestion locally if not upload, and removes it from the DB if uploaded */
+    async function deleteSuggestion(index: number): Promise<any> {
+        const sugerencia = sugerencias[index];
+        if (!sugerencia.id) {
+            return setSugerencias(sugerencias.filter((_, i) => i !== index));
+        }
+
+        const deleted = await IO_Database
+            .from("Recomendaciones")
+            .delete().eq("id", sugerencia.id);
+
+        const imageDeleted = await supabase.storage
+            .from("imagenes_servicios")
+            .remove([sugerencia.imagen?.id ?? ""]);
+
+        if (deleted?.error === null) {
+            recomendacionesQuery.refetch();
+            setSugerencias(sugerencias.filter((_, i) => i !== index));
+            console.log(deleted, imageDeleted);
+        }
+    }
+
+    /** Reactive state for the suggestions picker component */
+    const picker = createMutable({
+        editIndex: NaN,
+        isEditing: false,
+        showModal: false,
+        showImg: false
+    });
+
+    /** Active report being edited */
+    const report = createMutable<Recomendacion>({
+        acciones: [],
+        problema: "",
+    });
+
+    /**
+     * Render function for a suggestion entry
+     * @param entry The report to be rendered
+     * @param index The index for the report
+     * @returns A JSX rendered suggestion entry
+    */
+    function SuggestionEntry(entry: Recomendacion, index: number) {
+        return (
+            <>
+                <tr>
+                    <td>{entry.problema}</td>
                     <td>
-                        <div class="has-text-link"
-                            onClick={() => picker.showImg = true}
-                            style={{ cursor: "pointer" }}
-                        >
-                            {report.imagen?.id ?? "N/A"}
-                        </div>
-                        <Show when={report.imagen && picker.showImg}>
-                            <Modal show={true} onClose={() => picker.showImg = false}>
-                                <div class="box">
-                                    <img alt={`${report.imagen!.id} preview`}
-                                        src={URL.createObjectURL(report.imagen!.file)}
+                        <ol>
+                            <Index each={entry.acciones}>
+                                {(suggestion) => (
+                                    <li>{suggestion()}</li>
+                                )}
+                            </Index>
+                        </ol>
+                    </td>
+
+                    <Show when={windowSize.width > 550}>
+                        <td>
+                            <div class="has-text-link"
+                                onClick={() => { if (entry.imagen) picker.showImg = true }}
+                                style={{ cursor: "pointer" }}
+                            >
+                                {entry.imagen?.id ?? "N/A"}
+                            </div>
+                            <Show when={entry.imagen && picker.showImg}>
+                                <Modal show={true} onClose={() => picker.showImg = false}>
+                                    <img alt={`${entry.imagen!.id} preview`}
+                                        src={URL.createObjectURL(entry.imagen!.file)}
                                     />
 
                                     <button type="button" onClick={() => picker.showImg = false}>
                                         Cerrar
                                     </button>
-                                </div>
-                            </Modal>
-                        </Show>
-                    </td>
+                                </Modal>
+                            </Show>
+                        </td>
 
-                    <td>
-                        <a title="Editar" href="#">
-                            <span class="icon is-left">
-                                <i class="fas fa-edit fa-lg has-text-warning" aria-hidden="true" />
-                            </span>
-                        </a>
-
-                    </td>
-
-                    <td>
-                        <a title="Borrar" href="#" onClick={() => sugerencias.splice(index, 1)}>
-                            <span class="icon is-left">
-                                <i class="fas fa-trash-can fa-lg has-text-danger" aria-hidden="true" />
-                            </span>
-                        </a>
-                    </td>
-                </Show>
-            </tr>
-
-            <Show when={windowSize.width <= 550}>
-                <tr>
-                    <td colSpan={3}>
-                        <div class="is-flex is-justify-content-space-around">
-                            <a title="Editar" href="#">
+                        <td>
+                            <div title="Editar" onClick={() => editSugerencia(index)}>
                                 <span class="icon is-left">
                                     <i class="fas fa-edit fa-lg has-text-warning" aria-hidden="true" />
                                 </span>
-                            </a>
+                            </div>
 
-                            <a title="Borrar" href="#" onClick={() => sugerencias.splice(index, 1)}>
+                        </td>
+
+                        <td>
+                            <div title="Borrar" onClick={() => deleteSuggestion(index)}>
                                 <span class="icon is-left">
                                     <i class="fas fa-trash-can fa-lg has-text-danger" aria-hidden="true" />
                                 </span>
-                            </a>
+                            </div>
+                        </td>
+                    </Show>
+                </tr>
 
-                            <a title="Foto" href="#" onClick={() => picker.showImg = true}>
-                                <span class="icon is-left">
-                                    <i class={classNames("fas fa-lg has-text-info",
-                                        report.imagen ? "fa-image" : "fa-circle-xmark",
-                                    )}
-                                        aria-hidden="true"
+                <Show when={windowSize.width <= 550}>
+                    <tr>
+                        <td colSpan={3}>
+                            <div class="is-flex is-justify-content-space-around">
+                                <div title="Editar" onClick={() => editSugerencia(index)}>
+                                    <span class="icon is-left">
+                                        <i class="fas fa-edit fa-lg has-text-warning" aria-hidden="true" />
+                                    </span>
+                                </div>
+
+                                <div title="Borrar" onClick={() => deleteSuggestion(index)}>
+                                    <span class="icon is-left">
+                                        <i class="fas fa-trash-can fa-lg has-text-danger" aria-hidden="true" />
+                                    </span>
+                                </div>
+
+                                <div title="Foto" onClick={() => picker.showImg = true}>
+                                    <span class="icon is-left">
+                                        <i class={classNames("fas fa-lg",
+                                            entry.imagen ? "fa-image" : "fa-eye-slash",
+                                            entry.imagen ? "has-text-info" : "has-text-grey"
+                                        )}
+                                            aria-hidden="true"
+                                        />
+                                    </span>
+                                </div>
+                            </div>
+
+                            <Show when={entry.imagen && picker.showImg}>
+                                <Modal show={true} onClose={() => picker.showImg = false}>
+                                    <img alt={`${entry.imagen!.id} preview`}
+                                        src={URL.createObjectURL(entry.imagen!.file)}
                                     />
-                                </span>
-                            </a>
-                        </div>
 
-                        <Show when={report.imagen && picker.showImg}>
-                            <Modal show={true} onClose={() => picker.showImg = false}>
-                                <div class="box">
-                                    <img alt={`${report.imagen!.id} preview`}
-                                        src={URL.createObjectURL(report.imagen!.file)}
-                                    />
-
-                                    <button type="button" onClick={() => picker.showImg = false}>
+                                    <button
+                                        onClick={() => picker.showImg = false}
+                                        style={{ "margin-top": "1rem" }}
+                                        type="button"
+                                    >
                                         Cerrar
                                     </button>
-                                </div>
-                            </Modal>
-                        </Show>
-                    </td>
-                </tr>
-            </Show>
-        </>
-    );
-}
-
-/** Component picker to add multiple suggestion reports */
-export function SuggestionPicker() {
-    /** Active report being edited */
-    const report = createMutable<Sugerencia>({
-        recomendaciones: [],
-        problema: "",
-    });
+                                </Modal>
+                            </Show>
+                        </td>
+                    </tr>
+                </Show>
+            </>
+        );
+    }
 
     /**
      * Handles adding an image file to the reports list
@@ -163,41 +231,79 @@ export function SuggestionPicker() {
      */
     function handleFileUpload(e: FileInputEvent) {
         const { files } = e.target || {};
-        if (files?.[0]) {
-            const [file] = files;
-            report.imagen = {
-                extension: file.type.split("/")[1],
-                id: getImageId(),
-                file
-            };
-        }
+        const [file] = files || [];
+        if (!file) return;
+
+        report.imagen = {
+            extension: file.type.split("/")[1],
+            id: getImageId(),
+            file
+        };
     }
 
     /**
      * Updates the selected suggestions field for the currently active report
      * @param options A collection of HTMLOptionElements that will be added to the reports list by value
      */
-    function setSuggestions(options: HTMLCollectionOf<HTMLOptionElement>) {
+    function setActions(options: HTMLCollectionOf<HTMLOptionElement>) {
         const selected: string[] = [];
         for (const option of options) {
             selected.push(option.value);
         }
 
-        report.recomendaciones = selected;
+        report.acciones = selected;
+    }
+
+    /**
+     * Updates the active report with the selected suggestion and opens the modal
+     * @param index The index of the suggestion to edit
+     */
+    function editSugerencia(index: number) {
+        const sugerencia = sugerencias[index];
+        report.problema = sugerencia.problema;
+        report.acciones = sugerencia.acciones;
+        report.imagen = sugerencia.imagen;
+
+        if (suggestionsRef) {
+            // Wait for the next frame to select the options in the report
+            window.requestAnimationFrame(() => {
+                for (const accion of report.acciones) {
+                    const option = suggestionsRef.querySelector(`option[value="${accion}"]`);
+                    if (option instanceof HTMLOptionElement) {
+                        option.selected = true;
+                    }
+                }
+            });
+        }
+
+        picker.showModal = true;
+        picker.isEditing = true;
+        picker.editIndex = index;
     }
 
     /**
      * Saves the currently active report to the reports list. Resets the active report to its defaults.
      */
     function saveReport() {
-        sugerencias.push({ ...report });
+        if (picker.isEditing) {
+            const editIndex = picker.editIndex;
+            picker.isEditing = false;
+            picker.editIndex = NaN;
+
+            if (sugerencias[editIndex]) {
+                setSugerencias(editIndex, { ...report });
+            }
+        } else {
+            setSugerencias(sugerencias.length, { ...report });
+        }
+
         clearReportForm();
     }
 
     /** Clears the report form fields and unselects all suggestion options */
     function clearReportForm() {
         report.imagen = undefined;
-        report.recomendaciones = [];
+        report.acciones = [];
         report.problema = "";
 
         if (!suggestionsRef) {
@@ -209,14 +315,18 @@ export function SuggestionPicker() {
         }
     }
 
-    let suggestionsRef: HTMLSelectElement | undefined;
-    const isWideScreen = () => windowSize.width > 900;
-    const inputHeight = { height: "115px" };
+    createEffect(() => {
+        // Every time the suggestions list changes, update the parent component
+        props.onSuggestionAdd(sugerencias);
+    });
 
     return (
         <>
             {/* Modal element to show add or modify a report */}
-            <Modal show={picker.showModal} onClose={() => picker.showModal = false}>
+            <Modal show={picker.showModal} onClose={() => {
+                picker.showModal = false;
+                clearReportForm();
+            }}>
                 <form class="form fixed-grid has-3-cols marginless paddingless">
                     <div class="is-flex is-justify-content-space-between">
                         <h2 class="subtitle" style={{ "padding-left": 0 }}>
@@ -227,7 +337,7 @@ export function SuggestionPicker() {
                         </span>
                     </div>
 
-                    <div style={{ overflow: "scroll" }}>
+                    <div style={{ overflow: "auto" }}>
                         <div class="file has-name is-boxed is-flex-direction-column">
                             <label class="label">Fotografía</label>
                             <label class="file-label">
@@ -258,10 +368,12 @@ export function SuggestionPicker() {
                         <div class="cell">
                             <label class="label">Problema Detectado</label>
                             <p class="control has-icons-left">
-                                <textarea onInput={(e => report.problema = e.target.value)}
+                                <textarea
+                                    onInput={(e => report.problema = e.target.value)}
                                     placeholder="Se encontraron cucarachas en el lavadero..."
                                     value={report.problema}
                                     class="input"
+                                    required
                                     rows={4}
                                 />
                                 <span class="icon is-medium is-left">
@@ -277,16 +389,15 @@ export function SuggestionPicker() {
                             <div style={inputHeight} class={classNames("control is-expanded", ["has-icons-left", isWideScreen()])}>
                                 <div class="select is-fullwidth is-multiple">
                                     <select ref={suggestionsRef}
-                                        onChange={(e => setSuggestions(e.target.selectedOptions))}
+                                        onChange={(e => setActions(e.target.selectedOptions))}
                                         multiple name="recomendaciones" size="3"
                                         required
                                     >
-                                        <Index each={recomendaciones}>
-                                            {(recomendacion) => (
-                                                <option value={recomendacion()}>
-                                                    {recomendacion()}
-                                                </option>
-                                            )}
+                                        <Index each={AccionesRecomendadas}>
+                                            {(accion) =>
+                                                <option value={accion()}>
+                                                    {accion()}
+                                                </option>}
                                         </Index>
                                     </select>
                                 </div>
@@ -298,7 +409,7 @@ export function SuggestionPicker() {
                             </div>
                         </div>
 
-                        <div class="field marginless is-flex is-justify-content-center">
+                        <div class="field marginless is-flex is-justify-content-center" style={{ gap: "5%" }}>
                             <button style={{ width: "45%" }}
                                 class="column button"
                                 type="button"
@@ -313,7 +424,10 @@ export function SuggestionPicker() {
                                 </span>
                             </button>
                             <button style={{ width: "45%" }}
-                                onClick={() => picker.showModal = false}
+                                onClick={() => {
+                                    picker.showModal = false;
+                                    clearReportForm();
+                                }}
                                 class="column button"
                                 type="button"
                             >
@@ -330,30 +444,27 @@ export function SuggestionPicker() {
             </Modal>
 
             {/* List that shows the added reports, allows deleting and editing */}
-            <Show when={sugerencias.length > 0}>
-                <h2 class="subtitle no-pad-left is-marginless">Recomendaciones</h2>
-                <div class="table-container">
-                    <table class="table is-striped" style={{ width: "100%" }}>
-                        <thead>
-                            <tr>
-                                <th>Problema</th>
-                                <th>Recomendaciones</th>
-                                <Show when={windowSize.width > 550}>
-                                    <th>Foto</th>
-                                    <th>Editar</th>
-                                    <th>Borrar</th>
-                                </Show>
-                            </tr>
-                        </thead>
+            <div class="table-container">
+                <table class="table is-striped" style={{ width: "100%" }}>
+                    <thead>
+                        <tr>
+                            <th>Problema</th>
+                            <th>Recomendaciones</th>
+                            <Show when={windowSize.width > 550}>
+                                <th>Foto</th>
+                                <th>Editar</th>
+                                <th>Borrar</th>
+                            </Show>
+                        </tr>
+                    </thead>
 
-                        <tbody>
-                            <For each={sugerencias}>
-                                {(report, index) => SuggestionEntry(report, index())}
-                            </For>
-                        </tbody>
-                    </table>
-                </div>
-            </Show>
+                    <tbody>
+                        <For each={sugerencias}>
+                            {(report, index) => SuggestionEntry(report, index())}
+                        </For>
+                    </tbody>
+                </table>
+            </div>
 
             {/* Button to add a new report */}
             <div class="field">

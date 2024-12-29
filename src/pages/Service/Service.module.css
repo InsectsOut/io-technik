@@ -13,6 +13,9 @@ button {
 
 form {
     padding: 1rem 1rem;
+    margin-bottom: 1rem;
+    overflow-y: auto;
+    height: 70vh;
 }
 
 textarea::-webkit-scrollbar {

@@ -6,9 +6,9 @@ import { LocaleMX } from "@/constants";
  * @returns A string formatted in a locale friendly manner if a date is provided.
  */
 export function getLocalTime(date?: Date | null): string {
-    return date ? date.toLocaleTimeString(LocaleMX, {
+    return date?.toLocaleTimeString(LocaleMX, {
         minute: "2-digit",
         hour: "2-digit",
         hour12: true,
-    }) : "";
+    }) ?? "";
 }

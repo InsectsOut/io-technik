@@ -22,11 +22,20 @@ export function Service() {
     const { folio } = useParams();
     const navigate = useNavigate();
     const goHome = () => navigate(Pages.Home);
-    
+
     const [view, setView] = createSignal<Tabs>("detalles");
     const isContact = () => view() === "contacto";
     const isReport = () => view() === "reporte";
     const isInfo = () => view() === "detalles";
+
+    const onReportSubmit = () => {
+        window.setTimeout(() => servicio
+            .refetch()
+            .then(() => {
+                setView("detalles");
+                setView("reporte");
+            }), 1000);
+    };
 
     const getClientName = (cliente: Tables<"Clientes">) => {
         const { nombre, apellidos } = cliente;
@@ -168,7 +177,7 @@ export function Service() {
                     </Match>
 
                     <Match when={servicio.data && isReport()}>
-                        <ServiceReport service={servicio.data ?? undefined} />
+                        <ServiceReport service={servicio.data ?? undefined} onReportSubmit={onReportSubmit} />
                     </Match>
 
                     <Match when={servicio.data && isContact()}>

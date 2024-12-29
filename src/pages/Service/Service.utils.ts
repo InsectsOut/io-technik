@@ -1,4 +1,5 @@
 import dayjs, { Dayjs } from "dayjs";
+import { createUniqueId } from "solid-js";
 
 /**
  * Returns a date object using the provided `fecha` and `hora`
@@ -18,5 +19,5 @@ export function getServiceDate(fecha: string, hora: string, useDayJs = false): D
 
 /** Generates a unique `id/timestamp` for an img upload */
 export function getImageId() {
-    return `reporte-${dayjs().format("YYYY-MM-DDTHH:mm:ss")}`;
+    return `reporte-${dayjs().format("YYYY-MM-DD")}-${createUniqueId()}`;
 }

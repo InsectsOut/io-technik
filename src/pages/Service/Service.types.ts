@@ -1,27 +1,31 @@
+import { Enums } from "@/supabase";
 import { ImgFile } from "@/utils";
 
-/** Frencuencias de servicio válidas en días */
-export const FrecuenciaServicio = Object.freeze({
-    Ninguna: 0,
-    Semanal: 7,
-    Quincenal: 15,
-    Mensual: 30,
-    Bimestral: 60,
-    Trimestral: 90,
-    Semestral: 180,
-    Anual: 365
-});
-
 /** Nombres válidos de frencuencias de servicio */
-export type NombreFrecuencias = keyof typeof FrecuenciaServicio;
+export type Frecuencia = Enums<"FrecuenciaServicio">;
 
-/** Valores válidos de frencuencias de servicio */
-export type ValorFrencuencias = (typeof FrecuenciaServicio)[NombreFrecuencias];
+/** Frencuencias de servicio válidas en días */
+export const FrecuenciaServicio: Frecuencia[] = [
+    "Ninguna",
+    "Semanal",
+    "Quincenal",
+    "Mensual",
+    "Bimestral",
+    "Trimestral",
+    "Anual"
+];
 
-/** Tipo para una sugerencia de servicio */
-export type Sugerencia = {
-    /** Recomendaciones de esta sugerencia */
-    recomendaciones: string[];
+/** Valida que un valor sea una frecuencia válida */
+export function isFrecuencia(value: any): value is Frecuencia {
+    return FrecuenciaServicio.includes(value);
+}
+
+/** Tipo para una recomendación de servicio */
+export type Recomendacion = {
+    /* Identificador único de la recomendación */
+    id?: string;
+    /** Acciones de esta sugerencia */
+    acciones: string[];
     /** Problema encontrado en el servicio */
     problema: string;
     /** Imagen opcional adjunta al reporte */
