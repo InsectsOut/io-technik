@@ -53,15 +53,6 @@ export function Service() {
         ? new Date(`${servicio.data?.fecha_servicio}T${servicio.data?.horario_servicio}`)
         : undefined;
 
-    const getDireccion = (direccion?: Tables<"Direcciones">) => {
-        if (!direccion) {
-            return "No hay una dirección registrada";
-        }
-
-        const { calle, ciudad, codigo_postal, colonia, numero_ext, estado } = direccion
-        return `${calle} #${numero_ext}, ${colonia}. C.P. ${codigo_postal}, ${ciudad}, ${estado}`;
-    };
-
     return (
         <Suspense fallback={<Loading />}>
             <nav class="panel is-shadowless">
@@ -106,16 +97,6 @@ export function Service() {
                                     <input disabled class="input" value={getClientName(servicio.data?.Clientes!)} />
                                     <span class="icon is-small is-left">
                                         <i class="fas fa-user" />
-                                    </span>
-                                </p>
-                            </div>
-
-                            <div class={classNames("field", css.full_height, css.io_field)}>
-                                <label class="label">Dirección</label>
-                                <p class="control has-icons-left">
-                                    <textarea disabled class="input" value={getDireccion(servicio.data?.Direcciones ?? undefined) || "Sin dirección"} />
-                                    <span class="icon is-medium is-left">
-                                        <i class="fas fa-location-dot" />
                                     </span>
                                 </p>
                             </div>
@@ -176,12 +157,16 @@ export function Service() {
                         </form>
                     </Match>
 
-                    <Match when={servicio.data && isReport()}>
-                        <ServiceReport service={servicio.data ?? undefined} onReportSubmit={onReportSubmit} />
+                    <Match when={servicio.data && isContact()}>
+                        <ContactDetails
+                            responsable={servicio.data?.Responsables!}
+                            direccion={servicio.data?.Direcciones!}
+                            ubicacion={servicio.data?.ubicacion!}
+                        />
                     </Match>
 
-                    <Match when={servicio.data && isContact()}>
-                        <ContactDetails responsable={servicio.data?.Responsables ?? undefined} />
+                    <Match when={servicio.data && isReport()}>
+                        <ServiceReport service={servicio.data ?? undefined} onReportSubmit={onReportSubmit} />
                     </Match>
                 </Switch>
 

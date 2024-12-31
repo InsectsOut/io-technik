@@ -86,6 +86,10 @@ canvas {
     font-size: xx-large;
 }
 
+.no_overflow {
+    overflow: hidden;
+}
+
 th {
     padding-left: 0 !important;
 }

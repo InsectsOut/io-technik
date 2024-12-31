@@ -121,6 +121,18 @@ export function SuggestionPicker(props: PickerProps) {
     */
     function SuggestionEntry(entry: Recomendacion, index: number) {
         const [showPreview, setShowPreview] = createSignal(false);
+        const [imgPreview, setImgPreview] = createSignal("");
+
+        createEffect(() => {
+            if (entry.imagen && showPreview()) {
+                // Set the image preview to the object URL when the image is shown
+                setImgPreview(URL.createObjectURL(entry.imagen.file));
+            }
+
+            // Cleanup the object URL when the component is unmounted
+            return () => URL.revokeObjectURL(imgPreview());
+        });
+
         return (
             <>
                 <tr>
@@ -146,7 +158,7 @@ export function SuggestionPicker(props: PickerProps) {
                             <Show when={entry.imagen && showPreview()}>
                                 <Modal show={true} onClose={() => setShowPreview(false)}>
                                     <img alt={`${entry.imagen!.id} preview`}
-                                        src={URL.createObjectURL(entry.imagen!.file)}
+                                        src={imgPreview()}
                                     />
 
                                     <button type="button" onClick={() => setShowPreview(false)}>
@@ -206,7 +218,7 @@ export function SuggestionPicker(props: PickerProps) {
                             <Show when={entry.imagen && showPreview()}>
                                 <Modal show={true} onClose={() => setShowPreview(false)}>
                                     <img alt={`${entry.imagen!.id} preview`}
-                                        src={URL.createObjectURL(entry.imagen!.file)}
+                                        src={imgPreview()}
                                     />
 
                                     <button
@@ -327,7 +339,7 @@ export function SuggestionPicker(props: PickerProps) {
                 picker.showModal = false;
                 clearReportForm();
             }}>
-                <form class="form fixed-grid has-3-cols marginless paddingless">
+                <form class="form fixed-grid has-3-cols marginless paddingless" style={{ height: "auto" }}>
                     <div class="is-flex is-justify-content-space-between">
                         <h2 class="subtitle" style={{ "padding-left": 0 }}>
                             Nueva Recomendación
@@ -390,7 +402,7 @@ export function SuggestionPicker(props: PickerProps) {
                                 <div class="select is-fullwidth is-multiple">
                                     <select ref={suggestionsRef}
                                         onChange={(e => setActions(e.target.selectedOptions))}
-                                        multiple name="recomendaciones" size="3"
+                                        multiple name="recomendaciones" size="4"
                                         required
                                     >
                                         <Index each={AccionesRecomendadas}>
@@ -409,9 +421,23 @@ export function SuggestionPicker(props: PickerProps) {
                             </div>
                         </div>
 
-                        <div class="field marginless is-flex is-justify-content-center" style={{ gap: "5%" }}>
+                        <div class="field is-flex is-justify-content-center" style={{ gap: "5%", "margin-top": "5rem" }}>
                             <button style={{ width: "45%" }}
-                                class="column button"
+                                onClick={() => {
+                                    picker.showModal = false;
+                                    clearReportForm();
+                                }}
+                                class="column button is-danger is-outlined"
+                                type="button"
+                            >
+                                <span>Cancelar</span>
+                                <span class="icon">
+                                    <i class="fas fa-xmark" />
+                                </span>
+                            </button>
+
+                            <button style={{ width: "45%" }}
+                                class="column button is-success is-outlined"
                                 type="button"
                                 onClick={() => {
                                     picker.showModal = false;
@@ -421,19 +447,6 @@ export function SuggestionPicker(props: PickerProps) {
                                 <span>Guardar</span>
                                 <span class="icon">
                                     <i class="fas fa-circle-plus" />
-                                </span>
-                            </button>
-                            <button style={{ width: "45%" }}
-                                onClick={() => {
-                                    picker.showModal = false;
-                                    clearReportForm();
-                                }}
-                                class="column button"
-                                type="button"
-                            >
-                                <span>Cancelar</span>
-                                <span class="icon">
-                                    <i class="fas fa-xmark" />
                                 </span>
                             </button>
                         </div>

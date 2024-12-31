@@ -6,7 +6,9 @@ import { Show } from "solid-js";
 import css from "../Service.module.css";
 
 type ContactProps = {
-    responsable?: Tables<"Responsables">
+    responsable?: Tables<"Responsables">,
+    direccion?: Tables<"Direcciones">,
+    ubicacion?: string
 }
 
 export function ContactDetails(props: ContactProps) {
@@ -23,8 +25,17 @@ export function ContactDetails(props: ContactProps) {
         nombre,
         puesto,
         email,
-        telefono
+        telefono,
     } = destructure(props.responsable!);
+
+    const getDireccion = (direccion?: Tables<"Direcciones">) => {
+        if (!direccion) {
+            return "No hay una dirección registrada";
+        }
+
+        const { calle, ciudad, codigo_postal, colonia, numero_ext, estado } = direccion
+        return `${calle} #${numero_ext}, ${colonia}. C.P. ${codigo_postal}, ${ciudad}, ${estado}`;
+    };
 
     return (
         <form>
@@ -49,8 +60,8 @@ export function ContactDetails(props: ContactProps) {
             <div class={classNames("field is-flex-direction-column", css.two_col_grid)}>
                 <Show when={email() && telefono()}>
                     <label class="label">Correo</label>
-                    <p class="control has-icons-left">
-                        <a class="input" type="email" href={"mailto:" + email()}>
+                    <p class={classNames("control has-icons-left", css.no_overflow)}>
+                        <a class="input" type="email" href={`mailto:${email()}`}>
                             {email()}
                         </a>
                         <span class="icon is-small is-left">
@@ -68,6 +79,21 @@ export function ContactDetails(props: ContactProps) {
                         </span>
                     </p>
                 </Show>
+            </div>
+
+            <div class={classNames("field", css.full_height, css.io_field)}>
+                <label class="label">Dirección</label>
+                <p class="control has-icons-left has-text-link">
+                    <a class={classNames("input", css.full_height)}
+                        classList={{ "disabled": !props.ubicacion }}
+                        href={props.ubicacion ?? "#"}
+                    >
+                        {getDireccion(props.direccion) || "Sin dirección"}
+                    </a>
+                    <span class="icon is-medium is-left">
+                        <i class="fas fa-location-dot" />
+                    </span>
+                </p>
             </div>
         </form>
     );

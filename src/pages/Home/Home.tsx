@@ -239,8 +239,9 @@ export function Home() {
 function HomeActions({ service }: { service: Service }): JSX.Element {
   const { ubicacion, folio, Clientes } = service;
   const mapClasses = classNames(
-    "fas fa-lg has-text-danger",
-    ubicacion ? "fa-map-pin" : "fa-ban"
+    "fas fa-lg",
+    ubicacion ? "fa-map-pin" : "fa-ban",
+    ubicacion ? "has-text-danger" : "has-text-grey"
   );
 
   return (
