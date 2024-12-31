@@ -347,7 +347,13 @@ export function ServiceReport(props: ReportProps) {
             </form>
 
             <Modal show={isSaving()}>
-                <h3 class="title is-3 has-text-centered">Guardando Reporte</h3>
+                <span class="icon-text is-align-items-baseline is-justify-content-space-between" style={{ width: "100%" }}>
+                    <span class="subtitle has-text-center marginless">Guardando Reporte...</span>
+                    <span class="icon is-large is-right">
+                        <i class="fas fa-save" />
+                    </span>
+                </span>
+
                 <progress class="progress is-primary" style={{ margin: "auto" }} max="100" />
             </Modal>
 
