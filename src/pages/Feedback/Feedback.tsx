@@ -47,7 +47,8 @@ export function Feedback() {
     }
 
     createEffect(() => {
-        console.log(feedbackForm)
+        console.clear();
+        console.table({...feedbackForm})
     });
 
     return (
