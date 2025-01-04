@@ -83,7 +83,7 @@ canvas {
 .io_heading {
     padding: 5px 15px;
     background-color: transparent;
-    font-size: xx-large;
+    font-size: xx-large !important;
 }
 
 .no_overflow {

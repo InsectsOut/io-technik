@@ -3,16 +3,14 @@ import type { Component } from 'solid-js'
 import { Show } from 'solid-js'
 
 import css from './PWABadge.module.css'
+import { Modal } from './components'
 
 const PWABadge: Component = () => {
-  // check for updates every hour
-  const period = 60 * 60 * 1000;
+  // check for updates every 10m
+  const period = 10 * 60 * 1000;
 
-  const {
-    offlineReady: [offlineReady, setOfflineReady],
-    needRefresh: [needRefresh, setNeedRefresh],
-    updateServiceWorker,
-  } = useRegisterSW({
+  const { offlineReady: [offlineReady, setOfflineReady], needRefresh: [needRefresh, setNeedRefresh], updateServiceWorker } = useRegisterSW({
+    immediate: true,
     onRegisteredSW(serviceUrl, reg) {
       if (period <= 0) {
         return;
@@ -26,33 +24,42 @@ const PWABadge: Component = () => {
         })
       }
     },
-  })
+    onNeedRefresh() {
+      setNeedRefresh(true)
+    },
+    onOfflineReady() {
+      setOfflineReady(true)
+    }
+  });
 
   function close() {
     setOfflineReady(false)
     setNeedRefresh(false)
   }
 
+  function updateSW() {
+    updateServiceWorker(true).then(() => window.location.reload())
+  }
+
   return (
-    <div class={css.Container} role="alert" aria-labelledby="toast-message"><div class="begin">
-      <Show when={offlineReady() || needRefresh()}>
-        <div class={css.Toast}>
+    <div class={css.Container} role="alert" aria-labelledby="toast-message">
+      <Modal show={offlineReady() || needRefresh()} onClose={close}>
+        <Show when={offlineReady()}>
           <div class={css.Message}>
-            <Show
-              fallback={<span id="toast-message">Hay una actualización disponible. Da click para actualizar.</span>}
-              when={offlineReady()}
-            >
-              <span id="toast-message">Aplicación lista sin conexión</span>
-            </Show>
+            <span id="toast-message">Aplicación lista sin conexión</span>
           </div>
-          <div>
-            <Show when={needRefresh()}>
-              <button class={css.ToastButton} onClick={() => updateServiceWorker(true)}>Recargar</button>
-            </Show>
-            <button class={css.ToastButton} onClick={() => close()}>Cerrar</button>
+        </Show>
+        <Show when={needRefresh()}>
+          <div class={css.Message}>
+            <span id="toast-message">Hay una actualización disponible</span>
           </div>
-        </div>
-      </Show></div>
+
+          <div class="field is-flex is-justify-content-center" style={{ gap: "5%" }}>
+            <button class="column button is-success is-outlined" onClick={updateSW}>Actualizar</button>
+            <button class="column button is-danger is-outlined" onClick={close}>Cerrar</button>
+          </div>
+        </Show>
+      </Modal>
     </div>
   )
 }
@@ -60,17 +67,17 @@ const PWABadge: Component = () => {
 export default PWABadge
 
 /**
- * This function will register a periodic sync check every hour, you can modify the interval as needed.
+ * This function will register a periodic sync check every 10m, you can modify the interval as needed.
  */
 function registerPeriodicSync(period: number, workerUrl: string, reg: ServiceWorkerRegistration) {
-  if (period <= 0) return
+  if (period <= 0) return;
 
   setInterval(async () => {
-    if ('onLine' in navigator && !navigator.onLine) {
+    if (!navigator.onLine) {
       return;
     }
 
-    const resp = await fetch(workerUrl, {
+    const response = await fetch(workerUrl, {
       cache: 'no-store',
       headers: {
         'cache': 'no-store',
@@ -78,7 +85,7 @@ function registerPeriodicSync(period: number, workerUrl: string, reg: ServiceWor
       },
     });
 
-    if (resp?.status === 200)
+    if (response?.status === 200)
       await reg.update();
   }, period);
 }

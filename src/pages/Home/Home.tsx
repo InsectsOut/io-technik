@@ -69,7 +69,7 @@ function NoServices() {
     <>
       <h1 class="is-centered no-services">No hay servicios para hoy</h1>
       <div class="is-flex is-justify-content-center">
-        <i class="fa-solid fa-beer-mug-empty empty-icon"></i>
+        <i class="fa-solid fa-beer-mug-empty empty-icon" />
       </div>
     </>
   )
@@ -106,7 +106,6 @@ export function Home() {
     throwOnError: false
   }));
 
-
   return (
     <Suspense fallback={<Loading message="Cargando servicios..." />}>
       <Switch>
@@ -116,7 +115,7 @@ export function Home() {
 
         <Match when={services.data}>
           <nav class="panel is-shadowless">
-            <h1 class="title no-padding">Mis Servicios</h1>
+            <h1 class="title no-padding has-text-centered">Servicios</h1>
             <div class="panel-block">
               <p class="control has-icons-left">
                 <input onInput={(e) => setFilter(e.target.value)}
@@ -167,7 +166,7 @@ export function Home() {
                       <th>Cliente</th>
                       <th class="has-text-centered">Estatus</th>
                       <Show when={deviceType() > DeviceType.Mobile}>
-                        <th class="is-flex is-justify-content-space-around is-misaligned">
+                        <th class="is-flex is-justify-content-space-around is-misaligned" style={{ gap: "0.75rem" }}>
                           <div class="has-text-centered">Teléfono</div>
                           <div class="has-text-centered">Información</div>
                           <div class="has-text-centered">Ubicación</div>

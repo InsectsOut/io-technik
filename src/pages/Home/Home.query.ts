@@ -9,8 +9,7 @@ export type Service = NonNullable<QueryData<typeof query>[number]>
 const query = IO_Database
     .from("Servicios")
     .select(`*, Clientes(*)`)
-    .order("horario_servicio")
-    .limit(10);
+    .order("horario_servicio");
 
 /**
  * Fetches insects out services and their related clients

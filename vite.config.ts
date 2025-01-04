@@ -36,6 +36,18 @@ export default defineConfig({
         theme_color: '#69748c',
         start_url: "/login",
         lang: "es",
+        icons: [
+          {
+            src: "./public/favicon-gear.svg",
+            sizes: "192x192",
+            type: "image/svg+xml",
+          },
+          {
+            src: "./public/favicon-gear.svg",
+            sizes: "512x512",
+            type: "image/svg+xml",
+          }
+        ]
       },
 
       workbox: {
@@ -50,5 +62,6 @@ export default defineConfig({
         suppressWarnings: true,
         type: 'module',
       },
-    })],
+    })
+  ],
 })

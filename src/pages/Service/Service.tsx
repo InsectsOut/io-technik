@@ -56,9 +56,9 @@ export function Service() {
     return (
         <Suspense fallback={<Loading />}>
             <nav class="panel is-shadowless">
-                <p class={classNames("panel-heading io-heading", css.io_heading)}>
-                    Datos del Servicio
-                </p>
+                <h1 class={classNames("panel-heading io-heading has-text-centered", css.io_heading)}>
+                    Servicio #{folio}
+                </h1>
 
                 <p class="panel-tabs is-justify-content-start">
                     <a class={classNames(["is-active", isInfo()])}
@@ -172,7 +172,7 @@ export function Service() {
 
                 <Show when={!isReport()}>
                     <div class="panel-block is-justify-content-center">
-                        <button type="button" class="button is-link is-outlined is-half" onClick={goHome}>
+                        <button type="button" class="button is-link is-outlined is-fullwidth" onClick={goHome}>
                             Regresar a servicios
                         </button>
                     </div>
