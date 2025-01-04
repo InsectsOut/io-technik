@@ -9,8 +9,10 @@ const PWABadge: Component = () => {
   // check for updates every 10m
   const period = 10 * 60 * 1000;
 
-  const { offlineReady: [offlineReady, setOfflineReady], needRefresh: [needRefresh, setNeedRefresh], updateServiceWorker } = useRegisterSW({
-    immediate: true,
+  const {
+    offlineReady: [offlineReady, setOfflineReady],
+    needRefresh: [needRefresh, setNeedRefresh], updateServiceWorker
+  } = useRegisterSW({
     onRegisteredSW(serviceUrl, reg) {
       if (period <= 0) {
         return;
@@ -47,6 +49,7 @@ const PWABadge: Component = () => {
         <Show when={offlineReady()}>
           <div class={css.Message}>
             <span id="toast-message">Aplicación lista sin conexión</span>
+            <button class="column button is-danger is-outlined" onClick={close}>Cerrar</button>
           </div>
         </Show>
         <Show when={needRefresh()}>

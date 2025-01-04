@@ -12,6 +12,7 @@ export function Profile() {
 
     const { puesto, nombre, organizacion, curp, fecha_nacimiento } = destructure(userProfile()!);
     const { email, phone } = destructure(currentSession()!.user);
+    const pStyle = { margin: "1rem" };
 
     return (
         <div class={css.container}>
@@ -36,14 +37,14 @@ export function Profile() {
 
             <form class="form" style={{ width: "100%" }}>
                 <label class="label">Datos Insects Out</label>
-                <p class="control has-icons-left">
+                <p class="control has-icons-left" style={pStyle}>
                     <input disabled class="input" value={email?.() ?? ""} />
                     <span class="icon is-medium is-left">
                         <i class="fas fa-at fa-lg" />
                     </span>
                 </p>
 
-                <p class="control has-icons-left">
+                <p class="control has-icons-left" style={pStyle}>
                     <input disabled class="input" value={organizacion() ?? ""} />
                     <span class="icon is-medium is-left">
                         <i class="fas fa-briefcase fa-lg" />
@@ -51,14 +52,14 @@ export function Profile() {
                 </p>
 
                 <label class="label">Datos Personales</label>
-                <p class="control has-icons-left">
+                <p class="control has-icons-left" style={pStyle}>
                     <input disabled class="input" value={curp() ?? ""} />
                     <span class="icon is-medium is-left">
                         <i class="fas fa-id-card fa-lg" />
                     </span>
                 </p>
 
-                <p class="control has-icons-left">
+                <p class="control has-icons-left" style={pStyle}>
                     <input disabled class="input" value={fecha_nacimiento() ?? ""} />
                     <span class="icon is-medium is-left">
                         <i class="fas fa-cake-candles fa-lg" />
@@ -66,7 +67,7 @@ export function Profile() {
                 </p>
 
                 <Show when={phone?.()}>
-                    <p class="control has-icons-left">
+                    <p class="control has-icons-left" style={pStyle}>
                         <input disabled class="input" value={phone?.() ?? ""} />
                         <span class="icon is-medium is-left">
                             <i class="fas fa-at fa-lg" />
