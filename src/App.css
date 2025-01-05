@@ -9,3 +9,8 @@ main {
   display: flex;
   flex-direction: column;
 }
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hide_scroll::-webkit-scrollbar {
+  display: none;
+}

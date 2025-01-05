@@ -158,7 +158,7 @@ export function Home() {
             </div>
 
             <Show when={services.data?.length} fallback={<NoServices />}>
-              <div class="table-container io-table-container">
+              <div class="table-container io-table-container hide_scroll">
                 <table class="table io-table">
                   <thead>
                     <tr>

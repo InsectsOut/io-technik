@@ -6,7 +6,7 @@ import css from "./About.module.css";
 
 export function About() {
     return (
-        <>
+        <div class={classNames("hide_scroll", css.scrollable)}>
             <section class={classNames("hero is-medium is-link is-flex-direction-row", css['pad-rounded'])}>
                 <div class="hero-body">
                     <p class="title">Insects Out</p>
@@ -60,6 +60,6 @@ export function About() {
                     </ol>
                 </div>
             </section>
-        </>
+        </div>
     );
 }

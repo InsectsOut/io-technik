@@ -15,3 +15,9 @@ ul {
 .outlined {
     outline: 1px solid;
 }
+
+.scrollable {
+    overflow-y: scroll;
+    height: 90vh;
+
+}
