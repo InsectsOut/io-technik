@@ -1,10 +1,11 @@
-import { createStore } from "solid-js/store";
-import { ImgFile } from "@/utils";
 import { destructure } from "@solid-primitives/destructure";
+import { createEffect, createSignal } from "solid-js";
+import { createStore } from "solid-js/store";
+
+import { classNames, ImgFile } from "@/utils";
 import { userProfile } from "@/state";
 
-import "./Feedback.module.css";
-import { createEffect, createSignal } from "solid-js";
+import css from "./Feedback.module.css";
 
 /** Extends the `InputEvent` with its target set to an `HTMLInputElement` */
 type FileInputEvent = InputEvent & {
@@ -108,7 +109,7 @@ export function Feedback() {
                 </div>
             </div>
 
-            <div class="field is-grouped">
+            <div class={classNames("field is-grouped", css.fixed_bottom)}>
                 <button class="column button is-link">Reportar</button>
                 <button class="column button is-link is-light">Cancelar</button>
             </div>

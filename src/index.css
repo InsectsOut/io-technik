@@ -87,6 +87,7 @@ button:focus-visible {
 }
 
 [class*='sign-btn'] {
+  min-width: 135px;
   margin: 1rem 0.5rem !important;
 }
 

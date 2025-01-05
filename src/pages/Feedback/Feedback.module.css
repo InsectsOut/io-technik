@@ -5,3 +5,17 @@ section {
 h1 {
     font-weight: 500 !important;
 }
+
+.fixed_bottom {
+    justify-content: center !important;
+    transform: translateX(-50%);
+    left: 50%;
+
+    position: absolute;
+    bottom: 2rem;
+    width: 90%;
+
+    button {
+        max-width: 250px;
+    }
+}

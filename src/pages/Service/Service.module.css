@@ -12,10 +12,10 @@ button {
 }
 
 form {
-    padding: 1rem 1rem;
     margin-bottom: 1rem;
     overflow-y: auto;
-    height: 70vh;
+    padding: 1rem;
+    height: 65vh;
 }
 
 .two_col_grid {

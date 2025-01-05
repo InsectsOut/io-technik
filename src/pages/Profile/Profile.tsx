@@ -36,7 +36,7 @@ export function Profile() {
             </section>
 
             <form class="form" style={{ width: "100%" }}>
-                <label class="label">Datos Insects Out</label>
+                <label class="label">Correo</label>
                 <p class="control has-icons-left" style={pStyle}>
                     <input disabled class="input" value={email?.() ?? ""} />
                     <span class="icon is-medium is-left">
@@ -44,6 +44,7 @@ export function Profile() {
                     </span>
                 </p>
 
+                <label class="label">Organización</label>
                 <p class="control has-icons-left" style={pStyle}>
                     <input disabled class="input" value={organizacion() ?? ""} />
                     <span class="icon is-medium is-left">
@@ -51,7 +52,7 @@ export function Profile() {
                     </span>
                 </p>
 
-                <label class="label">Datos Personales</label>
+                <label class="label">Clave Única</label>
                 <p class="control has-icons-left" style={pStyle}>
                     <input disabled class="input" value={curp() ?? ""} />
                     <span class="icon is-medium is-left">
@@ -59,6 +60,7 @@ export function Profile() {
                     </span>
                 </p>
 
+                <label class="label">Cumpleaños</label>
                 <p class="control has-icons-left" style={pStyle}>
                     <input disabled class="input" value={fecha_nacimiento() ?? ""} />
                     <span class="icon is-medium is-left">

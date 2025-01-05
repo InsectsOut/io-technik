@@ -244,7 +244,7 @@ function HomeActions({ service }: { service: Service }): JSX.Element {
   );
 
   return (
-    <td colSpan={4}>
+    <td colSpan={4} class="icon-col">
       <div class="is-flex is-justify-content-space-around">
         <a title="Teléfono" href={`tel:+${Clientes?.telefono}`}>
           <span class="icon is-left">
