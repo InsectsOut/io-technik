@@ -92,7 +92,7 @@ export function Navbar() {
 
                     <div class="navbar-end">
                         <div class="navbar-item">
-                            <div class="buttons is-centered">
+                            <div class="buttons is-justify-content-end">
                                 <button type="button" onClick={closeSession} class="button is-link">
                                     <strong>Cerrar sesión</strong>
                                 </button>
