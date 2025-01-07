@@ -1,21 +1,10 @@
 section {
     padding: 0px clamp(0px, calc(10vw - 75px), 30%);
+    flex-direction: column;
+    display: flex;
+    height: 85vh;
 }
 
 h1 {
     font-weight: 500 !important;
-}
-
-.fixed_bottom {
-    justify-content: center !important;
-    transform: translateX(-50%);
-    left: 50%;
-
-    position: absolute;
-    bottom: 2rem;
-    width: 90%;
-
-    button {
-        max-width: 250px;
-    }
 }

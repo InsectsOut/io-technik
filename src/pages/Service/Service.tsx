@@ -15,8 +15,9 @@ import { match } from "ts-pattern";
 import css from "./Service.module.css";
 import { ServiceReport } from "./components";
 import { ContactDetails } from "./components/ContactDetails";
+import { SuppliesDetails } from "./SuppliesDetails";
 
-type Tabs = "detalles" | "reporte" | "contacto";
+type Tabs = "detalles" | "reporte" | "contacto" | "supplies";
 
 export function Service() {
     const { folio } = useParams();
@@ -24,6 +25,7 @@ export function Service() {
     const goHome = () => navigate(Pages.Home);
 
     const [view, setView] = createSignal<Tabs>("detalles");
+    const isSupplies = () => view() === "supplies";
     const isContact = () => view() === "contacto";
     const isReport = () => view() === "reporte";
     const isInfo = () => view() === "detalles";
@@ -71,6 +73,11 @@ export function Service() {
                     >
                         Contacto
                     </a>
+                    <a class={classNames(["is-active", isSupplies()])}
+                        onClick={() => setView("supplies")}
+                    >
+                        Suministros
+                    </a>
                     <a class={classNames(["is-active", isReport()])}
                         onClick={() => setView("reporte")}
                     >
@@ -84,7 +91,7 @@ export function Service() {
                     </Match>
 
                     <Match when={servicio.data && isInfo()}>
-                        <form>
+                        <form class="hide_scroll">
                             <label class="label">Datos del Cliente</label>
                             <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                 <p class="control has-icons-left">
@@ -155,6 +162,12 @@ export function Service() {
                                 </p>
                             </div>
                         </form>
+                    </Match>
+
+                    <Match when={servicio.data && isSupplies()}>
+                        <SuppliesDetails
+                            registros={servicio.data!.RegistroAplicacion || []}
+                        />
                     </Match>
 
                     <Match when={servicio.data && isContact()}>

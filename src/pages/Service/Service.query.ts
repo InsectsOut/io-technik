@@ -13,7 +13,12 @@ export async function getServiceByFolio(folio: string) {
     /** Base service query */
     const { data } = await IO_Database
         .from("Servicios")
-        .select(`*, Clientes(*), Direcciones(*), Responsables(*)`)
+        .select(`*,
+            Clientes(*),
+            Direcciones(*),
+            Responsables(*),
+            RegistroAplicacion(*, Productos(*))`
+        )
         .eq("folio", folio)
         .limit(1)
         .maybeSingle();

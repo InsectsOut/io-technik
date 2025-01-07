@@ -122,7 +122,7 @@ export type Database = {
           },
         ]
       }
-      Documentos_empleados: {
+      DocumentosEmpleados: {
         Row: {
           created_at: string
           es_capacitacion: boolean | null
@@ -249,7 +249,7 @@ export type Database = {
         }
         Relationships: []
       }
-      plaguicidas: {
+      Productos: {
         Row: {
           dosis_max: string | null
           dosis_min: string | null
@@ -359,7 +359,7 @@ export type Database = {
             foreignKeyName: "RegistroAplicacion_producto_id_fkey"
             columns: ["producto_id"]
             isOneToOne: false
-            referencedRelation: "plaguicidas"
+            referencedRelation: "Productos"
             referencedColumns: ["id"]
           },
           {
