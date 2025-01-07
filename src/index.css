@@ -82,8 +82,8 @@ button:focus-visible {
 
 /* Insects Out Overrides */
 [class*=io-heading] {
-  padding: 5px 15px !important;
   background-color: transparent !important;
+  padding: 5px 15px !important;
 }
 
 [class*='sign-btn'] {

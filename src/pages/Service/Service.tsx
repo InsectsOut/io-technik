@@ -62,7 +62,7 @@ export function Service() {
                     Servicio #{folio}
                 </h1>
 
-                <p class="panel-tabs is-justify-content-start">
+                <p class="panel-tabs is-justify-content-start hide_scroll" style={{ "overflow-x": "scroll" }}>
                     <a class={classNames(["is-active", isInfo()])}
                         onClick={() => setView("detalles")}
                     >
