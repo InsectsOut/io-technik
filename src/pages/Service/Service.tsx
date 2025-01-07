@@ -30,14 +30,18 @@ export function Service() {
     const isReport = () => view() === "reporte";
     const isInfo = () => view() === "detalles";
 
-    const onReportSubmit = () => {
-        window.setTimeout(() => servicio
-            .refetch()
-            .then(() => {
-                setView("detalles");
-                setView("reporte");
-            }), 1000);
-    };
+    /** Updates the service cache if requested by a child */
+    document.addEventListener("UpdateService",
+        () => servicio.refetch().then(() => {
+            setView("detalles");
+            setView("supplies");
+        }));
+
+    const onReportSubmit = () => window.setTimeout(
+        () => servicio.refetch().then(() => {
+            setView("detalles");
+            setView("reporte");
+        }), 1000);
 
     const getClientName = (cliente: Tables<"Clientes">) => {
         const { nombre, apellidos } = cliente;
@@ -58,7 +62,7 @@ export function Service() {
     return (
         <Suspense fallback={<Loading />}>
             <nav class="panel is-shadowless">
-                <h1 class={classNames("panel-heading io-heading has-text-centered", css.io_heading)}>
+                <h1 class="title has-text-centered">
                     Servicio #{folio}
                 </h1>
 

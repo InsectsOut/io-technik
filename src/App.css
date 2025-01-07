@@ -14,3 +14,11 @@ main {
 .hide_scroll::-webkit-scrollbar {
   display: none;
 }
+
+.scrollable {
+  overflow: scroll;
+}
+
+.is-pointer {
+  cursor: pointer;
+}

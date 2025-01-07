@@ -85,3 +85,13 @@ canvas {
 .no_overflow {
     overflow: hidden;
 }
+
+.units {
+    height: var(--bulma-input-height);
+    display: inline-flex;
+    pointer-events: none;
+    align-items: center;
+    position: absolute;
+    z-index: 4;
+    right: 2em;
+}

@@ -80,12 +80,6 @@ button:focus-visible {
   }
 }
 
-/* Insects Out Overrides */
-[class*=io-heading] {
-  background-color: transparent !important;
-  padding: 5px 15px !important;
-}
-
 [class*='sign-btn'] {
   min-width: 135px;
   margin: 1rem 0.5rem !important;

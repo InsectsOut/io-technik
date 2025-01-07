@@ -287,7 +287,6 @@ export function ServiceReport(props: ReportProps) {
                             <i class="fas fa-door-closed" />
                         </span>
                     </p>
-
                 </div>
 
                 {/* Frecuencia sugerida para el servicio */}
