@@ -1,11 +1,46 @@
+import { createSignal, Show, type Component } from 'solid-js'
 import { useRegisterSW } from 'virtual:pwa-register/solid'
-import type { Component } from 'solid-js'
 import { Modal } from './components'
-import { Show } from 'solid-js'
 
 import css from './PWABadge.module.css'
 
+/** Custom event for the PWA installation event */
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed';
+    platform: string
+  }
+  >;
+}
+
 const PWABadge: Component = () => {
+  /** Intercepts the install event for the PWA */
+  const [installEvent, setInstallEvent] = createSignal<BeforeInstallPromptEvent | null>(null);
+
+  // Listen for the beforeinstallprompt event
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault(); // Prevent the default install prompt
+    setInstallEvent(e as BeforeInstallPromptEvent); // Save the event for later use
+  });
+
+  /** Handles intercepting the install event */
+  function handleInstall() {
+    const promptEvent = installEvent();
+    if (!promptEvent) return;
+
+    promptEvent.prompt(); // Show the install prompt
+    promptEvent.userChoice.then((choice) => {
+      if (choice.outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      } else {
+        console.log('User dismissed the install prompt');
+      }
+      setInstallEvent(null); // Clear the saved event
+      close();
+    });
+  }
+
   // check for updates every 1m
   const period = 1 * 60 * 1000;
 
@@ -39,22 +74,24 @@ const PWABadge: Component = () => {
     setNeedRefresh(false)
   }
 
-  function updateSW() {
-    updateServiceWorker(true).then(() => window.location.reload());
-  }
-
   return (
     <div class={css.Container} role="alert" aria-labelledby="toast-message">
       <Modal show={offlineReady() || needRefresh()} onClose={close}>
         <Show when={offlineReady()}>
           <h2 class="subtitle">Aplicación lista sin conexión</h2>
-          <button class="column button is-danger is-outlined is-fullwidth" onClick={close}>Cerrar</button>
+
+          <div class="field is-flex is-justify-content-center" style={{ gap: "5%" }}>
+            <button class="column button is-success is-outlined" onClick={handleInstall}>Instalar</button>
+            <button class="column button is-danger is-outlined" onClick={close}>Cerrar</button>
+          </div>
         </Show>
         <Show when={needRefresh()}>
           <h2 class="subtitle has-text-centered">Hay una actualización disponible</h2>
 
           <div class="field is-flex is-justify-content-center" style={{ gap: "5%" }}>
-            <button class="column button is-success is-outlined" onClick={updateSW}>Actualizar</button>
+            <button class="column button is-success is-outlined" onClick={() => updateServiceWorker(true)}>
+              Actualizar
+            </button>
             <button class="column button is-danger is-outlined" onClick={close}>Cerrar</button>
           </div>
         </Show>
