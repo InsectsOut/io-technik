@@ -43,6 +43,14 @@ export function Service() {
             setView("reporte");
         }), 1000);
 
+    /** Sets the provided tab as the current view and scrolls to it */
+    const setViewAndFocus = (el: HTMLElement, tab: Tabs) => {
+        window.requestAnimationFrame(() => {
+            el.scrollIntoView({ behavior: "smooth" });
+            setView(tab);
+        });
+    }
+
     const getClientName = (cliente: Tables<"Clientes">) => {
         const { nombre, apellidos } = cliente;
         return `${nombre} ${apellidos}`;
@@ -59,6 +67,11 @@ export function Service() {
         ? new Date(`${servicio.data?.fecha_servicio}T${servicio.data?.horario_servicio}`)
         : undefined;
 
+    let detallesTab: Maybe<HTMLAnchorElement>;
+    let contactosTab: Maybe<HTMLAnchorElement>;
+    let suppliesTab: Maybe<HTMLAnchorElement>;
+    let reporteTab: Maybe<HTMLAnchorElement>;
+
     return (
         <Suspense fallback={<Loading />}>
             <nav class="panel is-shadowless">
@@ -66,24 +79,24 @@ export function Service() {
                     Servicio #{folio}
                 </h1>
 
-                <p class="panel-tabs is-justify-content-start hide_scroll" style={{ "overflow-x": "scroll" }}>
-                    <a class={classNames(["is-active", isInfo()])}
-                        onClick={() => setView("detalles")}
+                <p class="panel-tabs is-justify-content-start scrollable hide_scroll">
+                    <a class={classNames(["is-active", isInfo()])} ref={detallesTab!}
+                        onClick={() => setViewAndFocus(detallesTab!, "detalles")}
                     >
                         Detalles
                     </a>
-                    <a class={classNames(["is-active", isContact()])}
-                        onClick={() => setView("contacto")}
+                    <a class={classNames(["is-active", isContact()])} ref={contactosTab!}
+                        onClick={() => setViewAndFocus(contactosTab!, "contacto")}
                     >
                         Contacto
                     </a>
-                    <a class={classNames(["is-active", isSupplies()])}
-                        onClick={() => setView("supplies")}
+                    <a class={classNames(["is-active", isSupplies()])} ref={suppliesTab!}
+                        onClick={() => setViewAndFocus(suppliesTab!, "supplies")}
                     >
                         Suministros
                     </a>
-                    <a class={classNames(["is-active", isReport()])}
-                        onClick={() => setView("reporte")}
+                    <a class={classNames(["is-active", isReport()])} ref={reporteTab!}
+                        onClick={() => setViewAndFocus(reporteTab!, "reporte")}
                     >
                         Reporte
                     </a>
