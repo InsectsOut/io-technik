@@ -71,7 +71,7 @@ export function ContactDetails(props: ContactProps) {
 
                     <label class="label">Teléfono</label>
                     <p class="control has-icons-left">
-                        <a class="input" type="phone" href={`tel:+${telefono() ?? ""}`}>
+                        <a class="input" type="phone" href={`tel:${telefono() ?? ""}`}>
                             {telefono() ?? ""}
                         </a>
                         <span class="icon is-small is-left">

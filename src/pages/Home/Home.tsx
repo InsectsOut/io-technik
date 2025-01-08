@@ -252,7 +252,7 @@ function HomeActions({ service }: { service: Service }): JSX.Element {
   return (
     <td colSpan={4} class="icon-col">
       <div class="is-flex is-justify-content-space-around">
-        <a title="Teléfono" href={`tel:+${Clientes?.telefono}`}>
+        <a title="Teléfono" href={`tel:${Clientes?.telefono}`}>
           <span class="icon is-left">
             <i class="fas fa-phone-flip fa-lg has-text-primary" aria-hidden="true" />
           </span>
