@@ -25,10 +25,12 @@ export default defineConfig({
     devtools({ autoname: true }),
     purgeCss({ variables: true, rejectedCss: true }),
     VitePWA({
+      strategies: "generateSW",
       registerType: "prompt",
       injectRegister: false,
 
       pwaAssets: {
+        htmlPreset: "2023",
         disabled: false,
         config: true,
       },
@@ -39,19 +41,7 @@ export default defineConfig({
         description: 'Registra tus servicios de Insects Out',
         theme_color: '#69748c',
         start_url: "/login",
-        lang: "es",
-        icons: [
-          {
-            src: "./public/favicon-gear.svg",
-            sizes: "192x192",
-            type: "image/svg+xml",
-          },
-          {
-            src: "./public/favicon-gear.svg",
-            sizes: "512x512",
-            type: "image/svg+xml",
-          }
-        ]
+        lang: "es"
       },
 
       workbox: {
