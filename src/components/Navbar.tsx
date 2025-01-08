@@ -9,12 +9,9 @@ import { Pages } from "@/pages";
 
 export function Navbar() {
     const [isMenuActive, setMenuActive] = createSignal(false);
-    const [isDropActive, setDropActive] = createSignal(false);
     const toggleMenu = () => setMenuActive(!isMenuActive());
-    const toggleDrop = () => setDropActive(!isDropActive());
     const closeMenu = () => {
         setMenuActive(false);
-        setDropActive(false);
     };
 
     /** Classname for the navbar-burger element */
@@ -33,16 +30,8 @@ export function Navbar() {
         "navbar-menu", ["is-active", isMenuActive()]
     );
 
-    /** Classname for the navbar-dropdown */
-    const navbarDropdownClass = () => classNames(
-        "navbar-item has-dropdown is-hoverable",
-        ["dropdown-expand", isDropActive()],
-        ["is-selected", isDropActive()],
-        ["is-active", isDropActive()],
-    );
-
     /** Close the dropdown menu on navigation */
-    useBeforeLeave(() => closeMenu());
+    useBeforeLeave(closeMenu);
 
     return (
         <Show when={currentSession()}>
@@ -50,7 +39,7 @@ export function Navbar() {
                 <div class="navbar-brand">
                     <A href={Pages.Home} class="panel-block is-active has-text-link no-padding">
                         <span class="panel-icon">
-                            <i class="fas fa-home" aria-hidden="true"></i>
+                            <i class="fas fa-home" aria-hidden="true" />
                         </span>
                         insects-out
                     </A>
@@ -72,22 +61,14 @@ export function Navbar() {
                             <A href="/user" class="has-text-link navbar-item">
                                 {userProfile()?.nombre}
                             </A>
+                            <A href="/feedback" class="navbar-item">
+                                Reporta un problema
+                            </A>
+                            <hr class="navbar-divider" />
+                            <A href="/about" class="navbar-item">
+                                Información
+                            </A>
                         </Show>
-
-                        <div class={navbarDropdownClass()}>
-                            <div class="has-text-weight-semibold navbar-link" onClick={toggleDrop}>Más</div>
-                            <Show when={isDropActive()}>
-                                <div class="navbar-dropdown is-boxed is-hoverable">
-                                    <A href="/feedback" class="navbar-item">
-                                        Reporta un problema
-                                    </A>
-                                    <hr class="navbar-divider" />
-                                    <A href="/about" class="navbar-item">
-                                        Información
-                                    </A>
-                                </div>
-                            </Show>
-                        </div>
                     </div>
 
                     <div class="navbar-end">
