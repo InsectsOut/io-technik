@@ -223,7 +223,8 @@ export function SuggestionPicker(props: PickerProps) {
 
                                     <button
                                         onClick={() => setShowPreview(false)}
-                                        style={{ "margin-top": "1rem" }}
+                                        style={{ "margin-top": "1rem", width: "100%" }}
+                                        class="button"
                                         type="button"
                                     >
                                         Cerrar

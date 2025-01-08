@@ -28,7 +28,6 @@ export function Modal(p: ModalProps) {
                 style={{
                     "max-height": "95vh",
                     "max-width": "95vw",
-                    padding: "1rem",
                 }}
             >
                 <div class="box">

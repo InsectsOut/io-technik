@@ -47,15 +47,11 @@ const PWABadge: Component = () => {
     <div class={css.Container} role="alert" aria-labelledby="toast-message">
       <Modal show={offlineReady() || needRefresh()} onClose={close}>
         <Show when={offlineReady()}>
-          <div class={css.Message}>
-            <span id="toast-message">Aplicación lista sin conexión</span>
-            <button class="column button is-danger is-outlined" onClick={close}>Cerrar</button>
-          </div>
+          <h2 class="subtitle">Aplicación lista sin conexión</h2>
+          <button class="column button is-danger is-outlined is-fullwidth" onClick={close}>Cerrar</button>
         </Show>
         <Show when={needRefresh()}>
-          <div class={css.Message}>
-            <span id="toast-message">Hay una actualización disponible</span>
-          </div>
+          <h2 class="subtitle has-text-centered">Hay una actualización disponible</h2>
 
           <div class="field is-flex is-justify-content-center" style={{ gap: "5%" }}>
             <button class="column button is-success is-outlined" onClick={updateSW}>Actualizar</button>
