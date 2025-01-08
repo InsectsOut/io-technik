@@ -63,14 +63,14 @@ export function SuppliesDetails(props: SuppliesDetails) {
     }
 
     const suministros = props.registros.map((r) => ({
-        dosis_min: r.Productos?.dosis_min || "N/A",
-        dosis_max: r.Productos?.dosis_max || "N/A",
+        dosis_min: r.Productos?.dosis_min || "0",
+        dosis_max: r.Productos?.dosis_max || "0",
         cantidad_usada: r.cantidad_usada || 0,
 
-        registro: r.Productos?.registro || "N/A",
+        registro: r.Productos?.registro || "Sin registro",
         nombre: r.Productos?.nombre || "N/A",
         cantidad: r.cantidad || 0,
-        unidad: r.unidad || "N/A",
+        unidad: r.unidad || "unidades",
         id: r.id,
 
         ingrediente: r.Productos?.ingrediente_activo || "N/A",
@@ -81,11 +81,11 @@ export function SuppliesDetails(props: SuppliesDetails) {
     return (
         <table class="table is-striped" style={{ width: "100%", height: "65vh" }}>
             <thead>
-                <tr>
-                    <th>Nombre</th>
+                <tr class={css.slim_pad}>
+                    <th class="no-pad-left">Nombre</th>
                     <th>Cantidad</th>
                     <th class="has-text-centered">Delta</th>
-                    <th class="has-text-centered">Editar</th>
+                    <th class="has-text-centered no-pad-right">Editar</th>
                 </tr>
             </thead>
 
@@ -120,8 +120,8 @@ function SupplyDetail(item: Supply) {
     onCleanup(() => document.addEventListener("keydown", handleEnterKey));
 
     return (
-        <tr>
-            <td>
+        <tr class={css.slim_pad}>
+            <td class="no-pad-left">
                 <span onClick={() => setShowInfo(true)}
                     class="has-text-link is-pointer"
                     title={item.nombre}
@@ -132,9 +132,9 @@ function SupplyDetail(item: Supply) {
 
             <td>
                 <div class="has-text-info" style={{ "margin-bottom": "0.5rem" }}>
-                    Sugerido: {item.cantidad}{simpleUnit()}
+                    Sugerido: {item.cantidad} {simpleUnit()}
                 </div>
-                <div>Usado: {item.cantidad_usada}{simpleUnit()}</div>
+                <div>Usado: {item.cantidad_usada} {simpleUnit()}</div>
             </td>
 
             <td style={{ "text-align-last": "center", "vertical-align": "baseline" }}>
@@ -160,7 +160,7 @@ function SupplyDetail(item: Supply) {
                     />
                 </span>
             </td>
-            <td style={{ "text-align-last": "center", "vertical-align": "baseline" }}>
+            <td class="no-pad-right" style={{ "text-align-last": "center", "vertical-align": "baseline" }}>
                 <div title="Editar" onClick={() => setShowInfo(true)}>
                     <span class="icon is-left is-pointer">
                         <i class="fas fa-pen-to-square fa-lg has-text-warning" aria-hidden="true" />

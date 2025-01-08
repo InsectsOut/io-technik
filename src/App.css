@@ -30,3 +30,11 @@ main {
 .is-brown {
   color: saddlebrown;
 }
+
+.no-pad-left {
+  padding-left: unset !important;
+}
+
+.no-pad-right {
+  padding-right: unset !important;
+}

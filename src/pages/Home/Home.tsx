@@ -166,10 +166,10 @@ export function Home() {
                 <table class="table io-table">
                   <thead>
                     <tr>
-                      <th class="has-text-centered">#</th>
+                      <th class="has-text-centered no-pad-left">#</th>
                       <th>Horario</th>
                       <th>Cliente</th>
-                      <th class="has-text-centered">Estatus</th>
+                      <th class="has-text-centered no-pad-right">Estatus</th>
                       <Show when={deviceType() > DeviceType.Mobile}>
                         <th class="is-flex is-justify-content-space-around is-misaligned" style={{ gap: "0.75rem" }}>
                           <div class="has-text-centered">Teléfono</div>
@@ -191,7 +191,7 @@ export function Home() {
                         return (
                           <>
                             <tr class="is-pointer" onClick={() => toggleShownService(service)}>
-                              <th>{service.folio}</th>
+                              <th class="no-pad-left">{service.folio}</th>
                               <th>{getSimpleTime(service)}</th>
                               <td>
                                 <Show when={deviceType() > DeviceType.Mobile} fallback={
@@ -202,7 +202,7 @@ export function Home() {
                                   </a>
                                 </Show>
                               </td>
-                              <td class="icon-col has-text-centered">
+                              <td class="icon-col has-text-centered no-pad-right">
                                 <div title={serviceStatus}>
                                   {deviceType() > DeviceType.Tablet ? serviceStatus : getStatusIcon(service)}
                                 </div>
