@@ -31,7 +31,7 @@ form {
 }
 
 .file_input_width {
-    & > * {
+    &>* {
         width: 96%;
     }
 }
@@ -48,6 +48,12 @@ form {
         &:has(label) {
             height: 85px;
         }
+    }
+}
+
+.three_cols {
+    p {
+        width: 32%;
     }
 }
 

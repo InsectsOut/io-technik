@@ -1,8 +1,9 @@
 import { destructure } from "@solid-primitives/destructure";
 import { createEffect, createSignal } from "solid-js";
-import { createStore } from "solid-js/store";
+import { createMutable } from "solid-js/store";
 
-import { ImgFile } from "@/utils";
+import { Buckets, ImgFile } from "@/utils";
+import { supabase } from "@/supabase";
 import { userProfile } from "@/state";
 import "./Feedback.module.css";
 
@@ -13,10 +14,47 @@ type FileInputEvent = InputEvent & {
 };
 
 export function Feedback() {
-    const { nombre } = destructure(userProfile() ?? { nombre: "" })
+    const { nombre } = destructure(userProfile()!)
     const [imgId, setImgId] = createSignal(getImgId());
 
-    const [feedbackForm, setFeedback] = createStore({
+    async function saveReport() {
+        const { id, file } = feedbackForm.captura || {};
+        const fileAttached = !!(id && file);
+
+        const result = fileAttached && await supabase.storage
+            .from(Buckets.ReportesError)
+            .upload(id, file, {
+                upsert: true
+            });
+
+        if (result && result.error) {
+            alert("Error subiendo captura adjunta");
+        }
+
+        const insert = await supabase
+            .from("ErroresSistema")
+            .insert({
+                imagen: result ? result.data?.fullPath : null,
+                descripcion: feedbackForm.description,
+                tipo_error: feedbackForm.tipo,
+                titulo: feedbackForm.titulo,
+                id_user: userProfile()?.id!
+            });
+
+        if (insert.error) {
+            return alert("Ha ocurrido un error cargando el reporte");
+        }
+
+        window.requestAnimationFrame(() => {
+            // Clears the report
+            feedbackForm.captura = undefined;
+            feedbackForm.description = "";
+            feedbackForm.titulo = "";
+            feedbackForm.tipo = "";
+        });
+    }
+
+    const feedbackForm = createMutable({
         captura: undefined as ImgFile | undefined,
         nombre: nombre(),
         description: "",
@@ -39,16 +77,16 @@ export function Feedback() {
 
         setImgId(getImgId());
 
-        setFeedback("captura", {
+        feedbackForm.captura = {
             extension: file.type.split("/")[1],
             id: imgId(),
             file
-        });
+        };
     }
 
     createEffect(() => {
         console.clear();
-        console.table({...feedbackForm})
+        console.table({ ...feedbackForm })
     });
 
     return (
@@ -63,7 +101,7 @@ export function Feedback() {
             <div class="field">
                 <label class="label">Título</label>
                 <div class="control">
-                    <input onInput={(e) => setFeedback("titulo", e.target.value)}
+                    <input onInput={(e) => feedbackForm.tipo = e.target.value}
                         placeholder="No hay ningún servicio"
                         class="input"
                         type="text"
@@ -74,7 +112,7 @@ export function Feedback() {
             <div class="field">
                 <label class="label">Descripción</label>
                 <div class="control">
-                    <textarea onInput={(e) => setFeedback("description", e.target.value)}
+                    <textarea onInput={(e) => feedbackForm.description = e.target.value}
                         placeholder="Cuéntanos del problema que encontraste..."
                         class="textarea"
                     />
@@ -85,10 +123,12 @@ export function Feedback() {
             <div class="field is-grouped is-column">
                 <div class="control">
                     <div class="select">
-                        <select onChange={(e) => setFeedback("tipo", e.target.value)}>
+                        <select onChange={(e) => feedbackForm.tipo = e.target.value}>
                             <option>Error de interfaz</option>
-                            <option>No puedo salvar un reporte</option>
                             <option>No carga ningún servicio</option>
+                            <option>No puedo salvar un reporte</option>
+                            <option>Hay datos faltantes en un reporte</option>
+                            <option>No se actualizan los datos de una vista</option>
                             <option>Se muestra una pantalla de error</option>
                         </select>
                     </div>
@@ -109,7 +149,7 @@ export function Feedback() {
             </div>
 
             <div class="field is-grouped">
-                <button class="column button is-link">Reportar</button>
+                <button class="column button is-link" onClick={saveReport}>Reportar</button>
                 <button class="column button is-link is-light">Cancelar</button>
             </div>
         </section>

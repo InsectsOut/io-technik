@@ -44,7 +44,7 @@ export function ContactDetails(props: ContactProps) {
                 <p class="control has-icons-left">
                     <input disabled class="input" type="text" value={nombre() || "Sin información"} />
                     <span class="icon is-medium is-left">
-                        <i class="fas fa-address-card" />
+                        <i class="fas fa-address-card has-text-info" />
                     </span>
                 </p>
 
@@ -52,7 +52,7 @@ export function ContactDetails(props: ContactProps) {
                 <p class="control has-icons-left">
                     <input disabled class="input" value={puesto() || "Sin información"} />
                     <span class="icon is-medium is-left">
-                        <i class="fas fa-briefcase" />
+                        <i class="fas fa-briefcase is-brown" />
                     </span>
                 </p>
             </div>
@@ -65,7 +65,7 @@ export function ContactDetails(props: ContactProps) {
                             {email()}
                         </a>
                         <span class="icon is-small is-left">
-                            <i class="fas fa-envelope" />
+                            <i class="fas fa-envelope has-text-warning" />
                         </span>
                     </p>
 
@@ -75,7 +75,7 @@ export function ContactDetails(props: ContactProps) {
                             {telefono() ?? ""}
                         </a>
                         <span class="icon is-small is-left">
-                            <i class="fas fa-phone" />
+                            <i class="fas fa-phone has-text-success" />
                         </span>
                     </p>
                 </Show>
@@ -83,7 +83,7 @@ export function ContactDetails(props: ContactProps) {
 
             <div class={classNames("field", css.full_height, css.io_field)}>
                 <label class="label">Dirección</label>
-                <p class="control has-icons-left has-text-link">
+                <p class="control has-icons-left">
                     <a class={classNames("input", css.full_height)}
                         classList={{ "disabled": !props.ubicacion }}
                         href={props.ubicacion ?? "#"}
@@ -91,7 +91,7 @@ export function ContactDetails(props: ContactProps) {
                         {getDireccion(props.direccion) || "Sin dirección"}
                     </a>
                     <span class="icon is-medium is-left">
-                        <i class="fas fa-location-dot" />
+                        <i class="fas fa-location-dot has-text-danger" />
                     </span>
                 </p>
             </div>

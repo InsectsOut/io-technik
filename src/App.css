@@ -22,3 +22,11 @@ main {
 .is-pointer {
   cursor: pointer;
 }
+
+.is-link {
+  color: var(--bulma-link-text);
+}
+
+.is-brown {
+  color: saddlebrown;
+}

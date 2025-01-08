@@ -1,9 +1,10 @@
 import { destructure } from "@solid-primitives/destructure";
-import { createSignal, For } from "solid-js";
+import { createSignal, For, onCleanup, onMount } from "solid-js";
 
-import { classNames } from "@/utils";
-import { Modal } from "@/components";
+import { classNames, DeviceType, deviceType } from "@/utils";
+import { getSimpleUnit } from "./Service.utils";
 import { supabase, Tables } from "@/supabase";
+import { Modal } from "@/components";
 
 import css from "./Service.module.css"
 
@@ -21,16 +22,20 @@ type Supply = {
     registro: string;
     tipo: string;
     cantidad: number;
+    cantidad_usada: number,
     unidad: string;
+    dosis_min: string;
+    dosis_max: string;
 }
 
 async function updateUsedProduct(item: Supply, cantidad: number) {
     if (isNaN(cantidad)) {
-        return alert("Cantidad inválida")
+        return alert("Cantidad inválida");
     }
 
-    const { status } = await supabase.from("RegistroAplicacion")
-        .update({ cantidad })
+    const { status } = await supabase
+        .from("RegistroAplicacion")
+        .update({ cantidad_usada: cantidad })
         .eq("id", item.id);
 
     if (status === 204) {
@@ -40,11 +45,16 @@ async function updateUsedProduct(item: Supply, cantidad: number) {
     }
 }
 
+/**
+ * Component that shows the supplies details tab
+ * @param props The supplies props to be rendered
+ * @returns A `JSX` element that lists the supplies
+ */
 export function SuppliesDetails(props: SuppliesDetails) {
     const { registros } = destructure(props);
     if (!registros()?.length) {
         return (
-            <section class="no-contact">
+            <section class="no-contact" style={{ height: "65vh", "margin-bottom": "1rem" }}>
                 <h1 class="title has-text-centered">Sin suministros asignados 🔎</h1>
                 <br />
                 <h2 class="subtitle has-text-centered">No se encontró equipo asignado a este servicio.</h2>
@@ -53,6 +63,10 @@ export function SuppliesDetails(props: SuppliesDetails) {
     }
 
     const suministros = props.registros.map((r) => ({
+        dosis_min: r.Productos?.dosis_min || "N/A",
+        dosis_max: r.Productos?.dosis_max || "N/A",
+        cantidad_usada: r.cantidad_usada || 0,
+
         registro: r.Productos?.registro || "N/A",
         nombre: r.Productos?.nombre || "N/A",
         cantidad: r.cantidad || 0,
@@ -70,7 +84,8 @@ export function SuppliesDetails(props: SuppliesDetails) {
                 <tr>
                     <th>Nombre</th>
                     <th>Cantidad</th>
-                    <th>Info</th>
+                    <th class="has-text-centered">Delta</th>
+                    <th class="has-text-centered">Editar</th>
                 </tr>
             </thead>
 
@@ -88,23 +103,67 @@ export function SuppliesDetails(props: SuppliesDetails) {
  * @returns A JSX rendered supply item
 */
 function SupplyDetail(item: Supply) {
-    const [cantidad, setCantidad] = createSignal(item.cantidad);
+    const [cantidad, setCantidad] = createSignal(item.cantidad_usada || item.cantidad);
+    const delta = () => item.cantidad_usada - item.cantidad;
     const [showInfo, setShowInfo] = createSignal(false);
+    const simpleUnit = () => getSimpleUnit(item.unidad);
     const closeInfo = () => setShowInfo(false);
+
+    function handleEnterKey(e: KeyboardEvent) {
+        if (e.key === "Enter") {
+            updateUsedProduct(item, cantidad()).then(closeInfo);
+        }
+    }
+
+    // Saves the updated supply details on Enter keydown
+    onMount(() => document.addEventListener("keydown", handleEnterKey));
+    onCleanup(() => document.addEventListener("keydown", handleEnterKey));
 
     return (
         <tr>
-            <td onClick={() => setShowInfo(true)}
-                class="has-text-link is-pointer"
-                title={item.nombre}
-            >
-                {item.nombre}
+            <td>
+                <span onClick={() => setShowInfo(true)}
+                    class="has-text-link is-pointer"
+                    title={item.nombre}
+                >
+                    {item.nombre}
+                </span>
             </td>
-            <td>{item.cantidad} {item.unidad}</td>
-            <td style={{ "text-align-last": "start", "vertical-align": "baseline" }}>
+
+            <td>
+                <div class="has-text-info" style={{ "margin-bottom": "0.5rem" }}>
+                    Sugerido: {item.cantidad}{simpleUnit()}
+                </div>
+                <div>Usado: {item.cantidad_usada}{simpleUnit()}</div>
+            </td>
+
+            <td style={{ "text-align-last": "center", "vertical-align": "baseline" }}>
+                <span class="is-block">{delta()} {simpleUnit()}</span>
+                <span class="icon is-right is-pointer">
+                    <i aria-hidden="true"
+                        class={classNames("fas fa-lg is-inline",
+                            ["fa-arrow-up has-text-danger", delta() > 0],
+                            ["fa-arrow-down has-text-success", delta() < 0]
+                        )}
+                    />
+                    <i aria-hidden="true"
+                        class={classNames("fas fa-lg is-inline",
+                            ["fa-arrow-up has-text-danger", delta() > 0],
+                            ["fa-arrow-down has-text-success", delta() < 0]
+                        )}
+                    />
+                    <i aria-hidden="true"
+                        class={classNames("fas fa-lg is-inline",
+                            ["fa-arrow-up has-text-danger", delta() > 0],
+                            ["fa-arrow-down has-text-success", delta() < 0]
+                        )}
+                    />
+                </span>
+            </td>
+            <td style={{ "text-align-last": "center", "vertical-align": "baseline" }}>
                 <div title="Editar" onClick={() => setShowInfo(true)}>
-                    <span class="icon is-left" style={{ cursor: "pointer" }}>
-                        <i class="fas fa-circle-info fa-lg has-text-info" aria-hidden="true" />
+                    <span class="icon is-left is-pointer">
+                        <i class="fas fa-pen-to-square fa-lg has-text-warning" aria-hidden="true" />
                     </span>
                 </div>
             </td>
@@ -113,7 +172,7 @@ function SupplyDetail(item: Supply) {
                 <h1 class="title" style={{ "margin-bottom": "0.5rem" }}>{item.nombre}</h1>
                 <h2>{item.registro}</h2>
 
-                <form style={{ padding: "unset", "margin-top": "1rem", height: "auto" }}>
+                <form class="scrollable hide_scroll" style={{ padding: "unset", "margin-top": "1rem" }}>
                     <div class={classNames("field is-grouped is-flex-direction-column hide_scroll scrollable", css.io_field)}>
                         <label class="label">Presentación</label>
                         <p class="control has-icons-left">
@@ -127,7 +186,7 @@ function SupplyDetail(item: Supply) {
                             </span>
                         </p>
 
-                        <label class="label">Ingrediente</label>
+                        <label class="label">Ingrediente Activo</label>
                         <p class="control has-icons-left">
                             <input id="p_ingrediente" disabled
                                 value={item.ingrediente}
@@ -135,12 +194,42 @@ function SupplyDetail(item: Supply) {
                                 type="text"
                             />
                             <span class="icon is-medium is-left">
-                                <i class="fas fa-flask-vial has-text-success" />
+                                <i class="fas fa-flask-vial has-text-warning" />
                             </span>
                         </p>
                     </div>
 
                     <div class={classNames("field is-grouped is-flex-direction-column hide_scroll scrollable", css.io_field)}>
+                        <label class="label">Dosis Mínima</label>
+                        <p class="control has-icons-left">
+                            <input id="p_presentacion" disabled
+                                value={item.dosis_min}
+                                class="input"
+                                type="text"
+                            />
+                            <span class="icon is-medium is-left">
+                                <i class="fas fa-minus has-text-danger" />
+                            </span>
+                        </p>
+
+                        <label class="label">Dosis Máxima</label>
+                        <p class="control has-icons-left">
+                            <input id="p_ingrediente" disabled
+                                value={item.dosis_max}
+                                class="input"
+                                type="text"
+                            />
+                            <span class="icon is-medium is-left">
+                                <i class="fas fa-plus has-text-success" />
+                            </span>
+                        </p>
+
+                    </div>
+
+                    <div class={classNames(
+                        "field is-grouped is-flex-direction-column hide_scroll scrollable",
+                        css.io_field, [css.three_cols, deviceType() > DeviceType.Mobile])}
+                    >
                         <label class="label">Tipo Aplicación</label>
                         <p class="control has-icons-left">
                             <input id="p_tipo" disabled
@@ -153,9 +242,24 @@ function SupplyDetail(item: Supply) {
                             </span>
                         </p>
 
+                        <label class="label">Cantidad Sugerida</label>
+                        <p class="control has-icons-left">
+                            <input id="p_cantidad" disabled
+                                value={item.cantidad}
+                                class="input"
+                                type="number"
+                            />
+                            <span class="icon is-medium is-left">
+                                <i class="fas fa-fill has-text-info" />
+                            </span>
+                            <span class={css.units}>
+                                {simpleUnit()}
+                            </span>
+                        </p>
+
                         <label class="label">Cantidad Utilizada</label>
                         <p class="control has-icons-left">
-                            <input id="p_cantidad" required
+                            <input id="p_cantidad_usada" required
                                 onInput={(e) => setCantidad(e.target.valueAsNumber)}
                                 value={cantidad()}
                                 class="input"
@@ -163,10 +267,10 @@ function SupplyDetail(item: Supply) {
                                 min={0}
                             />
                             <span class="icon is-medium is-left">
-                                <i class="fas fa-pen-ruler has-text-info" />
+                                <i class="fas fa-fill-drip has-text-danger" />
                             </span>
                             <span class={css.units}>
-                                {item.unidad}
+                                {simpleUnit()}
                             </span>
                         </p>
 

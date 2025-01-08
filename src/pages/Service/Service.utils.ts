@@ -1,5 +1,6 @@
 import dayjs, { Dayjs } from "dayjs";
 import { createUniqueId } from "solid-js";
+import { match } from "ts-pattern";
 
 /**
  * Returns a date object using the provided `fecha` and `hora`
@@ -21,3 +22,12 @@ export function getServiceDate(fecha: string, hora: string, useDayJs = false): D
 export function getImageId() {
     return `reporte-${dayjs().format("YYYY-MM-DD")}-${createUniqueId()}`;
 }
+
+/** Simplifies the units presentation */
+export const getSimpleUnit = (unit: string) => match(unit.toLowerCase())
+    .with("kilogramos", () => "kg")
+    .with("mililitros", () => "ml")
+    .with("unidades", () => "pz")
+    .with("litros", () => "lts")
+    .with("gramos", () => "gr")
+    .otherwise(() => unit);

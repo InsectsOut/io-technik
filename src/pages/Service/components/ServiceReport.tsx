@@ -271,7 +271,7 @@ export function ServiceReport(props: ReportProps) {
                             type="time"
                         />
                         <span class="icon is-medium is-left">
-                            <i class="fas fa-door-open" />
+                            <i class="fas fa-door-open is-brown" />
                         </span>
                     </p>
 
@@ -284,7 +284,7 @@ export function ServiceReport(props: ReportProps) {
                             type="time"
                         />
                         <span class="icon is-medium is-left">
-                            <i class="fas fa-door-closed" />
+                            <i class="fas fa-door-closed is-brown" />
                         </span>
                     </p>
                 </div>
@@ -298,13 +298,13 @@ export function ServiceReport(props: ReportProps) {
                                 <Index each={FrecuenciaServicio}>
                                     {(frecuencia) =>
                                         <option selected={reporte.frecuencia === frecuencia()} value={frecuencia()}>
-                                            {frecuencia()}
+                                            - {frecuencia()}
                                         </option>}
                                 </Index>
                             </select>
                         </div>
                         <div class="icon is-small is-left">
-                            <i class="fas fa-clock-rotate-left" />
+                            <i class="fas fa-clock-rotate-left has-text-info" />
                         </div>
                     </div>
                 </div>
@@ -346,11 +346,11 @@ export function ServiceReport(props: ReportProps) {
             </form>
 
             <Modal show={isSaving()}>
-                <span class="icon-text is-align-items-baseline is-justify-content-space-between" style={{ width: "100%" }}>
-                    <span class="subtitle has-text-center marginless">Guardando Reporte...</span>
+                <span class="icon-text is-align-items-baseline has-icons-left is-flex is-justify-content-center gapless">
                     <span class="icon is-large is-right">
                         <i class="fas fa-save" />
                     </span>
+                    <span class="subtitle has-text-center marginless">Guardando Reporte...</span>
                 </span>
 
                 <progress class="progress is-primary" style={{ margin: "auto" }} max="100" />

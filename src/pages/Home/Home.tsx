@@ -78,6 +78,7 @@ function NoServices() {
 export function Home() {
 
   const [filter, setFilter] = createSignal("");
+  const lowerFilter = () => filter().toLowerCase();
 
   const setDay = (val?: number) => {
     if (val == null) {
@@ -87,16 +88,19 @@ export function Home() {
     return () => setDate(day => day.add(val, "day"));
   };
 
-  const filteredServices = () => services.data?.filter(({ Clientes: c }) => {
-    if (!filter()) {
+  const filteredServices = () => services.data?.filter((s) => {
+    if (!lowerFilter()) {
       return services.data;
     }
 
-    return `${c?.nombre} ${c?.apellidos}`
-      .toLowerCase()
-      .includes(
-        filter().toLowerCase()
-      );
+    const nombreCliente = `${s.Clientes?.nombre} ${s.Clientes?.apellidos}`.toLowerCase();
+    const folioFilter = parseInt(lowerFilter());
+
+    if (!isNaN(folioFilter)) {
+      return s.folio === folioFilter;
+    }
+
+    return nombreCliente.includes(lowerFilter());
   });
 
   const services = createQuery(() => ({
@@ -119,7 +123,7 @@ export function Home() {
             <div class="panel-block">
               <p class="control has-icons-left">
                 <input onInput={(e) => setFilter(e.target.value)}
-                  placeholder="Buscar por cliente..."
+                  placeholder="Buscar por cliente o folio..."
                   value={filter()}
                   class="input"
                   type="text"
@@ -162,6 +166,7 @@ export function Home() {
                 <table class="table io-table">
                   <thead>
                     <tr>
+                      <th class="has-text-centered">#</th>
                       <th>Horario</th>
                       <th>Cliente</th>
                       <th class="has-text-centered">Estatus</th>
@@ -186,6 +191,7 @@ export function Home() {
                         return (
                           <>
                             <tr class="is-pointer" onClick={() => toggleShownService(service)}>
+                              <th>{service.folio}</th>
                               <th>{getSimpleTime(service)}</th>
                               <td>
                                 <Show when={deviceType() > DeviceType.Mobile} fallback={

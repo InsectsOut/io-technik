@@ -99,9 +99,9 @@ export function Service() {
                             <label class="label">Datos del Cliente</label>
                             <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                 <p class="control has-icons-left">
-                                    <input disabled class="input" type="text" value={`Folio: ${servicio.data?.folio}`} />
+                                    <input disabled class="input has-text-link" type="text" value={`Folio: ${servicio.data?.folio}`} />
                                     <span class="icon is-medium is-left">
-                                        <i class="fas fa-hashtag" />
+                                        <i class="fas fa-hashtag has-text-link" />
                                     </span>
                                 </p>
                                 <p class="control has-icons-left">

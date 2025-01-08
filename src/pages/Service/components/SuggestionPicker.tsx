@@ -1,5 +1,5 @@
 import { createMutable, createStore } from "solid-js/store";
-import { createEffect, createSignal, For, Index, Show } from "solid-js";
+import { createEffect, createSignal, For, Index, onCleanup, onMount, Show } from "solid-js";
 
 import { classNames, getFileExtension, windowSize } from "@/utils";
 import { getImageId } from "../Service.utils"
@@ -327,6 +327,17 @@ export function SuggestionPicker(props: PickerProps) {
         }
     }
 
+    function handleEnterKey(e: KeyboardEvent) {
+        if (e.key === "Enter") {
+            picker.showModal = false;
+            saveReport();
+        }
+    }
+
+    // Save the report on Enter keydown event
+    onMount(() => document.addEventListener("keydown", handleEnterKey));
+    onCleanup(() => document.removeEventListener("keydown", handleEnterKey));
+
     createEffect(() => {
         // Every time the suggestions list changes, update the parent component
         props.onSuggestionAdd(sugerencias);
@@ -389,7 +400,7 @@ export function SuggestionPicker(props: PickerProps) {
                                     rows={4}
                                 />
                                 <span class="icon is-medium is-left">
-                                    <i class="fas fa-info-circle" />
+                                    <i class="fas fa-info-circle has-text-warning" />
                                 </span>
                             </p>
                         </div>
@@ -400,15 +411,16 @@ export function SuggestionPicker(props: PickerProps) {
                             <label class="label">Recomendaciones</label>
                             <div style={inputHeight} class={classNames("control is-expanded", ["has-icons-left", isWideScreen()])}>
                                 <div class="select is-fullwidth is-multiple">
-                                    <select ref={suggestionsRef}
+                                    <select ref={suggestionsRef} required
                                         onChange={(e => setActions(e.target.selectedOptions))}
-                                        multiple name="recomendaciones" size="4"
-                                        required
+                                        multiple name="recomendaciones"
+                                        title="Elegir sugerencias"
+                                        size="4"
                                     >
                                         <Index each={AccionesRecomendadas}>
                                             {(accion) =>
                                                 <option value={accion()}>
-                                                    {accion()}
+                                                    ➕ {accion()}
                                                 </option>}
                                         </Index>
                                     </select>

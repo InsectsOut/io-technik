@@ -231,6 +231,47 @@ export type Database = {
           },
         ]
       }
+      ErroresSistema: {
+        Row: {
+          created_at: string
+          descripcion: string | null
+          id: number
+          id_user: number
+          imagen: string | null
+          tipo_error: string | null
+          titulo: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          descripcion?: string | null
+          id?: number
+          id_user: number
+          imagen?: string | null
+          tipo_error?: string | null
+          titulo?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          descripcion?: string | null
+          id?: number
+          id_user?: number
+          imagen?: string | null
+          tipo_error?: string | null
+          titulo?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ErroresSistema_id_user_fkey"
+            columns: ["id_user"]
+            isOneToOne: false
+            referencedRelation: "Empleados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       Plagas: {
         Row: {
           created_at: string
@@ -321,6 +362,7 @@ export type Database = {
         Row: {
           area_aplicacion: string | null
           cantidad: number | null
+          cantidad_usada: number | null
           created_at: string
           id: number
           producto_id: number | null
@@ -333,6 +375,7 @@ export type Database = {
         Insert: {
           area_aplicacion?: string | null
           cantidad?: number | null
+          cantidad_usada?: number | null
           created_at?: string
           id?: number
           producto_id?: number | null
@@ -345,6 +388,7 @@ export type Database = {
         Update: {
           area_aplicacion?: string | null
           cantidad?: number | null
+          cantidad_usada?: number | null
           created_at?: string
           id?: number
           producto_id?: number | null
