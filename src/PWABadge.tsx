@@ -1,29 +1,29 @@
 import { useRegisterSW } from 'virtual:pwa-register/solid'
 import type { Component } from 'solid-js'
+import { Modal } from './components'
 import { Show } from 'solid-js'
 
 import css from './PWABadge.module.css'
-import { Modal } from './components'
 
 const PWABadge: Component = () => {
-  // check for updates every 10m
-  const period = 10 * 60 * 1000;
+  // check for updates every 1m
+  const period = 1 * 60 * 1000;
 
   const {
     offlineReady: [offlineReady, setOfflineReady],
     needRefresh: [needRefresh, setNeedRefresh], updateServiceWorker
   } = useRegisterSW({
     onRegisteredSW(serviceUrl, reg) {
-      if (period <= 0) {
-        return;
-      } else if (reg?.active?.state === 'activated') {
-        registerPeriodicSync(period, serviceUrl, reg)
-      } else if (reg?.installing) {
+      if (period <= 0) return;
+
+      if (reg?.active?.state === 'activated') {
+        return registerPeriodicSync(period, serviceUrl, reg);
+      }
+      if (reg?.installing) {
         reg.installing.addEventListener('statechange', (e) => {
           const worker = e.target as ServiceWorker;
-          if (worker.state === 'activated')
-            registerPeriodicSync(period, serviceUrl, reg)
-        })
+          if (worker.state === 'activated') registerPeriodicSync(period, serviceUrl, reg);
+        });
       }
     },
     onNeedRefresh() {
@@ -40,7 +40,7 @@ const PWABadge: Component = () => {
   }
 
   function updateSW() {
-    updateServiceWorker(true).then(() => window.location.reload())
+    updateServiceWorker(true).then(() => window.location.reload());
   }
 
   return (

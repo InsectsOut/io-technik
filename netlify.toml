@@ -1,6 +1,22 @@
-## Redirects to the homepage if the route is empty
+# [build]
+# publish = "dist"
+# command = "pnpm run build"
+
 [[redirects]]
-  from = "/"
-  to = "/home"
-  status = 301
-  force = false
+from = "/*"
+to = "/index.html"
+status = 200
+
+[[headers]]
+for = "/manifest.webmanifest"
+[headers.values]
+Content-Type = "application/manifest+json"
+
+[[headers]]
+for = "/assets/*"
+[headers.values]
+cache-control = '''
+    public,
+    max-age=0,
+    must-revalidate
+    '''

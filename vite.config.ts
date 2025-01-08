@@ -16,13 +16,17 @@ export default defineConfig({
     ]
   },
 
+  worker: {
+    format: "es"
+  },
+
   plugins: [
     solid(),
     devtools({ autoname: true }),
     purgeCss({ variables: true, rejectedCss: true }),
     VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: "script",
+      registerType: "prompt",
+      injectRegister: false,
 
       pwaAssets: {
         disabled: false,
