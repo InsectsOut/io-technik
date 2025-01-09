@@ -20,6 +20,9 @@ export function isFrecuencia(value: any): value is Frecuencia {
     return FrecuenciaServicio.includes(value);
 }
 
+/** Tabs to show for the service component */
+export type Tabs = "detalles" | "reporte" | "contacto" | "suministros";
+
 /** Tipo para una recomendación de servicio */
 export type Recomendacion = {
     /* Identificador único de la recomendación */

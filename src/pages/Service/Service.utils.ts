@@ -1,6 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
 import { createUniqueId } from "solid-js";
 import { match } from "ts-pattern";
+import { Tabs } from "./Service.types";
 
 /**
  * Returns a date object using the provided `fecha` and `hora`
@@ -17,6 +18,11 @@ export function getServiceDate(fecha: string, hora: string, useDayJs = false): D
         return null;
     }
 }
+
+/** Order in which to cycle the service tabs */
+export const tabOrder: Tabs[] = [
+    "detalles", "contacto", "suministros", "reporte"
+];
 
 /** Generates a unique `id/timestamp` for an img upload */
 export function getImageId() {

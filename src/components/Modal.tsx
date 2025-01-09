@@ -1,4 +1,5 @@
-import { onCleanup, onMount, ParentProps } from "solid-js";
+import { createEffect, onCleanup, onMount, ParentProps } from "solid-js";
+import { setCanSwipe } from "@/pages";
 import { classNames } from "@/utils";
 
 /** Props for the modal component */
@@ -20,6 +21,7 @@ export function Modal(p: ModalProps) {
 
     onMount(() => document.addEventListener("keydown", escHandler));
     onCleanup(() => document.removeEventListener("keydown", escHandler));
+    createEffect(() => setCanSwipe(!p.show));
 
     return (
         <div class={classNames("modal", ["is-active", p.show])}>

@@ -9,17 +9,17 @@ import { Tables } from "@/supabase";
 import { ContactDetails, SuppliesDetails, ServiceReport } from "./components/";
 import { classNames, FadeOutAnimation, useSwipe } from "@/utils";
 import { getLocalTime } from "@/utils/Date";
+import { Tabs } from "./Service.types";
 import { Error, Pages } from "..";
 
 import { createQuery } from "@tanstack/solid-query";
 import { match } from "ts-pattern";
 
 import css from "./Service.module.css";
+import { tabOrder } from "./Service.utils";
 
-type Tabs = "detalles" | "reporte" | "contacto" | "suministros";
-const tabOrder: Tabs[] = [
-    "detalles", "contacto", "suministros", "reporte"
-];
+/** Tracks if the service component can use swipe gestures */
+export const [canSwipe, setCanSwipe] = createSignal(true);
 
 export function Service() {
     const { folio } = useParams();
@@ -45,20 +45,6 @@ export function Service() {
             setView("reporte");
         }), 1000);
 
-    /** Sets the provided tab as the current view and scrolls to it */
-    const setViewAndFocus = (e: Event, tab: Tabs) => {
-        const el = e instanceof HTMLElement ? e : null;
-        window.requestAnimationFrame(() => {
-            el?.scrollIntoView({ behavior: "smooth" });
-            setView(tab);
-        });
-    }
-
-    const getClientName = (cliente: Tables<"Clientes">) => {
-        const { nombre, apellidos } = cliente;
-        return `${nombre} ${apellidos}`;
-    }
-
     const servicio = createQuery(() => ({
         queryKey: [`service/${folio}`],
         queryFn: () => getServiceByFolio(folio),
@@ -70,10 +56,27 @@ export function Service() {
         ? new Date(`${servicio.data?.fecha_servicio}T${servicio.data?.horario_servicio}`)
         : undefined;
 
+    function getClientName(cliente: Tables<"Clientes">) {
+        const { nombre, apellidos } = cliente;
+        return `${nombre} ${apellidos}`;
+    }
+
+    /** Sets the provided tab as the current view and scrolls to it */
+    function setViewAndFocus(e: Event, tab: Tabs) {
+        const el = e.target instanceof HTMLElement ? e.target : null;
+        window.requestAnimationFrame(() => {
+            el?.scrollIntoView({ behavior: "smooth" });
+            setView(tab);
+        });
+    }
+
     /** Element reference for the tab container  */
     let tabContainer: Maybe<HTMLTemplateElement>;
 
+    /** Handles swiping between the different tab views  */
     const handleTabSwipe = (direction: 'left' | 'right', _distance: number) => {
+        if (!canSwipe()) return;
+
         const currentTab = tabOrder.findIndex((tab) => tab === view());
         const nextTab = direction === "left"
             ? currentTab + 1
@@ -97,7 +100,11 @@ export function Service() {
             );
 
             if (animation) animation.onfinish = () => {
-                setView(nextView);
+                const el = document.getElementById(view());
+                window.requestAnimationFrame(() => {
+                    el?.scrollIntoView({ behavior: "smooth", inline: "center" });
+                    setView(nextView);
+                });
             }
         }
     };
@@ -119,21 +126,25 @@ export function Service() {
                 <p class="panel-tabs is-justify-content-start scrollable hide_scroll">
                     <a class={classNames(["is-active", isInfo()])}
                         onClick={(e) => setViewAndFocus(e!, "detalles")}
+                        id="detalles"
                     >
                         Detalles
                     </a>
                     <a class={classNames(["is-active", isContact()])}
                         onClick={(e) => setViewAndFocus(e!, "contacto")}
+                        id="contacto"
                     >
                         Contacto
                     </a>
                     <a class={classNames(["is-active", isSupplies()])}
                         onClick={(e) => setViewAndFocus(e!, "suministros")}
+                        id="suministros"
                     >
                         Suministros
                     </a>
                     <a class={classNames(["is-active", isReport()])}
                         onClick={(e) => setViewAndFocus(e!, "reporte")}
+                        id="reporte"
                     >
                         Reporte
                     </a>
