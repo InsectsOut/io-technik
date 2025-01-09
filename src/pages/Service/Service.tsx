@@ -79,12 +79,16 @@ export function Service() {
             ? currentTab + 1
             : currentTab - 1;
 
-        const nextView = tabOrder.at(nextTab);
+        const nextView = tabOrder[nextTab];
+        const transformEnd = direction === "left"
+            ? "translateX(-100%)"
+            : "translateX(100%)";
+
         if (nextView) {
             const animation = tabContainer?.animate(
                 [
-                    { transform: 'translateX(0)', opacity: 1 }, // Starting state
-                    { transform: 'translateX(-100%)', opacity: 0 }, // Ending state
+                    { transform: "translateX(0)", opacity: 1 }, // Starting state
+                    { transform: transformEnd, opacity: 0 }, // Ending state
                 ],
                 {
                     duration: 250, // Duration in ms

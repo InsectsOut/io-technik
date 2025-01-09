@@ -6,7 +6,7 @@ import { getSimpleUnit } from "../Service.utils";
 import { supabase, Tables } from "@/supabase";
 import { Modal } from "@/components";
 
-import css from "./Service.module.css"
+import css from "../Service.module.css"
 
 type SuppliesDetails = {
     registros: Array<Tables<"RegistroAplicacion"> & {
