@@ -30,7 +30,7 @@ export function Modal(p: ModalProps) {
                     "max-width": "95vw",
                 }}
             >
-                <div class="box">
+                <div class="box is-flex is-flex-direction-column">
                     {p.children}
                 </div>
             </div>

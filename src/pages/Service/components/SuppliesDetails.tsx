@@ -2,7 +2,7 @@ import { destructure } from "@solid-primitives/destructure";
 import { createSignal, For, onCleanup, onMount } from "solid-js";
 
 import { classNames, DeviceType, deviceType } from "@/utils";
-import { getSimpleUnit } from "./Service.utils";
+import { getSimpleUnit } from "../Service.utils";
 import { supabase, Tables } from "@/supabase";
 import { Modal } from "@/components";
 

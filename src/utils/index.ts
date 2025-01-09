@@ -1,6 +1,8 @@
+export * from "./Animations"
+export * from "./Constants";
 export * from "./CssHelpers";
 export * from "./DeviceType";
-export * from "./Constants";
+export * from "./Touch";
 
 /** Image file extension */
 export type ImgFile = {
