@@ -48,14 +48,14 @@ export default defineConfig({
         screenshots: [
           {
             label: "Login page for io-technik",
-            src: "/public/screenshot-pwa.png",
+            src: "screenshot-pwa.png",
             form_factor: "wide",
             type: "image/png",
             sizes: "444x763"
           },
           {
             label: "Login page for io-technik",
-            src: "/public/screenshot-pwa.png",
+            src: "screenshot-pwa.png",
             form_factor: "narrow",
             type: "image/png",
             sizes: "444x763"
@@ -64,17 +64,17 @@ export default defineConfig({
 
         icons: [
           {
-            src: "/public/icon-192x192.png",
+            src: "icon-192x192.png",
             type: "image/png",
             sizes: "192x192",
           },
           {
-            src: "/public/icon-512x512.png",
+            src: "icon-512x512.png",
             type: "image/png",
             sizes: "512x512",
           },
           {
-            src: "/public/favicon-gear.svg",
+            src: "favicon-gear.svg",
             type: "image/svg+xml",
             sizes: "any",
           }
