@@ -246,11 +246,11 @@ export function Home() {
 }
 
 function HomeActions({ service }: { service: Service }): JSX.Element {
-  const { ubicacion, folio, Clientes } = service;
+  const { folio, Clientes, Direcciones: dir } = service;
   const mapClasses = classNames(
     "fas fa-lg",
-    ubicacion ? "fa-map-pin" : "fa-ban",
-    ubicacion ? "has-text-danger" : "has-text-grey"
+    dir?.ubicacion ? "fa-map-pin" : "fa-ban",
+    dir?.ubicacion ? "has-text-danger" : "has-text-grey"
   );
 
   return (
@@ -268,13 +268,13 @@ function HomeActions({ service }: { service: Service }): JSX.Element {
           </span>
         </a>
 
-        <a classList={{ "disabled": !ubicacion }} rel="noopener" title="Ubicación" target="_blank" href={ubicacion ?? "#"}>
+        <a classList={{ "disabled": !dir?.ubicacion }} rel="noopener" title="Ubicación" target="_blank" href={dir?.ubicacion!}>
           <span class="icon is-left">
             <i class={mapClasses} aria-hidden="true" />
           </span>
         </a>
 
-        <a title="Compartir" href="#" onClick={() => Share(service)}>
+        <a title="Compartir" href="" onClick={() => Share(service)}>
           <span class="icon is-left">
             <i class="fas fa-share-nodes fa-lg" aria-hidden="true" />
           </span>

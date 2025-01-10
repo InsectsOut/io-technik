@@ -245,7 +245,6 @@ export function Service() {
                             <ContactDetails
                                 responsable={servicio.data?.Responsables!}
                                 direccion={servicio.data?.Direcciones!}
-                                ubicacion={servicio.data?.ubicacion!}
                             />
                         </Match>
 

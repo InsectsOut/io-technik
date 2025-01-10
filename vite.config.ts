@@ -39,9 +39,46 @@ export default defineConfig({
         name: 'io-technik',
         short_name: 'io-technik',
         description: 'Registra tus servicios de Insects Out',
+        background_color: "#69748c",
         theme_color: '#69748c',
         start_url: "/login",
-        lang: "es"
+        lang: "es",
+        id: "/",
+        
+        screenshots: [
+          {
+            label: "Login page for io-technik",
+            src: "/public/screenshot-pwa.png",
+            form_factor: "wide",
+            type: "image/png",
+            sizes: "444x763"
+          },
+          {
+            label: "Login page for io-technik",
+            src: "/public/screenshot-pwa.png",
+            form_factor: "narrow",
+            type: "image/png",
+            sizes: "444x763"
+          }
+        ],
+
+        icons: [
+          {
+            src: "/public/icon-192x192.png",
+            type: "image/png",
+            sizes: "192x192",
+          },
+          {
+            src: "/public/icon-512x512.png",
+            type: "image/png",
+            sizes: "512x512",
+          },
+          {
+            src: "/public/favicon-gear.svg",
+            type: "image/svg+xml",
+            sizes: "any",
+          }
+        ]
       },
 
       workbox: {

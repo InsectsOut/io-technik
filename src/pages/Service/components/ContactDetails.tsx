@@ -8,7 +8,6 @@ import css from "../Service.module.css";
 type ContactProps = {
     responsable?: Tables<"Responsables">,
     direccion?: Tables<"Direcciones">,
-    ubicacion?: string
 }
 
 export function ContactDetails(props: ContactProps) {
@@ -71,7 +70,7 @@ export function ContactDetails(props: ContactProps) {
 
                     <label class="label">Teléfono</label>
                     <p class="control has-icons-left">
-                        <a class="input" type="phone" href={`tel:${telefono() ?? ""}`}>
+                        <a class="input" type="phone" href={`tel:${telefono()}`}>
                             {telefono() ?? ""}
                         </a>
                         <span class="icon is-small is-left">
@@ -85,8 +84,8 @@ export function ContactDetails(props: ContactProps) {
                 <label class="label">Dirección</label>
                 <p class="control has-icons-left">
                     <a class={classNames("input", css.full_height)}
-                        classList={{ "disabled": !props.ubicacion }}
-                        href={props.ubicacion ?? "#"}
+                        classList={{ "disabled": !props.direccion?.ubicacion }}
+                        href={props.direccion?.ubicacion!}
                     >
                         {getDireccion(props.direccion) || "Sin dirección"}
                     </a>

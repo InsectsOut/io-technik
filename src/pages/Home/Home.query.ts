@@ -8,7 +8,7 @@ export type Service = NonNullable<QueryData<typeof query>[number]>
 /** Base service query */
 const query = IO_Database
     .from("Servicios")
-    .select(`*, Clientes(*)`)
+    .select(`*, Clientes(*), Direcciones(ubicacion)`)
     .order("horario_servicio");
 
 /**

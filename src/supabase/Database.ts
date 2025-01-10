@@ -489,7 +489,6 @@ export type Database = {
           tipo_plaga_array_id: number[] | null
           tipo_plaga_id: number | null
           tipo_servicio: string | null
-          ubicacion: string | null
           updated_at: string | null
           user_id: string | null
         }
@@ -518,7 +517,6 @@ export type Database = {
           tipo_plaga_array_id?: number[] | null
           tipo_plaga_id?: number | null
           tipo_servicio?: string | null
-          ubicacion?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -547,7 +545,6 @@ export type Database = {
           tipo_plaga_array_id?: number[] | null
           tipo_plaga_id?: number | null
           tipo_servicio?: string | null
-          ubicacion?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
