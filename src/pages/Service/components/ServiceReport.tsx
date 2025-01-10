@@ -5,14 +5,15 @@ import { createEffect, createSignal, createUniqueId, Index } from "solid-js";
 import { SuggestionPicker } from "./SuggestionPicker";
 import SignaturePad from "signature_pad";
 
-import { FrecuenciaServicio, isFrecuencia, Recomendacion } from "../Service.types";
+import { classNames, getFileExtension, ImgFile, isOk } from "@/utils";
+import { IO_Database, supabase, Tables } from "@/supabase";
+import { Modal, useToast } from "@/components";
 import { LocaleMX } from "@/constants";
 
-import { IO_Database, supabase, Tables } from "@/supabase";
-import { classNames, getFileExtension, ImgFile, isOk } from "@/utils";
+import { FrecuenciaServicio, isFrecuencia, Recomendacion } from "../Service.types";
+import { setCanSwipe } from "../Service";
 
 import css from "../Service.module.css";
-import { Modal } from "@/components";
 
 type ReportProps = {
     service?: Tables<"Servicios">
@@ -45,6 +46,7 @@ export function ServiceReport(props: ReportProps) {
     /** If the report is being saved currently */
     const [isSaving, setIsSaving] = createSignal(false);
     const [signSaved, setSignSaved] = createSignal(false);
+    const { addToast } = useToast();
 
     /** Reference for the SignaturePad WebComponent */
     let signPad: SignaturePad | undefined;
@@ -123,7 +125,7 @@ export function ServiceReport(props: ReportProps) {
         }
 
         if (signPad?.isEmpty()) {
-            return alert("Por favor agregue una firma");
+            return addToast("Por favor agregue una firma", "is-warning");
         }
 
         const dataURL = signPad!.toDataURL("image/png");
@@ -319,11 +321,14 @@ export function ServiceReport(props: ReportProps) {
                 {/* Firma del cliente en formato .png  */}
                 <div class="field io-signature">
                     <label class="label">Firma del cliente</label>
-                    <canvas width={400} height={450} style={{
-                        "border-color": signSaved() ? "orange" : "green",
-                        "border-style": "solid",
-                        "border-width": "medium"
-                    }}
+                    <canvas id="sign_canvas" width={400} height={450}
+                        onTouchStart={() => setCanSwipe(false)}
+                        onTouchEnd={() => setCanSwipe(true)}
+                        style={{
+                            "border-color": signSaved() ? "orange" : "green",
+                            "border-style": "solid",
+                            "border-width": "medium"
+                        }}
                     />
 
                     <div class="field is-grouped is-justify-content-center gapless">
@@ -362,7 +367,10 @@ export function ServiceReport(props: ReportProps) {
                     onClick={() => {
                         setIsSaving(true);
                         onReportSubmit()
-                            .then(() => setIsSaving(false))
+                            .then(() => {
+                                setIsSaving(false);
+                                addToast("Servicio guardado correctamente", "is-info");
+                            })
                             .catch(() => setIsSaving(false));
                     }}
                 >

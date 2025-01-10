@@ -3,8 +3,10 @@ import { createEffect, createSignal } from "solid-js";
 import { createMutable } from "solid-js/store";
 
 import { Buckets, ImgFile } from "@/utils";
+import { useToast } from "@/components";
 import { supabase } from "@/supabase";
 import { userProfile } from "@/state";
+
 import "./Feedback.module.css";
 
 /** Extends the `InputEvent` with its target set to an `HTMLInputElement` */
@@ -16,6 +18,7 @@ type FileInputEvent = InputEvent & {
 export function Feedback() {
     const { nombre } = destructure(userProfile()!)
     const [imgId, setImgId] = createSignal(getImgId());
+    const { addToast } = useToast();
 
     async function saveReport() {
         const { id, file } = feedbackForm.captura || {};
@@ -28,7 +31,7 @@ export function Feedback() {
             });
 
         if (result && result.error) {
-            alert("Error subiendo captura adjunta");
+            addToast("Error subiendo captura adjunta", "is-warning");
         }
 
         const insert = await supabase
@@ -42,7 +45,7 @@ export function Feedback() {
             });
 
         if (insert.error) {
-            return alert("Ha ocurrido un error cargando el reporte");
+            return addToast("Ha ocurrido un error cargando el reporte", "is-danger");
         }
 
         window.requestAnimationFrame(() => {

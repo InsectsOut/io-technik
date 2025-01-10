@@ -1,7 +1,8 @@
 import { FadeOutAnimation } from "@/utils";
-import PWABadge from './PWABadge.tsx'
-import { Navbar } from "@/components";
+import { Navbar, Toast, useToast } from "@/components";
 import { Error } from "@/pages";
+
+import PWABadge from './PWABadge.tsx'
 
 import { ErrorBoundary, createSignal, Show, ParentProps, onMount } from 'solid-js';
 import { useBeforeLeave } from '@solidjs/router';
@@ -15,6 +16,7 @@ const { animate, exit, transition } = FadeOutAnimation;
 function App(props: ParentProps) {
   /** Resets the animation state so it shows up on navigation */
   const [visible, setVisible] = createSignal(true);
+  const { toasts } = useToast();
 
   useBeforeLeave(() => {
     setVisible(false);
@@ -32,6 +34,7 @@ function App(props: ParentProps) {
 
   return (
     <>
+      <Toast toasts={toasts()} />
       <Navbar />
       <Show when={visible()}>
         <Motion.main

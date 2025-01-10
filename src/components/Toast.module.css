@@ -1,0 +1,19 @@
+.toast {
+    transform: translateX(-50%);
+    position: fixed;
+    left: 50%;
+    width: 90%;
+    z-index: 1000;
+    max-width: 400px;
+}
+
+.toast_icon {
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+}
+
+[class^='notification'] {
+    margin-bottom: 0.5rem;
+    position: relative;
+}

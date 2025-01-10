@@ -94,7 +94,7 @@ export function Service() {
                     { transform: transformEnd, opacity: 0 }, // Ending state
                 ],
                 {
-                    duration: 250, // Duration in ms
+                    duration: 300, // Duration in ms
                     easing: 'ease-in-out', // Easing function
                 }
             );
@@ -111,7 +111,7 @@ export function Service() {
 
     onMount(() => {
         if (tabContainer) {
-            const cleanup = useSwipe(tabContainer, handleTabSwipe, { threshold: 50 });
+            const cleanup = useSwipe(tabContainer, handleTabSwipe, { threshold: 80 });
             onCleanup(cleanup); // Ensure cleanup on component unmount
         }
     });

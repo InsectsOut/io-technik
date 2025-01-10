@@ -3,21 +3,24 @@ import { Auth, currentSession } from "@/supabase";
 import { useLocation, useNavigate } from "@solidjs/router";
 import { createEffect, createSignal, Show } from "solid-js";
 
-import css from "./Login.module.css";
+import { useToast } from "@/components";
 import { classNames } from "@/utils";
+
+import css from "./Login.module.css";
 
 const [email, setEmail] = createSignal("");
 const [pass, setPass] = createSignal("");
 
 export function Login() {
     const location = useLocation<{ from: string }>();
+    const { addToast } = useToast();
     const navigate = useNavigate();
 
     const signIn = (): Promise<string> => Auth
         .signIn(email(), pass())
         .then(({ data, error }) => {
             if (!data.user || error) {
-                alert("Correo o contraseña incorrecta");
+                addToast("Correo o contraseña incorrecta", "is-info");
             } else {
                 navigate("/home", { replace: true });
             }

@@ -1,10 +1,10 @@
 import { destructure } from "@solid-primitives/destructure";
-import { createSignal, For, onCleanup, onMount } from "solid-js";
+import { createSignal, For } from "solid-js";
 
 import { classNames, DeviceType, deviceType } from "@/utils";
 import { getSimpleUnit } from "../Service.utils";
+import { Modal, useToast } from "@/components";
 import { supabase, Tables } from "@/supabase";
-import { Modal } from "@/components";
 
 import css from "../Service.module.css"
 
@@ -28,20 +28,27 @@ type Supply = {
     dosis_max: string;
 }
 
+const { addToast } = useToast();
+
+/** Updates the amount of product used during a service */
 async function updateUsedProduct(item: Supply, cantidad: number) {
     if (isNaN(cantidad)) {
-        return alert("Cantidad inválida");
+        return addToast("Cantidad inválida", "is-warning");
     }
 
-    const { status } = await supabase
+    const { status, error } = await supabase
         .from("RegistroAplicacion")
         .update({ cantidad_usada: cantidad })
         .eq("id", item.id);
 
     if (status === 204) {
         document.dispatchEvent(new Event("UpdateService"));
+        addToast(
+            `Se actualizó el uso de ${item.nombre} a ${cantidad} ${item.unidad}`,
+            "is-info"
+        );
     } else {
-        alert("No se pudo actualizar la cantidad usada");
+        addToast(`Error actualizando la cantidad usada\n${error?.details}`, "is-danger");
     }
 }
 
@@ -115,10 +122,6 @@ function SupplyDetail(item: Supply) {
         }
     }
 
-    // Saves the updated supply details on Enter keydown
-    onMount(() => document.addEventListener("keydown", handleEnterKey));
-    onCleanup(() => document.addEventListener("keydown", handleEnterKey));
-
     return (
         <tr class={css.slim_pad}>
             <td class="no-pad-left">
@@ -172,7 +175,7 @@ function SupplyDetail(item: Supply) {
                 <h1 class="title" style={{ "margin-bottom": "0.5rem" }}>{item.nombre}</h1>
                 <h2>{item.registro}</h2>
 
-                <form class="scrollable hide_scroll" style={{ padding: "unset", "margin-top": "1rem" }}>
+                <form class="scrollable hide_scroll" style={{ padding: "unset", "margin-top": "1rem", height: "50vh" }} onKeyDown={handleEnterKey}>
                     <div class={classNames("field is-grouped is-flex-direction-column hide_scroll scrollable", css.io_field)}>
                         <label class="label">Presentación</label>
                         <p class="control has-icons-left">
@@ -275,31 +278,31 @@ function SupplyDetail(item: Supply) {
                         </p>
 
                     </div>
-
-                    <div class="field is-flex is-justify-content-center" style={{ gap: "5%", "margin-top": "5rem" }}>
-                        <button style={{ width: "45%" }}
-                            class="column button is-danger is-outlined"
-                            onClick={closeInfo}
-                            type="button"
-                        >
-                            <span>Cancelar</span>
-                            <span class="icon">
-                                <i class="fas fa-xmark" />
-                            </span>
-                        </button>
-
-                        <button style={{ width: "45%" }}
-                            onClick={() => updateUsedProduct(item, cantidad()).then(closeInfo)}
-                            class="column button is-success is-outlined"
-                            type="button"
-                        >
-                            <span>Guardar</span>
-                            <span class="icon">
-                                <i class="fas fa-circle-plus" />
-                            </span>
-                        </button>
-                    </div>
                 </form>
+
+                <div class="field is-flex is-justify-content-center" style={{ gap: "5%", "margin-top": "1rem" }}>
+                    <button style={{ width: "45%" }}
+                        class="column button is-danger is-outlined"
+                        onClick={closeInfo}
+                        type="button"
+                    >
+                        <span>Cancelar</span>
+                        <span class="icon">
+                            <i class="fas fa-xmark" />
+                        </span>
+                    </button>
+
+                    <button style={{ width: "45%" }}
+                        onClick={() => updateUsedProduct(item, cantidad()).then(closeInfo)}
+                        class="column button is-success is-outlined"
+                        type="button"
+                    >
+                        <span>Guardar</span>
+                        <span class="icon">
+                            <i class="fas fa-circle-plus" />
+                        </span>
+                    </button>
+                </div>
             </Modal>
         </tr>
     );

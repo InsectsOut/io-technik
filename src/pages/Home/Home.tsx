@@ -2,16 +2,18 @@ import { For, JSX, Match, Show, Suspense, Switch, createSignal } from "solid-js"
 import { createQuery } from "@tanstack/solid-query";
 
 import { Service, fetchServices } from "./Home.query";
-import { deviceType, DeviceType } from "@/utils";
+import { deviceType, DeviceType, SlideDownFadeIn } from "@/utils";
 import { Error, Pages } from "@/pages";
 import { LocaleMX } from "@/constants";
 
+import { Loading } from "@/components/";
 import { classNames } from "@/utils";
+
+import { Motion } from "solid-motionone";
 import { match } from "ts-pattern";
 import dayjs from "dayjs";
 
 import "./Home.css";
-import { Loading } from "@/components/Loading";
 
 const [date, setDate] = createSignal(dayjs());
 const [infoShown, setInfoShown] = createSignal(NaN);
@@ -212,7 +214,9 @@ export function Home() {
                               </Show>
                             </tr>
                             <Show when={infoShown() === service.id && deviceType() === DeviceType.Mobile}>
-                              <tr><HomeActions service={service} /></tr>
+                              <Motion.tr {...SlideDownFadeIn}>
+                                <HomeActions service={service} />
+                              </Motion.tr>
                             </Show>
                           </>
                         );

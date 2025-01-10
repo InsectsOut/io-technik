@@ -15,6 +15,11 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const PWABadge: Component = () => {
+  // Don't install the service worker if disabled
+  if (import.meta.env.IO_DISABLE_SW) {
+    return null;
+  }
+
   /** Intercepts the install event for the PWA */
   const [installEvent, setInstallEvent] = createSignal<BeforeInstallPromptEvent | null>(null);
 
