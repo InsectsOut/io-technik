@@ -1,10 +1,10 @@
-import { VitePWA } from 'vite-plugin-pwa';
-import { defineConfig } from 'vite'
+import { VitePWA } from "vite-plugin-pwa";
+import { defineConfig } from "vite"
 import { resolve } from "path";
 
 import purgeCss from "vite-plugin-purgecss-updated-v5";
-import devtools from 'solid-devtools/vite'
-import solid from 'vite-plugin-solid'
+import devtools from "solid-devtools/vite"
+import solid from "vite-plugin-solid"
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -36,62 +36,62 @@ export default defineConfig({
       },
 
       manifest: {
-        name: 'io-technik',
-        short_name: 'io-technik',
-        description: 'Registra tus servicios de Insects Out',
-        background_color: "#69748c",
-        theme_color: '#69748c',
+        name: "io-technik",
+        short_name: "io-technik",
+        description: "Registra tus servicios de Insects Out",
+        background_color: "#434784",
+        theme_color: "transparent",
         start_url: "/login",
         lang: "es",
         id: "/",
         
         screenshots: [
           {
-            label: "Login page for io-technik",
-            src: "screenshot-pwa.png",
+            label: "Desktop layout io-technik",
+            src: "screenshot-pwa-pc.png",
             form_factor: "wide",
             type: "image/png",
-            sizes: "444x763"
+            sizes: "876x664"
           },
           {
-            label: "Login page for io-technik",
-            src: "screenshot-pwa.png",
+            label: "Mobile layout io-technik",
+            src: "screenshot-pwa-mobile.png",
             form_factor: "narrow",
             type: "image/png",
-            sizes: "444x763"
+            sizes: "970x704"
           }
         ],
 
-        icons: [
-          {
-            src: "icon-192x192.png",
-            type: "image/png",
-            sizes: "192x192",
-          },
-          {
-            src: "icon-512x512.png",
-            type: "image/png",
-            sizes: "512x512",
-          },
-          {
-            src: "favicon-gear.svg",
-            type: "image/svg+xml",
-            sizes: "any",
-          }
-        ]
+        // icons: [
+        //   {
+        //     src: "icon-192x192.png",
+        //     type: "image/png",
+        //     sizes: "192x192",
+        //   },
+        //   {
+        //     src: "icon-512x512.png",
+        //     type: "image/png",
+        //     sizes: "512x512",
+        //   },
+        //   {
+        //     src: "favicon-gear.svg",
+        //     type: "image/svg+xml",
+        //     sizes: "any",
+        //   }
+        // ]
       },
 
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
+        globPatterns: ["**/*.{js,css,html,svg,png,ico}"],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
       },
 
       devOptions: {
         enabled: true,
-        navigateFallback: 'index.html',
+        navigateFallback: "index.html",
         suppressWarnings: true,
-        type: 'module',
+        type: "module",
       },
     })
   ],
