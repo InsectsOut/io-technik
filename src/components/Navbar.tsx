@@ -6,6 +6,7 @@ import { A, useBeforeLeave } from "@solidjs/router";
 import { Auth, currentSession } from "@/supabase";
 import { userProfile } from "@/state/Profile";
 import { Pages } from "@/pages";
+import { AiFillHome } from "solid-icons/ai";
 
 export function Navbar() {
     const [isMenuActive, setMenuActive] = createSignal(false);
@@ -39,7 +40,7 @@ export function Navbar() {
                 <div class="navbar-brand">
                     <A href={Pages.Home} class="panel-block is-active has-text-link no-padding">
                         <span class="panel-icon">
-                            <i class="fas fa-home" aria-hidden="true" />
+                            <AiFillHome class="is-size-5" />
                         </span>
                         insects-out
                     </A>

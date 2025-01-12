@@ -4,6 +4,7 @@ import { classNames } from "@/utils";
 import { Show } from "solid-js";
 
 import css from "../Service.module.css";
+import { FaSolidAddressCard, FaSolidBriefcase, FaSolidEnvelope, FaSolidLocationDot, FaSolidPhoneFlip } from "solid-icons/fa";
 
 type ContactProps = {
     responsable?: Tables<"Responsables">,
@@ -43,7 +44,7 @@ export function ContactDetails(props: ContactProps) {
                 <p class="control has-icons-left">
                     <input disabled class="input" type="text" value={nombre() || "Sin información"} />
                     <span class="icon is-medium is-left">
-                        <i class="fas fa-address-card has-text-info" />
+                        <FaSolidAddressCard class="has-text-info" />
                     </span>
                 </p>
 
@@ -51,7 +52,7 @@ export function ContactDetails(props: ContactProps) {
                 <p class="control has-icons-left">
                     <input disabled class="input" value={puesto() || "Sin información"} />
                     <span class="icon is-medium is-left">
-                        <i class="fas fa-briefcase is-brown" />
+                        <FaSolidBriefcase class="is-brown" />
                     </span>
                 </p>
             </div>
@@ -64,7 +65,7 @@ export function ContactDetails(props: ContactProps) {
                             {email()}
                         </a>
                         <span class="icon is-small is-left">
-                            <i class="fas fa-envelope has-text-warning" />
+                            <FaSolidEnvelope class="has-text-warning" />
                         </span>
                     </p>
 
@@ -74,7 +75,7 @@ export function ContactDetails(props: ContactProps) {
                             {telefono() ?? ""}
                         </a>
                         <span class="icon is-small is-left">
-                            <i class="fas fa-phone has-text-success" />
+                            <FaSolidPhoneFlip class="has-text-success" />
                         </span>
                     </p>
                 </Show>
@@ -90,7 +91,7 @@ export function ContactDetails(props: ContactProps) {
                         {getDireccion(props.direccion) || "Sin dirección"}
                     </a>
                     <span class="icon is-medium is-left">
-                        <i class="fas fa-location-dot has-text-danger" />
+                        <FaSolidLocationDot class="has-text-danger" />
                     </span>
                 </p>
             </div>

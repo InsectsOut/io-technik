@@ -3,6 +3,7 @@ import { classNames, SlideDownFadeIn } from "@/utils";
 import { Motion } from "solid-motionone";
 
 import css from "./Toast.module.css";
+import { TiTimes } from "solid-icons/ti";
 
 export type ToastData = { id: string; message: string; type: string };
 export type ToastType = "is-primary" | "is-link" | "is-info" | "is-success" | "is-warning" | "is-danger";
@@ -52,7 +53,7 @@ export function Toast(p: { toasts: ToastData[] }) {
                             onClick={() => removeToast(toast.id)}
                             title="Cerrar"
                         >
-                            <i class="fas fa-times" />
+                            <TiTimes class="is-size-5" />
                         </span>
                     </Motion.div>
                 )}

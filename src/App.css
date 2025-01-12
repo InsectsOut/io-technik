@@ -1,7 +1,7 @@
 #root {
   width: 100%;
   height: 100vh;
-  padding: 1rem;
+  padding: 0 0.5rem;
 }
 
 main {
@@ -36,4 +36,61 @@ main {
 
 .no-pad-right {
   padding-right: unset !important;
+}
+
+.fullwidth {
+  width: 100%;
+}
+
+.gap-0 {
+  gap: 0 !important;
+}
+
+.gap-1 {
+  gap: 0.25rem !important;
+}
+
+.gap-2 {
+  gap: 0.5rem !important;
+}
+
+.gap-3 {
+  gap: 1rem !important;
+}
+
+.gap-4 {
+  gap: 1.5rem !important;
+}
+
+.gap-5 {
+  gap: 2rem !important;
+}
+
+.gap-6 {
+  gap: 3rem !important;
+}
+
+/* Vertical alignment helpers */
+.text-top {
+  vertical-align: top !important;
+}
+
+.text-middle {
+  vertical-align: middle !important;
+}
+
+.text-bottom {
+  vertical-align: bottom !important;
+}
+
+.text-baseline {
+  vertical-align: baseline !important;
+}
+
+.text-sub {
+  vertical-align: sub !important;
+}
+
+.text-super {
+  vertical-align: super !important;
 }

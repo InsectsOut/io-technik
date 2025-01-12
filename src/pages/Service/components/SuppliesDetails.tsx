@@ -7,6 +7,9 @@ import { Modal, useToast } from "@/components";
 import { supabase, Tables } from "@/supabase";
 
 import css from "../Service.module.css"
+import { BsPencilSquare } from "solid-icons/bs";
+import { FaSolidArrowDown, FaSolidArrowUp, FaSolidBoxesPacking, FaSolidCirclePlus, FaSolidFill, FaSolidFillDrip, FaSolidFlaskVial, FaSolidMinus, FaSolidPlus, FaSolidVestPatches, FaSolidXmark } from "solid-icons/fa";
+import { match } from "ts-pattern";
 
 type SuppliesDetails = {
     registros: Array<Tables<"RegistroAplicacion"> & {
@@ -140,33 +143,19 @@ function SupplyDetail(item: Supply) {
                 <div>Usado: {item.cantidad_usada} {simpleUnit()}</div>
             </td>
 
-            <td style={{ "text-align-last": "center", "vertical-align": "baseline" }}>
+            <td class="text-baselines" style={{ "text-align-last": "center" }}>
                 <span class="is-block">{delta()} {simpleUnit()}</span>
                 <span class="icon is-right is-pointer">
-                    <i aria-hidden="true"
-                        class={classNames("fas fa-lg is-inline",
-                            ["fa-arrow-up has-text-danger", delta() > 0],
-                            ["fa-arrow-down has-text-success", delta() < 0]
-                        )}
-                    />
-                    <i aria-hidden="true"
-                        class={classNames("fas fa-lg is-inline",
-                            ["fa-arrow-up has-text-danger", delta() > 0],
-                            ["fa-arrow-down has-text-success", delta() < 0]
-                        )}
-                    />
-                    <i aria-hidden="true"
-                        class={classNames("fas fa-lg is-inline",
-                            ["fa-arrow-up has-text-danger", delta() > 0],
-                            ["fa-arrow-down has-text-success", delta() < 0]
-                        )}
-                    />
+                    {match(delta())
+                        .when(d => d < 0, () => <FaSolidArrowDown class="has-text-danger" aria-hidden="true" />)
+                        .when(d => d > 0, () => <FaSolidArrowUp class="has-text-success" aria-hidden="true" />)
+                        .otherwise(() => null)}
                 </span>
             </td>
             <td class="no-pad-right" style={{ "text-align-last": "center", "vertical-align": "baseline" }}>
                 <div title="Editar" onClick={() => setShowInfo(true)}>
                     <span class="icon is-left is-pointer">
-                        <i class="fas fa-pen-to-square fa-lg has-text-warning" aria-hidden="true" />
+                        <BsPencilSquare class="has-text-warning is-size-4" aria-hidden="true" />
                     </span>
                 </div>
             </td>
@@ -185,7 +174,7 @@ function SupplyDetail(item: Supply) {
                                 type="text"
                             />
                             <span class="icon is-medium is-left">
-                                <i class="fas fa-boxes-packing" />
+                                <FaSolidBoxesPacking class="is-size-5" />
                             </span>
                         </p>
 
@@ -197,7 +186,7 @@ function SupplyDetail(item: Supply) {
                                 type="text"
                             />
                             <span class="icon is-medium is-left">
-                                <i class="fas fa-flask-vial has-text-warning" />
+                                <FaSolidFlaskVial class="has-text-warning is-size-5" />
                             </span>
                         </p>
                     </div>
@@ -211,7 +200,7 @@ function SupplyDetail(item: Supply) {
                                 type="text"
                             />
                             <span class="icon is-medium is-left">
-                                <i class="fas fa-minus has-text-danger" />
+                                <FaSolidMinus class="has-text-danger is-size-5" />
                             </span>
                         </p>
 
@@ -223,7 +212,7 @@ function SupplyDetail(item: Supply) {
                                 type="text"
                             />
                             <span class="icon is-medium is-left">
-                                <i class="fas fa-plus has-text-success" />
+                                <FaSolidPlus class="has-text-success is-size-5" />
                             </span>
                         </p>
 
@@ -241,7 +230,7 @@ function SupplyDetail(item: Supply) {
                                 type="text"
                             />
                             <span class="icon is-medium is-left">
-                                <i class="fas fa-vest-patches has-text-warning" />
+                                <FaSolidVestPatches class="has-text-warning is-size-5" />
                             </span>
                         </p>
 
@@ -253,7 +242,7 @@ function SupplyDetail(item: Supply) {
                                 type="number"
                             />
                             <span class="icon is-medium is-left">
-                                <i class="fas fa-fill has-text-info" />
+                                <FaSolidFill class="has-text-info is-size-5" />
                             </span>
                             <span class={css.units}>
                                 {simpleUnit()}
@@ -270,7 +259,7 @@ function SupplyDetail(item: Supply) {
                                 min={0}
                             />
                             <span class="icon is-medium is-left">
-                                <i class="fas fa-fill-drip has-text-danger" />
+                                <FaSolidFillDrip class="has-text-danger is-size-5" />
                             </span>
                             <span class={css.units}>
                                 {simpleUnit()}
@@ -286,9 +275,9 @@ function SupplyDetail(item: Supply) {
                         onClick={closeInfo}
                         type="button"
                     >
-                        <span>Cancelar</span>
+                        <span class="text-top">Cancelar</span>
                         <span class="icon">
-                            <i class="fas fa-xmark" />
+                            <FaSolidXmark />
                         </span>
                     </button>
 
@@ -297,9 +286,9 @@ function SupplyDetail(item: Supply) {
                         class="column button is-success is-outlined"
                         type="button"
                     >
-                        <span>Guardar</span>
+                        <span class="text-top">Guardar</span>
                         <span class="icon">
-                            <i class="fas fa-circle-plus" />
+                            <FaSolidCirclePlus />
                         </span>
                     </button>
                 </div>

@@ -7,13 +7,15 @@ import { Error, Pages } from "@/pages";
 import { LocaleMX } from "@/constants";
 
 import { Loading } from "@/components/";
-import { classNames } from "@/utils";
 
 import { Motion } from "solid-motionone";
 import { match } from "ts-pattern";
 import dayjs from "dayjs";
 
 import "./Home.css";
+import { FaSolidBan, FaSolidCheck, FaSolidChevronLeft, FaSolidChevronRight, FaSolidCircleInfo, FaSolidMapPin, FaSolidPhoneFlip, FaSolidXmark } from "solid-icons/fa";
+import { TbProgressAlert, TbSearch } from "solid-icons/tb";
+import { FiSend } from "solid-icons/fi";
 
 const [date, setDate] = createSignal(dayjs());
 const [infoShown, setInfoShown] = createSignal(NaN);
@@ -27,16 +29,14 @@ function toggleShownService(service: Service) {
 }
 
 function getStatusIcon(service: Service) {
-  const icon = match(service)
-    .with({ realizado: true }, () => "fa-check has-text-primary")
-    .with({ cancelado: true }, () => "fa-xmark has-text-danger")
-    .otherwise(() => "fa-hourglass-half has-text-warning");
-
-  const iconClass = classNames("fas fa-lg", icon);
+  const StatusIcon = match(service)
+    .with({ realizado: true }, () => <FaSolidCheck class="has-text-primary is-size-4" />)
+    .with({ cancelado: true }, () => <FaSolidXmark class="has-text-danger is-size-4" />)
+    .otherwise(() => <TbProgressAlert class="has-text-warning is-size-4" />);
 
   return (
     <span class="icon is-left">
-      <i class={iconClass} aria-hidden="true" />
+      {StatusIcon}
     </span>
   );
 }
@@ -131,7 +131,7 @@ export function Home() {
                   type="text"
                 />
                 <span class="icon is-left">
-                  <i class="fas fa-search" aria-hidden="true" />
+                  <TbSearch aria-hidden="true" class="is-size-4" />
                 </span>
               </p>
             </div>
@@ -142,7 +142,7 @@ export function Home() {
                   onClick={setDay(-1)}
                   class="button icon is-left"
                 >
-                  <i class="fas fa-chevron-left" aria-hidden="true" />
+                  <FaSolidChevronLeft aria-hidden="true" />
                 </button>
 
                 <a class="is-active" onClick={setDay()}>Hoy</a>
@@ -152,7 +152,7 @@ export function Home() {
                   onClick={setDay(+1)}
                   class="button icon is-left"
                 >
-                  <i class="fas fa-chevron-right" aria-hidden="true" />
+                  <FaSolidChevronRight aria-hidden="true" />
                 </button>
               </p>
 
@@ -247,36 +247,33 @@ export function Home() {
 
 function HomeActions({ service }: { service: Service }): JSX.Element {
   const { folio, Clientes, Direcciones: dir } = service;
-  const mapClasses = classNames(
-    "fas fa-lg",
-    dir?.ubicacion ? "fa-map-pin" : "fa-ban",
-    dir?.ubicacion ? "has-text-danger" : "has-text-grey"
-  );
 
   return (
     <td colSpan={4} class="icon-col">
       <div class="is-flex is-justify-content-space-around">
         <a title="Teléfono" href={`tel:${Clientes?.telefono}`}>
           <span class="icon is-left">
-            <i class="fas fa-phone-flip fa-lg has-text-primary" aria-hidden="true" />
+            <FaSolidPhoneFlip class="has-text-primary is-size-5" aria-hidden="true" />
           </span>
         </a>
 
         <a title="Información" href={`${Pages.Services}/${folio}`}>
           <span class="icon is-left">
-            <i class="fas fa-circle-info fa-lg has-text-info" aria-hidden="true" />
+            <FaSolidCircleInfo class="has-text-info is-size-5" aria-hidden="true" />
           </span>
         </a>
 
         <a classList={{ "disabled": !dir?.ubicacion }} rel="noopener" title="Ubicación" target="_blank" href={dir?.ubicacion!}>
           <span class="icon is-left">
-            <i class={mapClasses} aria-hidden="true" />
+            {dir?.ubicacion
+              ? <FaSolidMapPin class="is-size-5 has-text-danger" aria-hidden="true" />
+              : <FaSolidBan class="is-size-5 has-text-grey" aria-hidden="true" />}
           </span>
         </a>
 
         <a title="Compartir" href="" onClick={() => Share(service)}>
           <span class="icon is-left">
-            <i class="fas fa-share-nodes fa-lg" aria-hidden="true" />
+            <FiSend class="is-size-5" aria-hidden="true" />
           </span>
         </a>
       </div>

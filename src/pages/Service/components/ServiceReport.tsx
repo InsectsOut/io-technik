@@ -13,6 +13,8 @@ import { LocaleMX } from "@/constants";
 import { FrecuenciaServicio, isFrecuencia, Recomendacion } from "../Service.types";
 import { setCanSwipe } from "../Service";
 
+import { FaSolidClockRotateLeft, FaSolidCloudArrowUp, FaSolidDoorClosed, FaSolidDoorOpen } from "solid-icons/fa";
+import { FiSave } from "solid-icons/fi";
 import css from "../Service.module.css";
 
 type ReportProps = {
@@ -273,7 +275,7 @@ export function ServiceReport(props: ReportProps) {
                             type="time"
                         />
                         <span class="icon is-medium is-left">
-                            <i class="fas fa-door-open is-brown" />
+                            <FaSolidDoorOpen class="is-brown is-size-5" />
                         </span>
                     </p>
 
@@ -286,7 +288,7 @@ export function ServiceReport(props: ReportProps) {
                             type="time"
                         />
                         <span class="icon is-medium is-left">
-                            <i class="fas fa-door-closed is-brown" />
+                            <FaSolidDoorClosed class="is-brown is-size-5" />
                         </span>
                     </p>
                 </div>
@@ -300,13 +302,13 @@ export function ServiceReport(props: ReportProps) {
                                 <Index each={FrecuenciaServicio}>
                                     {(frecuencia) =>
                                         <option selected={reporte.frecuencia === frecuencia()} value={frecuencia()}>
-                                            - {frecuencia()}
+                                            {frecuencia()}
                                         </option>}
                                 </Index>
                             </select>
                         </div>
                         <div class="icon is-small is-left">
-                            <i class="fas fa-clock-rotate-left has-text-info" />
+                            <FaSolidClockRotateLeft class="is-size-5 has-text-info" />
                         </div>
                     </div>
                 </div>
@@ -351,11 +353,11 @@ export function ServiceReport(props: ReportProps) {
             </form>
 
             <Modal show={isSaving()}>
-                <span class="icon-text is-align-items-baseline has-icons-left is-flex is-justify-content-center gapless">
-                    <span class="icon is-large is-right">
-                        <i class="fas fa-save" />
+                <span class="is-flex is-justify-content-center p-2 fullwidth" style={{ gap: "0.5rem" }}>
+                    <FiSave class="is-size-4" />
+                    <span class="subtitle has-text-center">
+                        Guardando Reporte...
                     </span>
-                    <span class="subtitle has-text-center marginless">Guardando Reporte...</span>
                 </span>
 
                 <progress class="progress is-primary" style={{ margin: "auto" }} max="100" />
@@ -376,7 +378,7 @@ export function ServiceReport(props: ReportProps) {
                 >
                     <span>Guardar Reporte</span>
                     <span class="icon">
-                        <i class="fas fa-cloud-arrow-up" />
+                        <FaSolidCloudArrowUp class="is-size-5" />
                     </span>
                 </button>
             </div>

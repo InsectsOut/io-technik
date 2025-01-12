@@ -7,6 +7,7 @@ import { useToast } from "@/components";
 import { classNames } from "@/utils";
 
 import css from "./Login.module.css";
+import { FaSolidCheck, FaSolidEnvelope, FaSolidLock } from "solid-icons/fa";
 
 const [email, setEmail] = createSignal("");
 const [pass, setPass] = createSignal("");
@@ -65,10 +66,10 @@ export function Login() {
                             required={true}
                         />
                         <span class="icon is-small is-left">
-                            <i class="fas fa-envelope" />
+                            <FaSolidEnvelope />
                         </span>
                         <span class="icon is-small is-right">
-                            <i class="fas fa-check" />
+                            <FaSolidCheck />
                         </span>
                     </p>
 
@@ -81,7 +82,7 @@ export function Login() {
                             required={true}
                         />
                         <span class="icon is-small is-left">
-                            <i class="fas fa-lock" />
+                            <FaSolidLock />
                         </span>
                     </p>
 

@@ -1,7 +1,9 @@
+import { FaSolidPhoneFlip, FaSolidCircleInfo, FaSolidMapPin } from "solid-icons/fa";
 import insectsImg from "@/assets/insects-out-med.png";
-import insectsEmployee from "@/assets/insects_out_employee.png";
-import menuOptions from "@/assets/home_options.png";
+
 import { classNames } from "@/utils";
+import { FiSend } from "solid-icons/fi";
+
 import css from "./About.module.css";
 
 export function About() {
@@ -31,7 +33,7 @@ export function About() {
                 </div>
 
                 <figure class="image is-align-self-center">
-                    <img class="is-rounded" src={insectsEmployee} />
+                    <img class="is-rounded" src="/public/insects_out_employee.png" />
                 </figure>
             </section>
 
@@ -45,16 +47,16 @@ export function About() {
                         <li>
                             <p>Da click en alguno de los servicios en la tabla para abrir y cerrar las opciones extras.</p>
                             <figure class={classNames("image", css.outlined, css['pad-rounded'])} style={{ margin: "1rem 0" }}>
-                                <img src={menuOptions} />
+                                <img src="/public/home_options.png" />
                             </figure>
                         </li>
                         <li>
                             <p>Con el menú abierto las opciones disponibles son: teléfono, información, mapa y compartir.</p>
                             <ul>
-                                <li>El botón de <i class="fas fa-phone-flip fa-lg has-text-primary" aria-hidden="true" />  te lleva a la aplicación de teléfono para marcar al teléfono del contacto asignado.</li>
-                                <li>El botón de <i class="fas fa-circle-info fa-lg has-text-info" aria-hidden="true" />  te lleva a la página de detalles del servicio, donde están las pestañas de <strong>detalles, contacto y reporte de servicio</strong>.</li>
-                                <li>El botón de <i aria-hidden="true" class="fas fa-lg has-text-danger fa-map-pin" />  abre la ubicación del servicio en tu mapa, si está disponible.</li>
-                                <li>El botón de <i class="fas fa-share-nodes fa-lg has-text-warning" aria-hidden="true" />  abre el menú de compartir de tu celular para mandar una liga de servicio a otra persona.</li>
+                                <li>El botón de <FaSolidPhoneFlip class="has-text-primary is-size-5" aria-hidden="true" />  te lleva a la aplicación de teléfono para marcar al teléfono del contacto asignado.</li>
+                                <li>El botón de <FaSolidCircleInfo class="has-text-info is-size-5" aria-hidden="true" />  te lleva a la página de detalles del servicio, donde están las pestañas de <strong>detalles, contacto y reporte de servicio</strong>.</li>
+                                <li>El botón de <FaSolidMapPin class="is-size-5 has-text-danger" aria-hidden="true" />  abre la ubicación del servicio en tu mapa, si está disponible.</li>
+                                <li>El botón de <FiSend class="is-size-5" aria-hidden="true" />  abre el menú de compartir de tu celular para mandar una liga de servicio a otra persona.</li>
                             </ul>
                         </li>
                     </ol>

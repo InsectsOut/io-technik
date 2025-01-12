@@ -1,6 +1,7 @@
-import { createEffect, onCleanup, onMount, ParentProps } from "solid-js";
+import { createEffect, onCleanup, onMount, ParentProps, Show } from "solid-js";
+import { classNames, SlideDown } from "@/utils";
 import { setCanSwipe } from "@/pages";
-import { classNames } from "@/utils";
+import { Motion } from "solid-motionone";
 
 /** Props for the modal component */
 export interface ModalProps extends ParentProps {
@@ -28,13 +29,18 @@ export function Modal(p: ModalProps) {
             <div class="modal-background" title="Cerrar" onClick={p.onClose} />
             <div class="modal-content"
                 style={{
+                    overflow: "visible",
                     "max-height": "95vh",
                     "max-width": "95vw",
                 }}
             >
-                <div class="box is-flex is-flex-direction-column">
-                    {p.children}
-                </div>
+                <Show when={p.show} keyed={true}>
+                    <Motion.div class="box is-flex is-flex-direction-column p-4 is-shadowless"
+                        {...SlideDown}
+                    >
+                        {p.children}
+                    </Motion.div>
+                </Show>
             </div>
         </div>
     )

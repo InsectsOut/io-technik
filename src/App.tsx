@@ -1,17 +1,14 @@
-import { FadeOutAnimation } from "@/utils";
+import { FadeInAnimation } from "@/utils";
 import { Navbar, Toast, useToast } from "@/components";
 import { Error } from "@/pages";
 
 import PWABadge from './PWABadge.tsx'
 
-import { ErrorBoundary, createSignal, Show, ParentProps, onMount } from 'solid-js';
+import { ErrorBoundary, createSignal, Show, ParentProps } from 'solid-js';
 import { useBeforeLeave } from '@solidjs/router';
 import { Motion } from 'solid-motionone';
 
 import './App.css'
-
-// Animation options for MotionOne
-const { animate, exit, transition } = FadeOutAnimation;
 
 function App(props: ParentProps) {
   /** Resets the animation state so it shows up on navigation */
@@ -23,25 +20,12 @@ function App(props: ParentProps) {
     setVisible(true);
   });
 
-  onMount(async () => {
-    /** Mounts eruda mobile dev tools if the qsp `debug=true` is set */
-    const params = new URLSearchParams(location.search);
-    if (params.has("debug", "true")) {
-      const eruda = await import("eruda");
-      eruda.default.init({ autoScale: true });
-    }
-  });
-
   return (
     <>
       <Toast toasts={toasts()} />
       <Navbar />
-      <Show when={visible()}>
-        <Motion.main
-          transition={transition}
-          animate={animate}
-          exit={exit}
-        >
+      <Show when={visible()} keyed={true}>
+        <Motion.main {...FadeInAnimation}>
           <ErrorBoundary fallback={Error}>
             {props.children}
           </ErrorBoundary>

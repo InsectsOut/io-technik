@@ -9,6 +9,8 @@ import { AccionesRecomendadas } from "./Suggestion.constants";
 import { createQuery } from "@tanstack/solid-query";
 import { getRecomendaciones } from "./Suggestion.query";
 import { IO_Database, supabase } from "@/supabase";
+import { BsPencilSquare } from "solid-icons/bs";
+import { FaRegularEyeSlash, FaRegularImage, FaSolidBug, FaSolidCamera, FaSolidCircleInfo, FaSolidCirclePlus, FaSolidTrashCan, FaSolidUpload, FaSolidXmark } from "solid-icons/fa";
 
 /** Extends the `InputEvent` with its target set to an `HTMLInputElement` */
 type FileInputEvent = InputEvent & {
@@ -168,19 +170,19 @@ export function SuggestionPicker(props: PickerProps) {
                             </Show>
                         </td>
 
-                        <td>
+                        <td class="has-text-centered">
                             <div title="Editar" onClick={() => editSugerencia(index)}>
-                                <span class="icon is-left" style={{ cursor: "pointer" }}>
-                                    <i class="fas fa-edit fa-lg has-text-warning" aria-hidden="true" />
+                                <span class="icon is-left is-clickable">
+                                    <BsPencilSquare class="is-size-4 has-text-warning" aria-hidden="true" />
                                 </span>
                             </div>
 
                         </td>
 
-                        <td>
+                        <td class="has-text-centered">
                             <div title="Borrar" onClick={() => deleteSuggestion(index)}>
-                                <span class="icon is-left" style={{ cursor: "pointer" }}>
-                                    <i class="fas fa-trash-can fa-lg has-text-danger" aria-hidden="true" />
+                                <span class="icon is-left is-clickable">
+                                    <FaSolidTrashCan class="is-size-5 has-text-danger" aria-hidden="true" />
                                 </span>
                             </div>
                         </td>
@@ -191,26 +193,24 @@ export function SuggestionPicker(props: PickerProps) {
                     <tr>
                         <td colSpan={3}>
                             <div class="is-flex is-justify-content-space-around">
-                                <div title="Editar" onClick={() => editSugerencia(index)}>
-                                    <span class="icon is-left" style={{ cursor: "pointer" }}>
-                                        <i class="fas fa-edit fa-lg has-text-warning" aria-hidden="true" />
+                                <div title="Editar" onClick={() => editSugerencia(index)} tabIndex={0}>
+                                    <span class="icon is-left is-clickable" aria-label="Editar">
+                                        <BsPencilSquare class="is-size-4 has-text-warning" />
                                     </span>
                                 </div>
 
-                                <div title="Borrar" onClick={() => deleteSuggestion(index)}>
-                                    <span class="icon is-left" style={{ cursor: "pointer" }}>
-                                        <i class="fas fa-trash-can fa-lg has-text-danger" aria-hidden="true" />
+                                <div title="Borrar" onClick={() => deleteSuggestion(index)} tabIndex={0}>
+                                    <span class="icon is-left is-clickable" aria-label="Borrar">
+                                        <FaSolidTrashCan class="is-size-5 has-text-danger" />
                                     </span>
                                 </div>
 
-                                <div title="Foto" onClick={() => setShowPreview(true)}>
-                                    <span class="icon is-left" style={{ cursor: "pointer" }}>
-                                        <i class={classNames("fas fa-lg",
-                                            entry.imagen ? "fa-image" : "fa-eye-slash",
-                                            entry.imagen ? "has-text-info" : "has-text-grey"
-                                        )}
-                                            aria-hidden="true"
-                                        />
+                                <div title="Foto" onClick={() => setShowPreview(true)} tabIndex={0}>
+                                    <span class="icon is-left is-clickable" aria-label="Imagen">
+                                        {entry.imagen
+                                            ? <FaRegularImage class="has-text-info is-size-4" />
+                                            : <FaRegularEyeSlash class="has-text-grey is-size-4" />
+                                        }
                                     </span>
                                 </div>
                             </div>
@@ -353,11 +353,11 @@ export function SuggestionPicker(props: PickerProps) {
             }}>
                 <form class="form fixed-grid has-3-cols marginless paddingless" style={{ height: "auto" }}>
                     <div class="is-flex is-justify-content-space-between">
-                        <h2 class="subtitle" style={{ "padding-left": 0 }}>
+                        <h2 class="subtitle pl-0">
                             Nueva Recomendación
                         </h2>
                         <span class="icon is-left">
-                            <i class="fas fa-edit fa-lg has-text-info" aria-hidden="true" />
+                            <BsPencilSquare class="is-size-4 has-text-info" aria-hidden="true" />
                         </span>
                     </div>
 
@@ -368,7 +368,7 @@ export function SuggestionPicker(props: PickerProps) {
                                 <input onInput={handleFileUpload} multiple={false} class="file-input" type="file" accept="image/*" />
                                 <span class="file-cta" style={{ "border-radius": report.imagen ? undefined : "6px" }}>
                                     <span class="file-icon">
-                                        <i class="fas fa-upload" />
+                                        <FaSolidUpload class="is-size-5" />
                                     </span>
                                     <span class="file-label">
                                         Elige una fotografía
@@ -377,11 +377,11 @@ export function SuggestionPicker(props: PickerProps) {
 
                                 <Show when={report.imagen}>
                                     <span style={{ "min-width": "100%" }} class="file-name">
-                                        <div style={{ display: "flex", "align-items": "baseline" }}>
+                                        <div class="is-flex is-align-items-baseline">
                                             <span class="icon is-left">
-                                                <i class="fas fa-camera fa-md has-text-info" aria-hidden="true" />
+                                                <FaSolidCamera class="has-text-info is-size-5" aria-hidden="true" />
                                             </span>
-                                            <span>{report.imagen?.id}.{report.imagen?.extension}</span>
+                                            <span class="m-auto">{report.imagen?.id}.{report.imagen?.extension}</span>
                                         </div>
                                     </span>
                                 </Show>
@@ -401,7 +401,7 @@ export function SuggestionPicker(props: PickerProps) {
                                     rows={4}
                                 />
                                 <span class="icon is-medium is-left">
-                                    <i class="fas fa-info-circle has-text-warning" />
+                                    <FaSolidCircleInfo class="has-text-warning" />
                                 </span>
                             </p>
                         </div>
@@ -428,38 +428,36 @@ export function SuggestionPicker(props: PickerProps) {
                                 </div>
                                 <Show when={isWideScreen()}>
                                     <div class="icon is-small is-left">
-                                        <i class="fas fa-bug" />
+                                        <FaSolidBug />
                                     </div>
                                 </Show>
                             </div>
                         </div>
 
-                        <div class="field is-flex is-justify-content-center" style={{ gap: "5%", "margin-top": "5rem" }}>
-                            <button style={{ width: "45%" }}
+                        <div class="field is-flex is-justify-content-center gap-3" style={{ "margin-top": "4rem" }}>
+                            <button type="button"
                                 onClick={() => {
                                     picker.showModal = false;
                                     clearReportForm();
                                 }}
                                 class="column button is-danger is-outlined"
-                                type="button"
                             >
-                                <span>Cancelar</span>
+                                <span class="text-top">Cancelar</span>
                                 <span class="icon">
-                                    <i class="fas fa-xmark" />
+                                    <FaSolidXmark />
                                 </span>
                             </button>
 
-                            <button style={{ width: "45%" }}
+                            <button type="button"
                                 class="column button is-success is-outlined"
-                                type="button"
                                 onClick={() => {
                                     picker.showModal = false;
                                     saveReport();
                                 }}
                             >
-                                <span>Guardar</span>
+                                <span class="text-top">Guardar</span>
                                 <span class="icon">
-                                    <i class="fas fa-circle-plus" />
+                                    <FaSolidCirclePlus />
                                 </span>
                             </button>
                         </div>
@@ -498,7 +496,7 @@ export function SuggestionPicker(props: PickerProps) {
                     <button type="button" class="button is-fullwidth" onClick={() => picker.showModal = true}>
                         <span>Nueva recomendación</span>
                         <span class="icon">
-                            <i class="fas fa-circle-plus" />
+                            <FaSolidCirclePlus />
                         </span>
                     </button>
                 </div>

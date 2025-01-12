@@ -2,6 +2,7 @@ import { destructure } from "@solid-primitives/destructure";
 import { createEffect, createSignal } from "solid-js";
 import { createMutable } from "solid-js/store";
 
+import { FaSolidUpload } from "solid-icons/fa";
 import { Buckets, ImgFile } from "@/utils";
 import { useToast } from "@/components";
 import { supabase } from "@/supabase";
@@ -142,7 +143,7 @@ export function Feedback() {
                         <input class="file-input" type="file" name="resume" onInput={handleImgUpload} multiple={false} />
                         <span class="file-cta file-btn">
                             <span class="file-icon">
-                                <i class="fas fa-upload" />
+                                <FaSolidUpload />
                             </span>
                             <span class="file-label"> Agrega una captura </span>
                         </span>

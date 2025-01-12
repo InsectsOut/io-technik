@@ -7,7 +7,7 @@ import { Loading } from "@/components/Loading";
 import { Tables } from "@/supabase";
 
 import { ContactDetails, SuppliesDetails, ServiceReport } from "./components/";
-import { classNames, FadeOutAnimation, useSwipe } from "@/utils";
+import { classNames, FadeInAnimation, useSwipe } from "@/utils";
 import { getLocalTime } from "@/utils/Date";
 import { Tabs } from "./Service.types";
 import { Error, Pages } from "..";
@@ -17,6 +17,19 @@ import { match } from "ts-pattern";
 
 import css from "./Service.module.css";
 import { tabOrder } from "./Service.utils";
+
+// Font Awesome Icons
+import {
+    FaSolidCalendarDays,
+    FaSolidCircleQuestion,
+    FaSolidClock,
+    FaSolidClockRotateLeft,
+    FaSolidFilePen,
+    FaSolidHashtag,
+    FaSolidUser,
+    FaSolidWarehouse
+} from "solid-icons/fa";
+
 
 /** Tracks if the service component can use swipe gestures */
 export const [canSwipe, setCanSwipe] = createSignal(true);
@@ -62,11 +75,22 @@ export function Service() {
     }
 
     /** Sets the provided tab as the current view and scrolls to it */
-    function setViewAndFocus(e: Event, tab: Tabs) {
+    function setViewAndFocus(e: Event | KeyboardEvent) {
+        if (e instanceof KeyboardEvent && e.key !== " " && e.key !== "Enter") {
+            return;
+        }
+
         const el = e.target instanceof HTMLElement ? e.target : null;
+        const nextTab = el?.id as Tabs;
+
+        const currViewIndex = tabOrder.findIndex(t => t === view());
+        const nextViewIndex = tabOrder.findIndex(t => t == nextTab);
+        const direction = currViewIndex < nextViewIndex ? "left" : "right";
+        const nextView = tabOrder[nextViewIndex];
+
         window.requestAnimationFrame(() => {
             el?.scrollIntoView({ behavior: "smooth" });
-            setView(tab);
+            animateViewChange(direction, nextView);
         });
     }
 
@@ -83,6 +107,11 @@ export function Service() {
             : currentTab - 1;
 
         const nextView = tabOrder[nextTab];
+        animateViewChange(direction, nextView);
+    };
+
+    /** Animates switching between the different service views */
+    function animateViewChange(direction: "left" | "right", nextView: Tabs) {
         const transformEnd = direction === "left"
             ? "translateX(-100%)"
             : "translateX(100%)";
@@ -107,7 +136,7 @@ export function Service() {
                 });
             }
         }
-    };
+    }
 
     onMount(() => {
         if (tabContainer) {
@@ -125,35 +154,43 @@ export function Service() {
 
                 <p class="panel-tabs is-justify-content-start scrollable hide_scroll">
                     <a class={classNames(["is-active", isInfo()])}
-                        onClick={(e) => setViewAndFocus(e!, "detalles")}
+                        onKeyDown={setViewAndFocus}
+                        onClick={setViewAndFocus}
                         id="detalles"
+                        tabindex={0}
                     >
                         Detalles
                     </a>
                     <a class={classNames(["is-active", isContact()])}
-                        onClick={(e) => setViewAndFocus(e!, "contacto")}
+                        onKeyDown={setViewAndFocus}
+                        onClick={setViewAndFocus}
                         id="contacto"
+                        tabindex={0}
                     >
                         Contacto
                     </a>
                     <a class={classNames(["is-active", isSupplies()])}
-                        onClick={(e) => setViewAndFocus(e!, "suministros")}
+                        onKeyDown={setViewAndFocus}
+                        onClick={setViewAndFocus}
                         id="suministros"
+                        tabindex={0}
                     >
                         Suministros
                     </a>
                     <a class={classNames(["is-active", isReport()])}
-                        onClick={(e) => setViewAndFocus(e!, "reporte")}
+                        onKeyDown={setViewAndFocus}
+                        onClick={setViewAndFocus}
                         id="reporte"
+                        tabindex={0}
                     >
                         Reporte
                     </a>
                 </p>
 
                 <Motion.template ref={tabContainer!} style={{ display: "block" }}
-                    transition={FadeOutAnimation.transition}
-                    animate={FadeOutAnimation.animate}
-                    exit={FadeOutAnimation.exit}
+                    transition={FadeInAnimation.transition}
+                    animate={FadeInAnimation.animate}
+                    exit={FadeInAnimation.exit}
                     id={view()}
                 >
                     <Switch>
@@ -168,13 +205,13 @@ export function Service() {
                                     <p class="control has-icons-left">
                                         <input disabled class="input has-text-link" type="text" value={`Folio: ${servicio.data?.folio}`} />
                                         <span class="icon is-medium is-left">
-                                            <i class="fas fa-hashtag has-text-link" />
+                                            <FaSolidHashtag class="has-text-link" />
                                         </span>
                                     </p>
                                     <p class="control has-icons-left">
                                         <input disabled class="input" value={getClientName(servicio.data?.Clientes!)} />
                                         <span class="icon is-small is-left">
-                                            <i class="fas fa-user" />
+                                            <FaSolidUser />
                                         </span>
                                     </p>
                                 </div>
@@ -184,14 +221,14 @@ export function Service() {
                                     <p class="control has-icons-left">
                                         <input disabled class="input" type="text" value={servicio.data?.fecha_servicio ?? "No asignada"} />
                                         <span class="icon is-medium is-left">
-                                            <i class="fas fa-calendar-days" />
+                                            <FaSolidCalendarDays />
                                         </span>
                                     </p>
                                     <label class="label">Hora de Servicio</label>
                                     <p class="control has-icons-left">
                                         <input disabled class="input" value={getLocalTime(fechaServicio()) || "No asignada"} />
                                         <span class="icon is-small is-left">
-                                            <i class="fas fa-clock" />
+                                            <FaSolidClock />
                                         </span>
                                     </p>
                                 </div>
@@ -201,14 +238,14 @@ export function Service() {
                                     <p class="control has-icons-left">
                                         <input disabled class="input" type="text" value={servicio.data?.frecuencia_recomendada || "No asignada"} />
                                         <span class="icon is-medium is-left">
-                                            <i class="fas fa-clock-rotate-left" />
+                                            <FaSolidClockRotateLeft />
                                         </span>
                                     </p>
                                     <label class="label">Tipo de Servicio</label>
                                     <p class="control has-icons-left">
                                         <input disabled class="input" value={servicio.data?.tipo_servicio || "Sin tipo"} />
                                         <span class="icon is-small is-left">
-                                            <i class="fas fa-warehouse" />
+                                            <FaSolidWarehouse />
                                         </span>
                                     </p>
                                 </div>
@@ -218,7 +255,7 @@ export function Service() {
                                     <p class="control has-icons-left">
                                         <input disabled class="input" type="text" value={servicio.data?.tipo_folio || "Sin tipo"} />
                                         <span class="icon is-medium is-left">
-                                            <i class="fas fa-file-pen" />
+                                            <FaSolidFilePen />
                                         </span>
                                     </p>
                                     <label class="label">Estado del Servicio</label>
@@ -228,7 +265,7 @@ export function Service() {
                                             .with({ cancelado: true }, () => "Cancelado")
                                             .otherwise(() => "Pendiente")} />
                                         <span class="icon is-small is-left">
-                                            <i class="fas fa-circle-question" />
+                                            <FaSolidCircleQuestion />
                                         </span>
                                     </p>
                                 </div>
