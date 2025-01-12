@@ -62,9 +62,11 @@ async function updateUsedProduct(item: Supply, cantidad: number) {
  */
 export function SuppliesDetails(props: SuppliesDetails) {
     const { registros } = destructure(props);
+    const viewWidth = { height: "65vh" };
+
     if (!registros()?.length) {
         return (
-            <section class="no-contact" style={{ height: "65vh", "margin-bottom": "1rem" }}>
+            <section class="no-contact mb-4" style={viewWidth}>
                 <h1 class="title has-text-centered">Sin suministros asignados 🔎</h1>
                 <br />
                 <h2 class="subtitle has-text-centered">No se encontró equipo asignado a este servicio.</h2>
@@ -89,7 +91,7 @@ export function SuppliesDetails(props: SuppliesDetails) {
     }));
 
     return (
-        <table class="table is-striped" style={{ width: "100%", height: "65vh" }}>
+        <table class="table is-striped fullwidth mb-4" style={viewWidth}>
             <thead>
                 <tr class={css.slim_pad}>
                     <th class="no-pad-left">Nombre</th>
@@ -137,7 +139,7 @@ function SupplyDetail(item: Supply) {
             </td>
 
             <td>
-                <div class="has-text-info" style={{ "margin-bottom": "0.5rem" }}>
+                <div class="has-text-info mb-2">
                     Sugerido: {item.cantidad} {simpleUnit()}
                 </div>
                 <div>Usado: {item.cantidad_usada} {simpleUnit()}</div>
@@ -152,7 +154,7 @@ function SupplyDetail(item: Supply) {
                         .otherwise(() => null)}
                 </span>
             </td>
-            <td class="no-pad-right" style={{ "text-align-last": "center", "vertical-align": "baseline" }}>
+            <td class="no-pad-right text-baseline" style={{ "text-align-last": "center" }}>
                 <div title="Editar" onClick={() => setShowInfo(true)}>
                     <span class="icon is-left is-pointer">
                         <BsPencilSquare class="has-text-warning is-size-4" aria-hidden="true" />
@@ -161,10 +163,10 @@ function SupplyDetail(item: Supply) {
             </td>
 
             <Modal show={showInfo()} onClose={closeInfo}>
-                <h1 class="title" style={{ "margin-bottom": "0.5rem" }}>{item.nombre}</h1>
+                <h1 class="title mb-2">{item.nombre}</h1>
                 <h2>{item.registro}</h2>
 
-                <form class="scrollable hide_scroll" style={{ padding: "unset", "margin-top": "1rem", height: "50vh" }} onKeyDown={handleEnterKey}>
+                <form class="scrollable hide_scroll mb-4 paddingless" style={{ height: "50vh" }} onKeyDown={handleEnterKey}>
                     <div class={classNames("field is-grouped is-flex-direction-column hide_scroll scrollable", css.io_field)}>
                         <label class="label">Presentación</label>
                         <p class="control has-icons-left">
@@ -269,8 +271,8 @@ function SupplyDetail(item: Supply) {
                     </div>
                 </form>
 
-                <div class="field is-flex is-justify-content-center" style={{ gap: "5%", "margin-top": "1rem" }}>
-                    <button style={{ width: "45%" }}
+                <div class="field is-flex is-justify-content-center gap-3 mt-4">
+                    <button
                         class="column button is-danger is-outlined"
                         onClick={closeInfo}
                         type="button"
@@ -281,7 +283,7 @@ function SupplyDetail(item: Supply) {
                         </span>
                     </button>
 
-                    <button style={{ width: "45%" }}
+                    <button
                         onClick={() => updateUsedProduct(item, cantidad()).then(closeInfo)}
                         class="column button is-success is-outlined"
                         type="button"

@@ -27,11 +27,10 @@ export function Modal(p: ModalProps) {
     return (
         <div class={classNames("modal", ["is-active", p.show])}>
             <div class="modal-background" title="Cerrar" onClick={p.onClose} />
-            <div class="modal-content"
+            <div class="modal-content mb-6"
                 style={{
-                    overflow: "visible",
-                    "max-height": "95vh",
                     "max-width": "95vw",
+                    overflow: "visible",
                 }}
             >
                 <Show when={p.show} keyed={true}>

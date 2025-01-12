@@ -353,14 +353,14 @@ export function ServiceReport(props: ReportProps) {
             </form>
 
             <Modal show={isSaving()}>
-                <span class="is-flex is-justify-content-center p-2 fullwidth" style={{ gap: "0.5rem" }}>
+                <span class="is-flex is-justify-content-center p-2 fullwidth gap-2">
                     <FiSave class="is-size-4" />
                     <span class="subtitle has-text-center">
                         Guardando Reporte...
                     </span>
                 </span>
 
-                <progress class="progress is-primary" style={{ margin: "auto" }} max="100" />
+                <progress class="progress is-primary m-auto" max="100" />
             </Modal>
 
             {/* Botón para guardar el reporte */}

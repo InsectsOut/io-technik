@@ -13,12 +13,10 @@ export function Profile() {
 
     const { puesto, nombre, organizacion, curp, fecha_nacimiento, telefono } = destructure(userProfile()!);
     const { email } = destructure(currentSession()!.user);
-    const pStyle = { margin: "1rem" };
 
     return (
         <div class={css.container}>
-            <h1 class="title">Tus Datos</h1>
-            <section class="media" style={{ "max-height": "fit-content", "margin-bottom": "0.5rem" }}>
+            <section class={`media is-flex-direction-row ${css.section}`}>
 
                 <div class="media-left">
                     <figure class="image is-64x64">
@@ -36,9 +34,9 @@ export function Profile() {
                 </div>
             </section>
 
-            <form class="form" style={{ width: "100%", height: "55vh" }}>
+            <form class="form fullwidth">
                 <label class="label">Correo</label>
-                <p class="control has-icons-left" style={pStyle}>
+                <p class="control has-icons-left m-4">
                     <input disabled class="input" value={email?.() ?? ""} />
                     <span class="icon is-medium is-left">
                         <FaSolidAt class="is-size-5" />
@@ -47,7 +45,7 @@ export function Profile() {
 
                 <Show when={telefono()}>
                     <label class="label">Teléfono</label>
-                    <p class="control has-icons-left" style={pStyle}>
+                    <p class="control has-icons-left m-4">
                         <input disabled class="input" value={telefono()!} />
                         <span class="icon is-medium is-left">
                             <FaSolidPhoneFlip class="is-size-5" />
@@ -56,7 +54,7 @@ export function Profile() {
                 </Show>
 
                 <label class="label">Organización</label>
-                <p class="control has-icons-left" style={pStyle}>
+                <p class="control has-icons-left m-4">
                     <input disabled class="input" value={organizacion() ?? ""} />
                     <span class="icon is-medium is-left">
                         <FaSolidBriefcase class="is-size-5" />
@@ -64,7 +62,7 @@ export function Profile() {
                 </p>
 
                 <label class="label">Clave Única</label>
-                <p class="control has-icons-left" style={pStyle}>
+                <p class="control has-icons-left m-4">
                     <input disabled class="input" value={curp() ?? ""} />
                     <span class="icon is-medium is-left">
                         <FaSolidIdCard class="is-size-5" />
@@ -72,7 +70,7 @@ export function Profile() {
                 </p>
 
                 <label class="label">Cumpleaños</label>
-                <p class="control has-icons-left" style={pStyle}>
+                <p class="control has-icons-left m-4">
                     <input disabled class="input" value={fecha_nacimiento() ?? ""} />
                     <span class="icon is-medium is-left">
                         <FaSolidCakeCandles class="is-size-5" />

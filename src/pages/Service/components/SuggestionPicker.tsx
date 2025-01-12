@@ -39,7 +39,6 @@ export function SuggestionPicker(props: PickerProps) {
 
     let suggestionsRef: HTMLSelectElement | undefined;
     const isWideScreen = () => windowSize.width > 900;
-    const inputHeight = { height: "115px" };
 
     // Load the suggestions from the DB and maps them to the local state
     createEffect(() => {
@@ -151,9 +150,8 @@ export function SuggestionPicker(props: PickerProps) {
 
                     <Show when={windowSize.width > 550}>
                         <td>
-                            <div class="has-text-link"
+                            <div class="has-text-link is-clickable"
                                 onClick={() => entry.imagen && setShowPreview(true)}
-                                style={{ cursor: "pointer" }}
                             >
                                 {entry.imagen?.id ?? "N/A"}
                             </div>
@@ -163,7 +161,11 @@ export function SuggestionPicker(props: PickerProps) {
                                         src={imgPreview()}
                                     />
 
-                                    <button type="button" onClick={() => setShowPreview(false)}>
+                                    <button
+                                        onClick={() => setShowPreview(false)}
+                                        class="button fullwidth mt-4"
+                                        type="button"
+                                    >
                                         Cerrar
                                     </button>
                                 </Modal>
@@ -223,8 +225,7 @@ export function SuggestionPicker(props: PickerProps) {
 
                                     <button
                                         onClick={() => setShowPreview(false)}
-                                        style={{ "margin-top": "1rem", width: "100%" }}
-                                        class="button"
+                                        class="button mt-4 fullwidth"
                                         type="button"
                                     >
                                         Cerrar
@@ -351,7 +352,7 @@ export function SuggestionPicker(props: PickerProps) {
                 picker.showModal = false;
                 clearReportForm();
             }}>
-                <form class="form fixed-grid has-3-cols marginless paddingless" style={{ height: "auto" }}>
+                <form class="form fixed-grid has-3-cols marginless paddingless height-auto">
                     <div class="is-flex is-justify-content-space-between">
                         <h2 class="subtitle pl-0">
                             Nueva Recomendación
@@ -361,115 +362,111 @@ export function SuggestionPicker(props: PickerProps) {
                         </span>
                     </div>
 
-                    <div style={{ overflow: "auto" }}>
-                        <div class="file has-name is-boxed is-flex-direction-column">
-                            <label class="label">Fotografía</label>
-                            <label class="file-label">
-                                <input onInput={handleFileUpload} multiple={false} class="file-input" type="file" accept="image/*" />
-                                <span class="file-cta" style={{ "border-radius": report.imagen ? undefined : "6px" }}>
-                                    <span class="file-icon">
-                                        <FaSolidUpload class="is-size-5" />
-                                    </span>
-                                    <span class="file-label">
-                                        Elige una fotografía
-                                    </span>
+                    <div class="file has-name is-boxed is-flex-direction-column">
+                        <label class="label">Fotografía</label>
+                        <label class="file-label">
+                            <input onInput={handleFileUpload} multiple={false} class="file-input" type="file" accept="image/*" />
+                            <span class="file-cta" style={{ "border-radius": report.imagen ? undefined : "6px" }}>
+                                <span class="file-icon">
+                                    <FaSolidUpload class="is-size-5" />
                                 </span>
-
-                                <Show when={report.imagen}>
-                                    <span style={{ "min-width": "100%" }} class="file-name">
-                                        <div class="is-flex is-align-items-baseline">
-                                            <span class="icon is-left">
-                                                <FaSolidCamera class="has-text-info is-size-5" aria-hidden="true" />
-                                            </span>
-                                            <span class="m-auto">{report.imagen?.id}.{report.imagen?.extension}</span>
-                                        </div>
-                                    </span>
-                                </Show>
-
-                            </label>
-                        </div>
-
-                        <div class="cell">
-                            <label class="label">Problema Detectado</label>
-                            <p class="control has-icons-left">
-                                <textarea
-                                    onInput={(e => report.problema = e.target.value)}
-                                    placeholder="Se encontraron cucarachas en el lavadero..."
-                                    value={report.problema}
-                                    class="input"
-                                    required
-                                    rows={4}
-                                />
-                                <span class="icon is-medium is-left">
-                                    <FaSolidCircleInfo class="has-text-warning" />
+                                <span class="file-label">
+                                    Elige una fotografía
                                 </span>
-                            </p>
-                        </div>
+                            </span>
 
-                        <div class="block" />
-
-                        <div class="cell field is-flex-direction-column">
-                            <label class="label">Recomendaciones</label>
-                            <div style={inputHeight} class={classNames("control is-expanded", ["has-icons-left", isWideScreen()])}>
-                                <div class="select is-fullwidth is-multiple">
-                                    <select ref={suggestionsRef} required
-                                        onChange={(e => setActions(e.target.selectedOptions))}
-                                        multiple name="recomendaciones"
-                                        title="Elegir sugerencias"
-                                        size="4"
-                                    >
-                                        <Index each={AccionesRecomendadas}>
-                                            {(accion) =>
-                                                <option value={accion()}>
-                                                    ➕ {accion()}
-                                                </option>}
-                                        </Index>
-                                    </select>
-                                </div>
-                                <Show when={isWideScreen()}>
-                                    <div class="icon is-small is-left">
-                                        <FaSolidBug />
+                            <Show when={report.imagen}>
+                                <span class="file-name fullwidth">
+                                    <div class="is-flex is-align-items-baseline">
+                                        <span class="icon is-left">
+                                            <FaSolidCamera class="has-text-info is-size-5" aria-hidden="true" />
+                                        </span>
+                                        <span class="m-auto">{report.imagen?.id}.{report.imagen?.extension}</span>
                                     </div>
-                                </Show>
+                                </span>
+                            </Show>
+
+                        </label>
+                    </div>
+
+                    <div class="cell">
+                        <label class="label">Problema Detectado</label>
+                        <p class="control has-icons-left">
+                            <textarea
+                                onInput={(e => report.problema = e.target.value)}
+                                placeholder="Se encontraron cucarachas en el lavadero..."
+                                value={report.problema}
+                                class="input"
+                                required
+                                rows={4}
+                            />
+                            <span class="icon is-medium is-left">
+                                <FaSolidCircleInfo class="has-text-warning" />
+                            </span>
+                        </p>
+                    </div>
+
+                    <div class="block" />
+
+                    <div class="cell field is-flex-direction-column mb-0">
+                        <label class="label">Recomendaciones</label>
+                        <div class={classNames("control is-expanded", ["has-icons-left", isWideScreen()])}>
+                            <div class="select is-fullwidth is-multiple">
+                                <select ref={suggestionsRef} required
+                                    onChange={(e => setActions(e.target.selectedOptions))}
+                                    multiple name="recomendaciones"
+                                    title="Elegir sugerencias"
+                                    size="4"
+                                >
+                                    <Index each={AccionesRecomendadas}>
+                                        {(accion) =>
+                                            <option value={accion()}>
+                                                ➕ {accion()}
+                                            </option>}
+                                    </Index>
+                                </select>
                             </div>
-                        </div>
-
-                        <div class="field is-flex is-justify-content-center gap-3" style={{ "margin-top": "4rem" }}>
-                            <button type="button"
-                                onClick={() => {
-                                    picker.showModal = false;
-                                    clearReportForm();
-                                }}
-                                class="column button is-danger is-outlined"
-                            >
-                                <span class="text-top">Cancelar</span>
-                                <span class="icon">
-                                    <FaSolidXmark />
-                                </span>
-                            </button>
-
-                            <button type="button"
-                                class="column button is-success is-outlined"
-                                onClick={() => {
-                                    picker.showModal = false;
-                                    saveReport();
-                                }}
-                            >
-                                <span class="text-top">Guardar</span>
-                                <span class="icon">
-                                    <FaSolidCirclePlus />
-                                </span>
-                            </button>
+                            <Show when={isWideScreen()}>
+                                <div class="icon is-small is-left">
+                                    <FaSolidBug />
+                                </div>
+                            </Show>
                         </div>
                     </div>
 
+                    <div class="field is-flex is-justify-content-center gap-3 mt-5">
+                        <button type="button"
+                            onClick={() => {
+                                picker.showModal = false;
+                                clearReportForm();
+                            }}
+                            class="column button is-danger is-outlined"
+                        >
+                            <span class="text-top">Cancelar</span>
+                            <span class="icon">
+                                <FaSolidXmark />
+                            </span>
+                        </button>
 
+                        <button type="button"
+                            class="column button is-success is-outlined"
+                            onClick={() => {
+                                picker.showModal = false;
+                                saveReport();
+                            }}
+                        >
+                            <span class="text-top">Guardar</span>
+                            <span class="icon">
+                                <FaSolidCirclePlus />
+                            </span>
+                        </button>
+                    </div>
                 </form>
             </Modal>
 
             {/* List that shows the added reports, allows deleting and editing */}
-            <div class="table-container">
-                <table class="table is-striped" style={{ width: "100%" }}>
+            <div class="table-container scrollable hide_scroll">
+                <table class="table is-striped fullwidth">
                     <thead>
                         <tr>
                             <th>Problema</th>

@@ -173,7 +173,7 @@ export function Home() {
                       <th>Cliente</th>
                       <th class="has-text-centered no-pad-right">Estatus</th>
                       <Show when={deviceType() > DeviceType.Mobile}>
-                        <th class="is-flex is-justify-content-space-around is-misaligned" style={{ gap: "0.75rem" }}>
+                        <th class="is-flex is-justify-content-space-around is-misaligned gap-3">
                           <div class="has-text-centered">Teléfono</div>
                           <div class="has-text-centered">Información</div>
                           <div class="has-text-centered">Ubicación</div>

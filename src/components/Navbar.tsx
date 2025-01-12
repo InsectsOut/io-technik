@@ -38,8 +38,8 @@ export function Navbar() {
         <Show when={currentSession()}>
             <nav class="navbar is-transparent">
                 <div class="navbar-brand">
-                    <A href={Pages.Home} class="panel-block is-active has-text-link no-padding">
-                        <span class="panel-icon">
+                    <A href={Pages.Home} class="panel-block is-active has-text-link">
+                        <span class="icon mr-1">
                             <AiFillHome class="is-size-5" />
                         </span>
                         insects-out
@@ -59,7 +59,7 @@ export function Navbar() {
                 <div id="navbar-element" class={navbarMenuClass()}>
                     <div class="navbar-start">
                         <Show when={currentSession()}>
-                            <A href="/user" class="has-text-link navbar-item">
+                            <A href="/user" class="navbar-item">
                                 {userProfile()?.nombre}
                             </A>
                             <A href="/feedback" class="navbar-item">

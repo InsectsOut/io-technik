@@ -187,10 +187,9 @@ export function Service() {
                     </a>
                 </p>
 
-                <Motion.template ref={tabContainer!} style={{ display: "block" }}
-                    transition={FadeInAnimation.transition}
-                    animate={FadeInAnimation.animate}
-                    exit={FadeInAnimation.exit}
+                <Motion.template {...FadeInAnimation}
+                    ref={tabContainer!}
+                    class="is-block"
                     id={view()}
                 >
                     <Switch>

@@ -85,7 +85,7 @@ const PWABadge: Component = () => {
         <Show when={offlineReady()}>
           <h2 class="subtitle">Aplicación lista sin conexión</h2>
 
-          <div class="field is-flex is-justify-content-center" style={{ gap: "5%" }}>
+          <div class="field is-flex is-justify-content-center gap-3">
             <button class="column button is-success is-outlined" onClick={handleInstall}>Instalar</button>
             <button class="column button is-danger is-outlined" onClick={close}>Cerrar</button>
           </div>
@@ -93,7 +93,7 @@ const PWABadge: Component = () => {
         <Show when={needRefresh()}>
           <h2 class="subtitle has-text-centered">Hay una actualización disponible</h2>
 
-          <div class="field is-flex is-justify-content-center" style={{ gap: "5%" }}>
+          <div class="field is-flex is-justify-content-center gap-3">
             <button class="column button is-success is-outlined" onClick={() => updateServiceWorker(true)}>
               Actualizar
             </button>

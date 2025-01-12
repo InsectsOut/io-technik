@@ -138,7 +138,7 @@ export function Feedback() {
                     </div>
                 </div>
 
-                <div class="file has-name is-fullwidth" style={{ width: "100%" }}>
+                <div class="file has-name fullwidth">
                     <label class="file-label">
                         <input class="file-input" type="file" name="resume" onInput={handleImgUpload} multiple={false} />
                         <span class="file-cta file-btn">

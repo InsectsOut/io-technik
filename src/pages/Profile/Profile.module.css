@@ -8,9 +8,12 @@
     flex-direction: column;
     justify-content: center;
     align-items: start;
-    padding: 1rem 0;
 
-    & > * {
-        padding: 0 1rem;
+    & > form {
+        padding: 0;
     }
+}
+
+.section {
+    max-height: fit-content;
 }
