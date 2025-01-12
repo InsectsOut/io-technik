@@ -94,3 +94,7 @@ main {
 .text-super {
   vertical-align: super !important;
 }
+
+.height-auto {
+  height: auto !important;
+}

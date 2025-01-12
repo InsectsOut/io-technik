@@ -17,7 +17,7 @@ ul {
 }
 
 .scrollable {
+    height: calc(85vh - 1rem);
     overflow-y: scroll;
-    height: 90vh;
 
 }
