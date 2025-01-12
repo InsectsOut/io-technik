@@ -9,7 +9,7 @@ import css from "./About.module.css";
 export function About() {
     return (
         <div class={classNames("hide_scroll", css.scrollable)}>
-            <section class={classNames("hero is-medium is-link is-flex-direction-row", css['pad-rounded'])}>
+            <section class={classNames("hero is-small is-link is-flex-direction-row", css['pad-rounded'])}>
                 <div class="hero-body">
                     <p class="title">Insects Out</p>
                     <p class="subtitle">io-technik</p>
@@ -20,13 +20,13 @@ export function About() {
                 </figure>
             </section>
 
-            <section class="hero is-medium">
+            <section class="hero is-small">
                 <div class="hero-body">
                     <p class="subtitle">Esta aplicación ha sido diseñada para simplificar el registro de servicios de control de plagas.</p>
                 </div>
             </section>
 
-            <section class={classNames("hero is-medium is-link", css['pad-rounded'])}>
+            <section class={classNames("hero is-small is-link", css['pad-rounded'])}>
                 <div class="hero-body">
                     <p class="title is-spaced">Cómo usar la app?</p>
                     <p class="subtitle">Una vez registrado puedes ver tus servicios asignados, revisar sus datos y registrar detalles de servicio.</p>
@@ -37,7 +37,7 @@ export function About() {
                 </figure>
             </section>
 
-            <section class="hero is-medium">
+            <section class="hero is-small">
                 <div class="hero-body">
                     <p class="title is-marginless">Inicio</p>
                     <ol class={css['pad-rounded']}>
