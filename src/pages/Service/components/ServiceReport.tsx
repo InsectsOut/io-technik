@@ -360,7 +360,7 @@ export function ServiceReport(props: ReportProps) {
                     </span>
                 </span>
 
-                <progress class="progress is-primary m-auto" max="100" />
+                <progress class="progress is-primary m-auto fullwidth" max="100" />
             </Modal>
 
             {/* Botón para guardar el reporte */}
