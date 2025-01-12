@@ -138,9 +138,10 @@ export function Home() {
             <div class="panel-tabs is-align-items-center is-justify-content-space-between">
               <p class="panel-tabs is-align-items-center is-borderless">
                 <button
-                  type="button"
-                  onClick={setDay(-1)}
                   class="button icon is-left"
+                  onClick={setDay(-1)}
+                  type="button"
+                  title="Ayer"
                 >
                   <FaSolidChevronLeft aria-hidden="true" />
                 </button>
@@ -148,9 +149,10 @@ export function Home() {
                 <a class="is-active" onClick={setDay()}>Hoy</a>
 
                 <button
-                  type="button"
-                  onClick={setDay(+1)}
                   class="button icon is-left"
+                  onClick={setDay(+1)}
+                  title="Mañana"
+                  type="button"
                 >
                   <FaSolidChevronRight aria-hidden="true" />
                 </button>
