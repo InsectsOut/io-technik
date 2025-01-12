@@ -89,7 +89,6 @@ export function Service() {
         const nextView = tabOrder[nextViewIndex];
 
         window.requestAnimationFrame(() => {
-            el?.scrollIntoView({ behavior: "smooth" });
             animateViewChange(direction, nextView);
         });
     }
