@@ -50,8 +50,10 @@ export function ServiceReport(props: ReportProps) {
     const [signSaved, setSignSaved] = createSignal(false);
     const { addToast } = useToast();
 
+    /** Reference for the HTML canvas element */
+    let canvasRef: Maybe<HTMLCanvasElement>;
     /** Reference for the SignaturePad WebComponent */
-    let signPad: SignaturePad | undefined;
+    let signPad: Maybe<SignaturePad>;
 
     /** Store de un reporte de servicio llenado por un técnico */
     const reporte = createMutable({
@@ -64,11 +66,7 @@ export function ServiceReport(props: ReportProps) {
 
     createEffect(() => {
         // Loads the signature pad component and the saved signature if any
-        const canvas = document.querySelector("canvas")!;
-        signPad = new SignaturePad(canvas, {
-            backgroundColor: "#EAEAEA",
-            penColor: "black"
-        });
+        signPad = canvasRef ? new SignaturePad(canvasRef) : undefined;
 
         supabase.storage
             .from("imagenes_servicios")
@@ -83,7 +81,7 @@ export function ServiceReport(props: ReportProps) {
                 }
 
                 const base64Url = URL.createObjectURL(data);
-                signPad!.fromDataURL(base64Url);
+                signPad?.fromDataURL(base64Url);
 
                 setSignSaved(true);
                 signPad?.off();
@@ -184,11 +182,11 @@ export function ServiceReport(props: ReportProps) {
 
     async function onReportSubmit() {
         const imagesUploaded = new Map<string, string>();
-        const serviceId = props.service?.id ?? NaN;
+        const folio = props.service?.folio ?? NaN;
 
         function getImagePath(image: ImgFile) {
-            const path = !image.id.startsWith(serviceId.toString())
-                ? `${serviceId}/${image.id}`
+            const path = !image.id.startsWith(folio.toString())
+                ? `${folio}/${image.id}`
                 : image.id;
 
             imagesUploaded.set(image.id, path);
@@ -198,7 +196,7 @@ export function ServiceReport(props: ReportProps) {
         const deleteRecomedations = await IO_Database
             .from("Recomendaciones")
             .delete()
-            .eq("servicio_id", serviceId);
+            .eq("servicio_id", folio);
 
         const deleteImages = await supabase.storage
             .from("imagenes_servicios")
@@ -323,11 +321,12 @@ export function ServiceReport(props: ReportProps) {
                 {/* Firma del cliente en formato .png  */}
                 <div class="field io-signature">
                     <label class="label">Firma del cliente</label>
-                    <canvas id="sign_canvas" width={400} height={450}
+                    <canvas id="sign_canvas" width={400} height={450} ref={canvasRef!}
                         onTouchStart={() => setCanSwipe(false)}
                         onTouchEnd={() => setCanSwipe(true)}
                         style={{
                             "border-color": signSaved() ? "orange" : "green",
+                            "background-color": "#EAEAEA",
                             "border-style": "solid",
                             "border-width": "medium"
                         }}
