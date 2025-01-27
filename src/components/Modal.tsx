@@ -3,6 +3,8 @@ import { classNames, SlideDown } from "@/utils";
 import { setCanSwipe } from "@/pages";
 import { Motion } from "solid-motionone";
 
+import "./Modal.css";
+
 /** Props for the modal component */
 export interface ModalProps extends ParentProps {
     /** Action to execute once the modal is closed */
@@ -27,12 +29,7 @@ export function Modal(p: ModalProps) {
     return (
         <div class={classNames("modal", ["is-active", p.show])}>
             <div class="modal-background" title="Cerrar" onClick={p.onClose} />
-            <div class="modal-content mb-6"
-                style={{
-                    "max-width": "95vw",
-                    overflow: "visible",
-                }}
-            >
+            <div class="modal-content mb-6">
                 <Show when={p.show} keyed={true}>
                     <Motion.div class="box is-flex is-flex-direction-column p-4 is-shadowless"
                         {...SlideDown}

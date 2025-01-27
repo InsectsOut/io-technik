@@ -84,6 +84,9 @@ export function Service() {
         const el = e.target instanceof HTMLElement ? e.target : null;
         const nextTab = el?.id as Tabs;
 
+        // Return if the next tab is the same as the current one
+        if (nextTab === view()) return;
+
         const currViewIndex = tabOrder.findIndex(t => t === view());
         const nextViewIndex = tabOrder.findIndex(t => t == nextTab);
         const direction = currViewIndex < nextViewIndex ? "left" : "right";

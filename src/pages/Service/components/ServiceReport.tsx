@@ -275,7 +275,7 @@ export function ServiceReport(props: ReportProps) {
                 </div>
 
                 {/* Frecuencia sugerida para el servicio */}
-                <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
+                <div class={classNames("field", css.io_field, css.two_col_grid)}>
                     <label class="label">Frecuencia sugerida de servicio</label>
                     <div class="control is-grouped has-icons-left is-expanded">
                         <div class="select is-fullwidth">

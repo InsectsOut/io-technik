@@ -146,11 +146,11 @@ function SupplyDetail(item: Supply) {
             </td>
 
             <td class="text-baselines" style={{ "text-align-last": "center" }}>
-                <span class="is-block">{delta()} {simpleUnit()}</span>
+                <span>{delta()} {simpleUnit()}</span>
                 <span class="icon is-right is-pointer">
                     {match(delta())
-                        .when(d => d < 0, () => <FaSolidArrowDown class="has-text-danger" aria-hidden="true" />)
-                        .when(d => d > 0, () => <FaSolidArrowUp class="has-text-success" aria-hidden="true" />)
+                        .when(d => d < 0, () => <FaSolidArrowDown class="has-text-success" />)
+                        .when(d => d > 0, () => <FaSolidArrowUp class="has-text-danger" />)
                         .otherwise(() => null)}
                 </span>
             </td>

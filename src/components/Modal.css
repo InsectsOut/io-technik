@@ -1,0 +1,13 @@
+.modal img {
+    max-height: 50vh;
+    max-width: 50vw;
+}
+
+.modal-content {
+    overflow: hidden;
+    max-width: 90%;
+}
+
+.modal-content:has(img) {
+ max-width: fit-content !important;   
+}
