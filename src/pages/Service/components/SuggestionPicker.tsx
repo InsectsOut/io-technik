@@ -1,16 +1,20 @@
-import { createMutable, createStore } from "solid-js/store";
 import { createEffect, createSignal, For, Index, onCleanup, onMount, Show } from "solid-js";
-
-import { classNames, getFileExtension, windowSize } from "@/utils";
-import { getImageId } from "../Service.utils"
-import { Recomendacion } from "../Service.types";
-import { Modal } from "@/components";
-import { AccionesRecomendadas } from "./Suggestion.constants";
+import { createMutable, createStore } from "solid-js/store";
+import { destructure } from "@solid-primitives/destructure";
 import { createQuery } from "@tanstack/solid-query";
+
+import { Buckets, classNames, getFileExtension, windowSize } from "@/utils";
+import { IO_Database, supabase, Tables } from "@/supabase";
+import { Modal, useToast } from "@/components";
+
+import { getImageId, getServiceImgPath } from "../Service.utils"
+import { Recomendacion } from "../Service.types";
+
+import { AccionesRecomendadas } from "./Suggestion.constants";
 import { getRecomendaciones } from "./Suggestion.query";
-import { IO_Database, supabase } from "@/supabase";
-import { BsPencilSquare } from "solid-icons/bs";
+
 import { FaRegularEyeSlash, FaRegularImage, FaSolidBug, FaSolidCamera, FaSolidCircleInfo, FaSolidCirclePlus, FaSolidTrashCan, FaSolidUpload, FaSolidXmark } from "solid-icons/fa";
+import { BsPencilSquare } from "solid-icons/bs";
 
 /** Extends the `InputEvent` with its target set to an `HTMLInputElement` */
 type FileInputEvent = InputEvent & {
@@ -20,25 +24,41 @@ type FileInputEvent = InputEvent & {
 
 /** Props for the suggestion picker component */
 type PickerProps = {
-    /** Id for a service to fetch its recommendations */
-    servicioId: number;
+    /** Parent service for the suggestion picker */
+    servicio: Tables<"Servicios">;
     /** Callback that exposes the suggestions array on change */
-    onSuggestionAdd: (suggestions: Recomendacion[]) => void;
+    onSuggestionAdd?: (suggestions: Recomendacion[]) => void;
 };
 
 /** Component picker to add multiple suggestion reports */
 export function SuggestionPicker(props: PickerProps) {
+    const { id: servicioId, folio } = destructure(props.servicio);
+    const { addToast } = useToast();
+
     const recomendacionesQuery = createQuery(() => ({
-        queryKey: [`recomendaciones/${props.servicioId}`],
-        queryFn: () => getRecomendaciones(props.servicioId.toString()),
+        queryKey: [`recomendaciones/${servicioId()}`],
+        queryFn: () => getRecomendaciones(servicioId().toString()),
         throwOnError: false
     }));
 
     /** Lista de sugerencias para un reporte de servicio */
     const [sugerencias, setSugerencias] = createStore<Recomendacion[]>([]);
 
-    let suggestionsRef: HTMLSelectElement | undefined;
+    /** Reactive state for the suggestions picker component */
+    const picker = createMutable({
+        editIndex: NaN,
+        isEditing: false,
+        showModal: false
+    });
+
+    /** Active report being edited */
+    const report = createMutable<Recomendacion>({
+        acciones: [],
+        problema: "",
+    });
+
     const isWideScreen = () => windowSize.width > 900;
+    let suggestionsRef: HTMLSelectElement | undefined;
 
     // Load the suggestions from the DB and maps them to the local state
     createEffect(() => {
@@ -50,21 +70,21 @@ export function SuggestionPicker(props: PickerProps) {
 
         // Maps the loaded data to the local state, including the image file
         const mappedEntries = loadedData.map(async item => {
-            const { data } = await supabase.storage
-                .from("imagenes_servicios")
-                .download(item.imagen ?? "")
-                .catch(_ => ({ data: null }));
+            const imgData = item.imagen ? await supabase.storage
+                .from(Buckets.ImagenesServicios)
+                .download(item.imagen)
+                .catch(_ => ({ data: null }))
+                : null;
 
-            const hasImage = Boolean(item.imagen && data);
-            const imgFile = hasImage
-                ? new File([data!], item.imagen!, { type: data!.type })
+            const imgFile = imgData?.data
+                ? new File([imgData.data], item.imagen!, { type: imgData.data.type })
                 : undefined;
 
             return {
                 id: item.id.toString(),
                 acciones: item.acciones,
                 problema: item.problema,
-                imagen: {
+                imagen: imgFile && {
                     extension: getFileExtension(item.imagen ?? ""),
                     id: item.imagen ?? "",
                     file: imgFile
@@ -79,11 +99,40 @@ export function SuggestionPicker(props: PickerProps) {
         }
     });
 
+    /**
+     * Handles adding an image file to the reports list
+     * @param e An event that has the image payload
+     */
+    function handleFileUpload(e: FileInputEvent) {
+        const { files } = e.target || {};
+        const [file] = files || [];
+        if (!file) return;
+
+        report.imagen = {
+            extension: file.type.split("/")[1],
+            id: getImageId(),
+            file
+        };
+    }
+
+    /**
+     * Updates the selected suggestions field for the currently active report
+     * @param options A collection of HTMLOptionElements that will be added to the reports list by value
+     */
+    function setActions(options: HTMLCollectionOf<HTMLOptionElement>) {
+        const selected: string[] = [];
+        for (const option of options) {
+            selected.push(option.value);
+        }
+
+        report.acciones = selected;
+    }
+
     /** Deletes a suggestion locally if not upload, and removes it from the DB if uploaded */
     async function deleteSuggestion(index: number): Promise<any> {
         const sugerencia = sugerencias[index];
         if (!sugerencia.id) {
-            return setSugerencias(sugerencias.filter((_, i) => i !== index));
+            return setSugerencias(s => s.filter((_, i) => i !== index));
         }
 
         const deleted = await IO_Database
@@ -91,28 +140,109 @@ export function SuggestionPicker(props: PickerProps) {
             .delete().eq("id", sugerencia.id);
 
         const imageDeleted = await supabase.storage
-            .from("imagenes_servicios")
+            .from(Buckets.ImagenesServicios)
             .remove([sugerencia.imagen?.id ?? ""]);
 
         if (deleted?.error === null) {
             recomendacionesQuery.refetch();
-            setSugerencias(sugerencias.filter((_, i) => i !== index));
+            setSugerencias(sugerencias.filter((s) => s.id !== sugerencia.id));
             console.log(deleted, imageDeleted);
         }
     }
 
-    /** Reactive state for the suggestions picker component */
-    const picker = createMutable({
-        editIndex: NaN,
-        isEditing: false,
-        showModal: false
-    });
+    /**
+     * Updates the active report with the selected suggestion and opens the modal
+     * @param index The index of the suggestion to edit
+     */
+    function loadSuggestionForEdit(index: number) {
+        const sugerencia = sugerencias[index];
+        report.problema = sugerencia.problema;
+        report.acciones = sugerencia.acciones;
+        report.imagen = sugerencia.imagen;
+        report.id = sugerencia.id;
 
-    /** Active report being edited */
-    const report = createMutable<Recomendacion>({
-        acciones: [],
-        problema: "",
-    });
+        if (suggestionsRef) {
+            // Wait for the next frame to select the options in the report
+            window.requestAnimationFrame(() => {
+                for (const accion of report.acciones) {
+                    const option = suggestionsRef.querySelector(`option[value="${accion}"]`);
+                    if (option instanceof HTMLOptionElement) {
+                        option.selected = true;
+                    }
+                }
+            });
+        }
+
+        picker.showModal = true;
+        picker.isEditing = true;
+        picker.editIndex = index;
+    }
+
+    /**
+     * Saves the currently active report to the reports list. Resets the active report to its defaults.
+     */
+    async function saveReport() {
+        const imgUpload = report.imagen && await supabase.storage
+            .from(Buckets.ImagenesServicios)
+            .upload(
+                getServiceImgPath(report.imagen!, folio()),
+                report.imagen!.file,
+                { upsert: true }
+            );
+
+        const update = await supabase
+            .from("Recomendaciones")
+            .upsert({
+                id: parseInt(report.id ?? "") || undefined,
+                imagen: imgUpload?.data?.path,
+                acciones: report.acciones,
+                problema: report.problema,
+                servicio_id: servicioId(),
+            })
+            .select("id");
+
+        if (update.error) {
+            addToast("Error guardando sugerencia", "is-danger");
+            return clearReportForm();
+        }
+
+        const updateIndex = picker.isEditing ? picker.editIndex : sugerencias.length;
+        addToast("Sugerencia guardada correctamente", "is-info");
+        setSugerencias(updateIndex, { ...report, id: update.data?.[0].id.toString() });
+        clearReportForm();
+
+        if (picker.isEditing) {
+            picker.isEditing = false;
+            picker.editIndex = NaN;
+        }
+    }
+
+    /** Clears the report form fields and unselects all suggestion options */
+    function clearReportForm() {
+        report.imagen = undefined;
+        report.id = undefined;
+        report.acciones = [];
+        report.problema = "";
+
+        if (!suggestionsRef) {
+            return;
+        }
+
+        for (const option of suggestionsRef.options) {
+            option.selected = false;
+        }
+    }
+
+    function handleEnterKey(e: KeyboardEvent) {
+        if (e.key === "Enter") {
+            picker.showModal = false;
+            saveReport();
+        }
+    }
+
+    // Save the report on Enter keydown event
+    onMount(() => document.addEventListener("keydown", handleEnterKey));
+    onCleanup(() => document.removeEventListener("keydown", handleEnterKey));
 
     /**
      * Render function for a suggestion entry
@@ -173,7 +303,7 @@ export function SuggestionPicker(props: PickerProps) {
                         </td>
 
                         <td class="has-text-centered">
-                            <div title="Editar" onClick={() => editSugerencia(index)}>
+                            <div title="Editar" onClick={() => loadSuggestionForEdit(index)}>
                                 <span class="icon is-left is-clickable">
                                     <BsPencilSquare class="is-size-4 has-text-warning" aria-hidden="true" />
                                 </span>
@@ -195,7 +325,7 @@ export function SuggestionPicker(props: PickerProps) {
                     <tr>
                         <td colSpan={3}>
                             <div class="is-flex is-justify-content-space-around">
-                                <div title="Editar" onClick={() => editSugerencia(index)} tabIndex={0}>
+                                <div title="Editar" onClick={() => loadSuggestionForEdit(index)} tabIndex={0}>
                                     <span class="icon is-left is-clickable" aria-label="Editar">
                                         <BsPencilSquare class="is-size-4 has-text-warning" />
                                     </span>
@@ -238,112 +368,6 @@ export function SuggestionPicker(props: PickerProps) {
             </>
         );
     }
-
-    /**
-     * Handles adding an image file to the reports list
-     * @param e An event that has the image payload
-     */
-    function handleFileUpload(e: FileInputEvent) {
-        const { files } = e.target || {};
-        const [file] = files || [];
-        if (!file) return;
-
-        report.imagen = {
-            extension: file.type.split("/")[1],
-            id: getImageId(),
-            file
-        };
-    }
-
-    /**
-     * Updates the selected suggestions field for the currently active report
-     * @param options A collection of HTMLOptionElements that will be added to the reports list by value
-     */
-    function setActions(options: HTMLCollectionOf<HTMLOptionElement>) {
-        const selected: string[] = [];
-        for (const option of options) {
-            selected.push(option.value);
-        }
-
-        report.acciones = selected;
-    }
-
-    /**
-     * Updates the active report with the selected suggestion and opens the modal
-     * @param index The index of the suggestion to edit
-     */
-    function editSugerencia(index: number) {
-        const sugerencia = sugerencias[index];
-        report.problema = sugerencia.problema;
-        report.acciones = sugerencia.acciones;
-        report.imagen = sugerencia.imagen;
-
-        if (suggestionsRef) {
-            // Wait for the next frame to select the options in the report
-            window.requestAnimationFrame(() => {
-                for (const accion of report.acciones) {
-                    const option = suggestionsRef.querySelector(`option[value="${accion}"]`);
-                    if (option instanceof HTMLOptionElement) {
-                        option.selected = true;
-                    }
-                }
-            });
-        }
-
-        picker.showModal = true;
-        picker.isEditing = true;
-        picker.editIndex = index;
-    }
-
-    /**
-     * Saves the currently active report to the reports list. Resets the active report to its defaults.
-     */
-    function saveReport() {
-        if (picker.isEditing) {
-            const editIndex = picker.editIndex;
-            picker.isEditing = false;
-            picker.editIndex = NaN;
-
-            if (sugerencias[editIndex]) {
-                setSugerencias(editIndex, { ...report });
-            }
-        } else {
-            setSugerencias(sugerencias.length, { ...report });
-        }
-
-        clearReportForm();
-    }
-
-    /** Clears the report form fields and unselects all suggestion options */
-    function clearReportForm() {
-        report.imagen = undefined;
-        report.acciones = [];
-        report.problema = "";
-
-        if (!suggestionsRef) {
-            return;
-        }
-
-        for (const option of suggestionsRef.options) {
-            option.selected = false;
-        }
-    }
-
-    function handleEnterKey(e: KeyboardEvent) {
-        if (e.key === "Enter") {
-            picker.showModal = false;
-            saveReport();
-        }
-    }
-
-    // Save the report on Enter keydown event
-    onMount(() => document.addEventListener("keydown", handleEnterKey));
-    onCleanup(() => document.removeEventListener("keydown", handleEnterKey));
-
-    createEffect(() => {
-        // Every time the suggestions list changes, update the parent component
-        props.onSuggestionAdd(sugerencias);
-    });
 
     return (
         <>

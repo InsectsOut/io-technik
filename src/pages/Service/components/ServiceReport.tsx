@@ -5,21 +5,24 @@ import { createEffect, createSignal, createUniqueId, Index } from "solid-js";
 import { SuggestionPicker } from "./SuggestionPicker";
 import SignaturePad from "signature_pad";
 
-import { classNames, getFileExtension, ImgFile, isOk } from "@/utils";
+import { Buckets, classNames, ImgFile, isOk } from "@/utils";
 import { IO_Database, supabase, Tables } from "@/supabase";
 import { Modal, useToast } from "@/components";
 import { LocaleMX } from "@/constants";
 
-import { FrecuenciaServicio, isFrecuencia, Recomendacion } from "../Service.types";
+import { EstadosServicio, FrecuenciaServicio, isFrecuencia, isServicioStatus, ServicioEstatus } from "../Service.types";
+import { getServiceImgPath } from "../Service.utils";
 import { setCanSwipe } from "../Service";
 
-import { FaSolidClockRotateLeft, FaSolidCloudArrowUp, FaSolidDoorClosed, FaSolidDoorOpen } from "solid-icons/fa";
+import { FaSolidCheck, FaSolidClockRotateLeft, FaSolidCloudArrowUp, FaSolidDoorClosed, FaSolidDoorOpen, FaSolidXmark } from "solid-icons/fa";
 import { FiSave } from "solid-icons/fi";
 import css from "../Service.module.css";
+import { match } from "ts-pattern";
+import { TbProgressAlert } from "solid-icons/tb";
 
 type ReportProps = {
     service?: Tables<"Servicios">
-    onReportSubmit?: () => void;
+    onServiceUpdate?: () => void;
 };
 
 type InputEvent = Event & {
@@ -38,12 +41,34 @@ export function ServiceReport(props: ReportProps) {
     }
 
     const {
+        id,
+        folio,
         firma_cliente,
         horario_servicio,
         horario_entrada,
         horario_salida,
-        frecuencia_recomendada
+        frecuencia_recomendada,
     } = destructure(props.service);
+
+    /** Initial service state loaded from the database */
+    const serviceState = () => match(props.service)
+        .returnType<ServicioEstatus>()
+        .with({ cancelado: true }, () => "Cancelado")
+        .with({ realizado: true }, () => "Realizado")
+        .otherwise(() => "Pendiente");
+
+    /** Store de un reporte de servicio llenado por un técnico */
+    const reporte = createMutable({
+        frecuencia: frecuencia_recomendada() ?? "Ninguna",
+        horaInicio: horario_entrada() ?? horario_servicio(),
+        horaSalida: horario_salida() ?? "",
+        estadoServicio: serviceState(),
+    });
+
+    const StateIcon = () => match(reporte.estadoServicio)
+        .with("Realizado", () => <FaSolidCheck class="has-text-primary is-size-5" />)
+        .with("Cancelado", () => <FaSolidXmark class="has-text-danger is-size-5" />)
+        .otherwise(() => <TbProgressAlert class="has-text-warning is-size-5" />);
 
     /** If the report is being saved currently */
     const [isSaving, setIsSaving] = createSignal(false);
@@ -55,30 +80,15 @@ export function ServiceReport(props: ReportProps) {
     /** Reference for the SignaturePad WebComponent */
     let signPad: Maybe<SignaturePad>;
 
-    /** Store de un reporte de servicio llenado por un técnico */
-    const reporte = createMutable({
-        recomendaciones: [] as Recomendacion[],
-        frecuencia: frecuencia_recomendada() ?? "Ninguna",
-        horaInicio: horario_entrada() ?? horario_servicio(),
-        horaSalida: horario_salida() ?? "",
-        firma: {} as ImgFile,
-    });
-
     createEffect(() => {
         // Loads the signature pad component and the saved signature if any
         signPad = canvasRef ? new SignaturePad(canvasRef) : undefined;
 
         supabase.storage
-            .from("imagenes_servicios")
+            .from(Buckets.ImagenesServicios)
             .download(firma_cliente() ?? "")
             .then(({ data }) => {
                 if (!data) return;
-
-                reporte.firma = {
-                    extension: getFileExtension(firma_cliente() ?? ""),
-                    file: new File([data], firma_cliente() ?? "", { type: data.type }),
-                    id: firma_cliente() ?? ""
-                }
 
                 const base64Url = URL.createObjectURL(data);
                 signPad?.fromDataURL(base64Url);
@@ -117,7 +127,7 @@ export function ServiceReport(props: ReportProps) {
         signPad?.clear();
     }
 
-    function saveSignature() {
+    async function saveSignature() {
         if (signSaved()) {
             signPad?.on();
             signPad?.clear();
@@ -138,15 +148,41 @@ export function ServiceReport(props: ReportProps) {
 
         const blob = new Blob([array], { type: "image/png" });
         const imgName = `firma_cliente_${createUniqueId()}`;
-
-        reporte.firma = {
+        const signFile: ImgFile = {
             extension: "png",
             file: new File([blob], imgName, { type: "image/png" }),
             id: imgName,
         }
 
-        setSignSaved(true);
-        signPad?.off();
+        const signPath = getServiceImgPath(signFile, folio());
+        const imgUpload = await supabase.storage
+            .from(Buckets.ImagenesServicios)
+            .upload(
+                signPath,
+                signFile.file,
+                { upsert: true }
+            );
+
+        if (imgUpload.data) {
+            const update = await supabase
+                .from("Servicios")
+                .update({ firma_cliente: signPath })
+                .eq("id", id());
+
+            if (update.error) {
+                addToast("Error actualizando la firma", "is-danger");
+            }
+        }
+
+        if (imgUpload.data) {
+            addToast("Firma guardada correctamente", "is-info");
+            setSignSaved(true);
+            props.onServiceUpdate?.();
+            signPad?.off();
+        } else {
+            addToast(imgUpload.error.message, "is-danger");
+            setSignSaved(false);
+        }
     }
 
     function onTimeChange(event: InputEvent) {
@@ -174,86 +210,33 @@ export function ServiceReport(props: ReportProps) {
         console.log(JSON.stringify(reporte));
     }
 
-    function onFrequencyChange(event: SelectEvent) {
-        if (isFrecuencia(event.target.value)) {
-            reporte.frecuencia = event.target.value;
+    function onFrequencyChange({ target }: SelectEvent) {
+        if (isFrecuencia(target.value)) {
+            reporte.frecuencia = target.value;
         }
     }
 
-    async function onReportSubmit() {
-        const imagesUploaded = new Map<string, string>();
-        const folio = props.service?.folio ?? NaN;
-
-        function getImagePath(image: ImgFile) {
-            const path = !image.id.startsWith(folio.toString())
-                ? `${folio}/${image.id}`
-                : image.id;
-
-            imagesUploaded.set(image.id, path);
-            return path;
+    function onServiceStateChange({ target }: SelectEvent) {
+        if (isServicioStatus(target.value)) {
+            reporte.estadoServicio = target.value;
         }
+    }
 
-        const deleteRecomedations = await IO_Database
-            .from("Recomendaciones")
-            .delete()
-            .eq("servicio_id", folio);
-
-        const deleteImages = await supabase.storage
-            .from("imagenes_servicios")
-            .remove([firma_cliente() ?? ""]);
-
-        if (deleteRecomedations.error || deleteImages.error) {
-            return;
-        }
-
-        // Result of the service report image uploads
-        const uploads = reporte.recomendaciones
-            .filter(recomendacion => recomendacion.imagen?.file)
-            .map((recomendacion) => supabase.storage
-                .from("imagenes_servicios")
-                .upload(
-                    getImagePath(recomendacion.imagen!),
-                    recomendacion!.imagen!.file,
-                    { upsert: true }
-                ));
-
-        const signPath = getImagePath(reporte.firma);
-        const signUpload = await supabase.storage
-            .from("imagenes_servicios")
-            .upload(
-                signPath,
-                reporte.firma.file,
-                { upsert: true }
-            );
-
-        // Updates the service frequency and time
+    async function onServiceUpdate() {
+        // Updates the service frequency, time and status
         const serviceUpdate = await IO_Database
             .from("Servicios")
             .update({
-                firma_cliente: signUpload.error === null ? signPath : null,
                 horario_entrada: reporte.horaInicio,
                 horario_salida: reporte.horaSalida,
                 frecuencia_recomendada: reporte.frecuencia,
+                cancelado: reporte.estadoServicio === "Cancelado",
+                realizado: reporte.estadoServicio === "Realizado",
             }).eq("id", props.service!.id);
 
-        // Uploads the images and gets the full path for each of them
-        await Promise.all(uploads);
-
         if (isOk(serviceUpdate)) {
-            props.onReportSubmit?.();
+            props.onServiceUpdate?.();
         }
-
-        // Inserts the recommendations into the database
-        const insert = await IO_Database.from("Recomendaciones").insert(
-            reporte.recomendaciones.map(r => ({
-                imagen: imagesUploaded.get(r.imagen!.id) ?? null,
-                acciones: [...r.acciones],
-                problema: r.problema,
-                servicio_id: props.service!.id
-            }))
-        );
-
-        console.log(insert);
     }
 
     window.addEventListener("resize", resizeCanvas);
@@ -309,14 +292,27 @@ export function ServiceReport(props: ReportProps) {
                             <FaSolidClockRotateLeft class="is-size-5 has-text-info" />
                         </div>
                     </div>
+
+                    <label class="label">Estado del Servicio</label>
+                    <div class="control is-grouped has-icons-left is-expanded">
+                        <div class="select is-fullwidth">
+                            <select name="estado_servicio" onChange={onServiceStateChange}>
+                                <Index each={EstadosServicio}>
+                                    {(estado) =>
+                                        <option selected={reporte.estadoServicio === estado()} value={estado()}>
+                                            {estado()}
+                                        </option>}
+                                </Index>
+                            </select>
+                        </div>
+                        <div class="icon is-small is-left">
+                            {StateIcon()}
+                        </div>
+                    </div>
                 </div>
 
                 {/* Sugerencias y recomendaciones */}
-                <SuggestionPicker
-                    servicioId={props.service!.id}
-                    onSuggestionAdd={(sugerencias) => {
-                        reporte.recomendaciones = sugerencias;
-                    }} />
+                <SuggestionPicker servicio={props.service} />
 
                 {/* Firma del cliente en formato .png  */}
                 <div class="field io-signature">
@@ -344,7 +340,7 @@ export function ServiceReport(props: ReportProps) {
                                 onClick={saveSignature}
                                 type="button"
                             >
-                                {signSaved() ? "Cambiar firma" : "Aceptar Firma"}
+                                {signSaved() ? "Cambiar firma" : "Guardar Firma"}
                             </button>
                         </div>
                     </div>
@@ -367,7 +363,7 @@ export function ServiceReport(props: ReportProps) {
                 <button class="button is-success is-outlined is-fullwidth"
                     onClick={() => {
                         setIsSaving(true);
-                        onReportSubmit()
+                        onServiceUpdate()
                             .then(() => {
                                 setIsSaving(false);
                                 addToast("Servicio guardado correctamente", "is-info");

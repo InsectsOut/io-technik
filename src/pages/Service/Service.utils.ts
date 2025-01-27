@@ -2,6 +2,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { createUniqueId } from "solid-js";
 import { match } from "ts-pattern";
 import { Tabs } from "./Service.types";
+import { ImgFile } from "@/utils";
 
 /**
  * Returns a date object using the provided `fecha` and `hora`
@@ -17,6 +18,11 @@ export function getServiceDate(fecha: string, hora: string, useDayJs = false): D
     } catch (error) {
         return null;
     }
+}
+
+/** Returns a service image path by its folio */
+export function getServiceImgPath(image: ImgFile, folio: number) {
+    return image.id.startsWith(folio.toString()) ? image.id : `${folio}/${image.id}`;
 }
 
 /** Order in which to cycle the service tabs */

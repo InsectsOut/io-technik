@@ -1,5 +1,6 @@
 import { Enums } from "@/supabase";
 import { ImgFile } from "@/utils";
+import { match } from "ts-pattern";
 
 /** Nombres válidos de frencuencias de servicio */
 export type Frecuencia = Enums<"FrecuenciaServicio">;
@@ -12,12 +13,28 @@ export const FrecuenciaServicio: Frecuencia[] = [
     "Mensual",
     "Bimestral",
     "Trimestral",
-    "Anual"
+    "Anual",
 ];
 
-/** Valida que un valor sea una frecuencia válida */
+export const EstadosServicio: ServicioEstatus[] = [
+    "Cancelado",
+    "Pendiente",
+    "Realizado",
+];
+
+/** Possible state values for a service */
+export type ServicioEstatus = "Cancelado" | "Realizado" | "Pendiente";
+
+/** Validates that a value is a valid `Frecuencia` value */
 export function isFrecuencia(value: any): value is Frecuencia {
     return FrecuenciaServicio.includes(value);
+}
+
+/** Validates that a value is a valid `ServicioEstatus` value */
+export function isServicioStatus(value: any): value is ServicioEstatus {
+    return match(value)
+        .with("Cancelado", "Realizado", "Pendiente", () => true)
+        .otherwise(() => false);
 }
 
 /** Tabs to show for the service component */

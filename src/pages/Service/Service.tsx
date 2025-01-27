@@ -52,16 +52,17 @@ export function Service() {
             setView("suministros");
         }));
 
-    const onReportSubmit = () => window.setTimeout(
+    const onServiceUpdate = () => window.setTimeout(
         () => servicio.refetch().then(() => {
             setView("detalles");
             setView("reporte");
         }), 1000);
 
+    /** Creates a query to fetch the requested service, caches data for 1m */
     const servicio = createQuery(() => ({
         queryKey: [`service/${folio}`],
         queryFn: () => getServiceByFolio(folio),
-        staleTime: 1000 * 60 * 5,
+        staleTime: 1000 * 60 * 1,
         throwOnError: false
     }));
 
@@ -284,7 +285,7 @@ export function Service() {
                         </Match>
 
                         <Match when={servicio.data && isReport()}>
-                            <ServiceReport service={servicio.data ?? undefined} onReportSubmit={onReportSubmit} />
+                            <ServiceReport service={servicio.data ?? undefined} onServiceUpdate={onServiceUpdate} />
                         </Match>
                     </Switch>
                 </Motion.template>
