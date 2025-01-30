@@ -1,5 +1,7 @@
-import { IO_Database } from "@/supabase";
 import { QueryData } from "@supabase/supabase-js";
+import { IO_Database } from "@/supabase";
+
+import { employeeProfile } from "@/state";
 import { Dayjs } from "dayjs";
 
 /** Return type for a service query */
@@ -17,10 +19,20 @@ const query = IO_Database
  */
 export async function fetchServices(date?: Dayjs) {
     /** TODO: Remove check here so we can check services by date */
+    const serviceQuery = IO_Database
+        .from("Servicios")
+        .select(`*, Clientes(*), Direcciones(ubicacion)`)
+        .order("horario_servicio");
+
     if (date) {
         const serviceDate = date.format("YYYY-MM-DD")
-        query.eq("fecha_servicio", serviceDate);
+        serviceQuery.eq("fecha_servicio", serviceDate);
     }
 
-    return (await query).data;
+    const { id: employee_id } = employeeProfile() ?? {};
+    if (employee_id) {
+        query.eq("aplicador_Responsable", employee_id)
+    }
+
+    return (await serviceQuery).data;
 }

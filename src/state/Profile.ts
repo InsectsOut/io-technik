@@ -18,7 +18,7 @@ export async function fetchUserProfile(userId: string): Promise<Profile | null> 
 
 export type Profile = Tables<"Empleados">;
 
-export const [userProfile, setProfile] = createSignal<Profile | null>(null);
+export const [employeeProfile, setProfile] = createSignal<Profile | null>(null);
 
 supabase.auth.onAuthStateChange((_, session) => {
     const userId = session?.user.id;

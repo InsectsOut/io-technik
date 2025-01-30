@@ -1,17 +1,17 @@
 import css from "./Profile.module.css";
 import { Show } from "solid-js";
-import { userProfile } from "@/state/Profile";
+import { employeeProfile } from "@/state/Profile";
 import insectsImg from "@/assets/insects-out-med.png";
 import { currentSession } from "@/supabase";
 import { destructure } from "@solid-primitives/destructure";
 import { FaSolidAt, FaSolidBriefcase, FaSolidCakeCandles, FaSolidIdCard, FaSolidPhoneFlip } from "solid-icons/fa";
 
 export function Profile() {
-    if (!userProfile() || !currentSession()) {
-        return <Show when={!userProfile}>Loading...</Show>;
+    if (!employeeProfile() || !currentSession()) {
+        return <Show when={!employeeProfile}>Loading...</Show>;
     }
 
-    const { puesto, nombre, organizacion, curp, fecha_nacimiento, telefono } = destructure(userProfile()!);
+    const { puesto, nombre, organizacion, curp, fecha_nacimiento, telefono } = destructure(employeeProfile()!);
     const { email } = destructure(currentSession()!.user);
 
     return (

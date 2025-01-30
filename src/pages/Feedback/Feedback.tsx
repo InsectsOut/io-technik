@@ -6,7 +6,7 @@ import { FaSolidUpload } from "solid-icons/fa";
 import { Buckets, ImgFile } from "@/utils";
 import { useToast } from "@/components";
 import { supabase } from "@/supabase";
-import { userProfile } from "@/state";
+import { employeeProfile } from "@/state";
 
 import "./Feedback.module.css";
 
@@ -17,7 +17,7 @@ type FileInputEvent = InputEvent & {
 };
 
 export function Feedback() {
-    const { nombre } = destructure(userProfile()!)
+    const { nombre } = destructure(employeeProfile()!)
     const [imgId, setImgId] = createSignal(getImgId());
     const { addToast } = useToast();
 
@@ -42,7 +42,7 @@ export function Feedback() {
                 descripcion: feedbackForm.description,
                 tipo_error: feedbackForm.tipo,
                 titulo: feedbackForm.titulo,
-                id_user: userProfile()?.id!
+                id_user: employeeProfile()?.id!
             });
 
         if (insert.error) {

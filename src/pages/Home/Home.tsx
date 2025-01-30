@@ -82,12 +82,10 @@ export function Home() {
   const [filter, setFilter] = createSignal("");
   const lowerFilter = () => filter().toLowerCase();
 
-  const setDay = (val?: number) => {
-    if (val == null) {
-      return () => setDate(dayjs());
-    }
-
-    return () => setDate(day => day.add(val, "day"));
+  const setDay = (days?: number) => {
+    return days != null
+      	? () => setDate(day => day.add(days, "day"))
+        : () => setDate(dayjs());
   };
 
   const filteredServices = () => services.data?.filter((s) => {
@@ -106,8 +104,8 @@ export function Home() {
   });
 
   const services = createQuery(() => ({
-    queryKey: ["/service"],
-    queryFn: () => fetchServices(),
+    queryKey: [`/service-${shortDate()}`],
+    queryFn: () => fetchServices(date()),
     staleTime: 1000 * 60 * 5,
     throwOnError: false
   }));

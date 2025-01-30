@@ -4,7 +4,7 @@ import { Show, createSignal } from "solid-js";
 import "./Navbar.module.css";
 import { A, useBeforeLeave } from "@solidjs/router";
 import { Auth, currentSession } from "@/supabase";
-import { userProfile } from "@/state/Profile";
+import { employeeProfile } from "@/state/Profile";
 import { Pages } from "@/pages";
 import { AiFillHome } from "solid-icons/ai";
 
@@ -60,7 +60,7 @@ export function Navbar() {
                     <div class="navbar-start">
                         <Show when={currentSession()}>
                             <A href="/user" class="navbar-item">
-                                {userProfile()?.nombre}
+                                {employeeProfile()?.nombre}
                             </A>
                             <A href="/feedback" class="navbar-item">
                                 Reporta un problema
