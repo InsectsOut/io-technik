@@ -31,7 +31,7 @@ export async function fetchServices(date?: Dayjs) {
 
     const { id: employee_id } = employeeProfile() ?? {};
     if (employee_id) {
-        query.eq("aplicador_Responsable", employee_id)
+        serviceQuery.eq("aplicador_Responsable", employee_id)
     }
 
     return (await serviceQuery).data;

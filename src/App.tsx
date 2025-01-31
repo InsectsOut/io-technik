@@ -5,6 +5,7 @@ import { Error } from "@/pages";
 import PWABadge from './PWABadge.tsx'
 
 import { ErrorBoundary, createSignal, Show, ParentProps } from 'solid-js';
+import { employeeProfile } from "@/state/Profile.ts";
 import { useBeforeLeave } from '@solidjs/router';
 import { Motion } from 'solid-motionone';
 
@@ -24,7 +25,7 @@ function App(props: ParentProps) {
     <>
       <Toast toasts={toasts()} />
       <Navbar />
-      <Show when={visible()} keyed={true}>
+      <Show when={visible() && employeeProfile()} keyed={true}>
         <Motion.main {...FadeInAnimation}>
           <ErrorBoundary fallback={Error}>
             {props.children}
