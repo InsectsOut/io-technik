@@ -249,7 +249,7 @@ export function ServiceReport(props: ReportProps) {
                 <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                     <label class="label">Hora de Entrada</label>
                     <p class="control has-icons-left">
-                        <input id="hora_entrada" required
+                        <input title="Hora de entrada" id="hora_entrada" required
                             onChange={onTimeChange}
                             value={reporte.horaInicio}
                             class="input"
@@ -262,7 +262,7 @@ export function ServiceReport(props: ReportProps) {
 
                     <label class="label">Hora de Salida</label>
                     <p class="control has-icons-left">
-                        <input id="hora_salida" required
+                        <input title="Hora de salida" id="hora_salida" required
                             value={reporte.horaSalida}
                             onChange={onTimeChange}
                             class="input"
@@ -279,7 +279,7 @@ export function ServiceReport(props: ReportProps) {
                     <label class="label">Frecuencia sugerida de servicio</label>
                     <div class="control is-grouped has-icons-left is-expanded">
                         <div class="select is-fullwidth">
-                            <select name="frecuencia" onChange={onFrequencyChange}>
+                            <select title="Frecuencia" name="frecuencia" onChange={onFrequencyChange}>
                                 <Index each={FrecuenciaServicio}>
                                     {(frecuencia) =>
                                         <option selected={reporte.frecuencia === frecuencia()} value={frecuencia()}>
@@ -296,7 +296,7 @@ export function ServiceReport(props: ReportProps) {
                     <label class="label">Estado del Servicio</label>
                     <div class="control is-grouped has-icons-left is-expanded">
                         <div class="select is-fullwidth">
-                            <select name="estado_servicio" onChange={onServiceStateChange}>
+                            <select title="Estado del servicio" name="estado_servicio" onChange={onServiceStateChange}>
                                 <Index each={EstadosServicio}>
                                     {(estado) =>
                                         <option selected={reporte.estadoServicio === estado()} value={estado()}>

@@ -226,7 +226,7 @@ function SupplyDetail(item: Supply) {
                     >
                         <label class="label">Tipo Aplicación</label>
                         <p class="control has-icons-left">
-                            <input id="p_tipo" disabled
+                            <input title="Tipo de aplicación" id="p_tipo" disabled
                                 value={item.tipo}
                                 class="input"
                                 type="text"
@@ -238,7 +238,7 @@ function SupplyDetail(item: Supply) {
 
                         <label class="label">Cantidad Sugerida</label>
                         <p class="control has-icons-left">
-                            <input id="p_cantidad" disabled
+                            <input title="Cantidad sugerida" id="p_cantidad" disabled
                                 value={item.cantidad}
                                 class="input"
                                 type="number"
@@ -253,7 +253,7 @@ function SupplyDetail(item: Supply) {
 
                         <label class="label">Cantidad Utilizada</label>
                         <p class="control has-icons-left">
-                            <input id="p_cantidad_usada" required
+                            <input title="Cantidad usada" id="p_cantidad_usada" required
                                 onInput={(e) => setCantidad(e.target.valueAsNumber)}
                                 value={cantidad()}
                                 class="input"

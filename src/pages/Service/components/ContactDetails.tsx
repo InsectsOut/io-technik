@@ -42,7 +42,7 @@ export function ContactDetails(props: ContactProps) {
             <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                 <label class="label">Responsable</label>
                 <p class="control has-icons-left">
-                    <input disabled class="input" type="text" value={nombre() || "Sin información"} />
+                    <input title="Responsable" disabled class="input" type="text" value={nombre() || "Sin información"} />
                     <span class="icon is-medium is-left">
                         <FaSolidAddressCard class="has-text-info" />
                     </span>
@@ -50,7 +50,7 @@ export function ContactDetails(props: ContactProps) {
 
                 <label class="label">Puesto</label>
                 <p class="control has-icons-left">
-                    <input disabled class="input" value={puesto() || "Sin información"} />
+                    <input title="Puesto" disabled class="input" value={puesto() || "Sin información"} />
                     <span class="icon is-medium is-left">
                         <FaSolidBriefcase class="is-brown" />
                     </span>

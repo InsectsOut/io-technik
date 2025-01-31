@@ -205,13 +205,13 @@ export function Service() {
                                 <label class="label">Datos del Cliente</label>
                                 <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                     <p class="control has-icons-left">
-                                        <input disabled class="input has-text-link" type="text" value={`Folio: ${servicio.data?.folio}`} />
+                                        <input title="Folio" disabled class="input has-text-link" type="text" value={`Folio: ${servicio.data?.folio}`} />
                                         <span class="icon is-medium is-left">
                                             <FaSolidHashtag class="has-text-link" />
                                         </span>
                                     </p>
                                     <p class="control has-icons-left">
-                                        <input disabled class="input" value={getClientName(servicio.data?.Clientes!)} />
+                                        <input title="Cliente" disabled class="input" value={getClientName(servicio.data?.Clientes!)} />
                                         <span class="icon is-small is-left">
                                             <FaSolidUser />
                                         </span>
@@ -221,14 +221,14 @@ export function Service() {
                                 <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                     <label class="label">Fecha de Servicio</label>
                                     <p class="control has-icons-left">
-                                        <input disabled class="input" type="text" value={servicio.data?.fecha_servicio ?? "No asignada"} />
+                                        <input title="Fecha de servicio" disabled class="input" type="text" value={servicio.data?.fecha_servicio ?? "No asignada"} />
                                         <span class="icon is-medium is-left">
                                             <FaSolidCalendarDays />
                                         </span>
                                     </p>
                                     <label class="label">Hora de Servicio</label>
                                     <p class="control has-icons-left">
-                                        <input disabled class="input" value={getLocalTime(fechaServicio()) || "No asignada"} />
+                                        <input title="Hora de servicio" disabled class="input" value={getLocalTime(fechaServicio()) || "No asignada"} />
                                         <span class="icon is-small is-left">
                                             <FaSolidClock />
                                         </span>
@@ -238,14 +238,14 @@ export function Service() {
                                 <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                     <label class="label">Frecuencia del Servicio</label>
                                     <p class="control has-icons-left">
-                                        <input disabled class="input" type="text" value={servicio.data?.frecuencia_recomendada || "No asignada"} />
+                                        <input title="Frecuencia de servicio" disabled class="input" type="text" value={servicio.data?.frecuencia_recomendada || "No asignada"} />
                                         <span class="icon is-medium is-left">
                                             <FaSolidClockRotateLeft />
                                         </span>
                                     </p>
                                     <label class="label">Tipo de Servicio</label>
                                     <p class="control has-icons-left">
-                                        <input disabled class="input" value={servicio.data?.tipo_servicio || "Sin tipo"} />
+                                        <input title="Tipo de servicio" disabled class="input" value={servicio.data?.tipo_servicio || "Sin tipo"} />
                                         <span class="icon is-small is-left">
                                             <FaSolidWarehouse />
                                         </span>
@@ -255,14 +255,14 @@ export function Service() {
                                 <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                     <label class="label">Tipo de Folio</label>
                                     <p class="control has-icons-left">
-                                        <input disabled class="input" type="text" value={servicio.data?.tipo_folio || "Sin tipo"} />
+                                        <input title="Tipo de folio" disabled class="input" type="text" value={servicio.data?.tipo_folio || "Sin tipo"} />
                                         <span class="icon is-medium is-left">
                                             <FaSolidFilePen />
                                         </span>
                                     </p>
                                     <label class="label">Estado del Servicio</label>
                                     <p class="control has-icons-left">
-                                        <input disabled class="input" value={match(servicio.data)
+                                        <input title="Estado del servicio" disabled class="input" value={match(servicio.data)
                                             .with({ realizado: true }, () => "Realizado")
                                             .with({ cancelado: true }, () => "Cancelado")
                                             .otherwise(() => "Pendiente")} />

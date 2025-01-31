@@ -37,7 +37,7 @@ export function Profile() {
             <form class="form fullwidth">
                 <label class="label">Correo</label>
                 <p class="control has-icons-left m-4">
-                    <input disabled class="input" value={email?.() ?? ""} />
+                    <input title="Correo" disabled class="input" value={email?.() ?? ""} />
                     <span class="icon is-medium is-left">
                         <FaSolidAt class="is-size-5" />
                     </span>
@@ -46,7 +46,7 @@ export function Profile() {
                 <Show when={telefono()}>
                     <label class="label">Teléfono</label>
                     <p class="control has-icons-left m-4">
-                        <input disabled class="input" value={telefono()!} />
+                        <input title="Teléfono" disabled class="input" value={telefono()!} />
                         <span class="icon is-medium is-left">
                             <FaSolidPhoneFlip class="is-size-5" />
                         </span>
@@ -55,7 +55,7 @@ export function Profile() {
 
                 <label class="label">Organización</label>
                 <p class="control has-icons-left m-4">
-                    <input disabled class="input" value={organizacion() ?? ""} />
+                    <input title="Organización" disabled class="input" value={organizacion() ?? ""} />
                     <span class="icon is-medium is-left">
                         <FaSolidBriefcase class="is-size-5" />
                     </span>
@@ -63,7 +63,7 @@ export function Profile() {
 
                 <label class="label">Clave Única</label>
                 <p class="control has-icons-left m-4">
-                    <input disabled class="input" value={curp() ?? ""} />
+                    <input title="CURP" disabled class="input" value={curp() ?? ""} />
                     <span class="icon is-medium is-left">
                         <FaSolidIdCard class="is-size-5" />
                     </span>
@@ -71,7 +71,7 @@ export function Profile() {
 
                 <label class="label">Cumpleaños</label>
                 <p class="control has-icons-left m-4">
-                    <input disabled class="input" value={fecha_nacimiento() ?? ""} />
+                    <input title="Cumpleaños" disabled class="input" value={fecha_nacimiento() ?? ""} />
                     <span class="icon is-medium is-left">
                         <FaSolidCakeCandles class="is-size-5" />
                     </span>
