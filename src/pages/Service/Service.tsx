@@ -29,17 +29,11 @@ import {
     FaSolidUser,
     FaSolidWarehouse
 } from "solid-icons/fa";
-import { employeeProfile } from "@/state";
-
 
 /** Tracks if the service component can use swipe gestures */
 export const [canSwipe, setCanSwipe] = createSignal(true);
 
 export function Service() {
-    if (employeeProfile() == null) {
-        return null;
-    }
-
     const { folio } = useParams();
     const navigate = useNavigate();
     const goHome = () => navigate(Pages.Home);

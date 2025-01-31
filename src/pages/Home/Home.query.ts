@@ -18,20 +18,21 @@ const query = IO_Database
  * @returns A `promise` that resolves to an array of `Servicios`, null otherwise
  */
 export async function fetchServices(date?: Dayjs) {
+    const { id: employee_id } = employeeProfile() ?? {};
+    if (!employee_id) {
+        return null;
+    }
+
     /** TODO: Remove check here so we can check services by date */
     const serviceQuery = IO_Database
         .from("Servicios")
         .select(`*, Clientes(*), Direcciones(ubicacion)`)
-        .order("horario_servicio");
+        .order("horario_servicio")
+        .eq("aplicador_Responsable", employee_id);
 
     if (date) {
         const serviceDate = date.format("YYYY-MM-DD")
         serviceQuery.eq("fecha_servicio", serviceDate);
-    }
-
-    const { id: employee_id } = employeeProfile() ?? {};
-    if (employee_id) {
-        serviceQuery.eq("aplicador_Responsable", employee_id)
     }
 
     return (await serviceQuery).data;

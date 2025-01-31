@@ -1,18 +1,20 @@
-import { For, JSX, Match, Show, Suspense, Switch, createSignal } from "solid-js";
+import { For, JSX, Match, Show, Suspense, Switch, createEffect, createSignal } from "solid-js";
 import { createQuery } from "@tanstack/solid-query";
+import { Motion } from "solid-motionone";
 
 import { Service, fetchServices } from "./Home.query";
+
 import { deviceType, DeviceType, SlideDownFadeIn } from "@/utils";
-import { Error, Pages } from "@/pages";
+import { employeeProfile } from "@/state";
 import { LocaleMX } from "@/constants";
-
 import { Loading } from "@/components/";
+import { Error, Pages } from "@/pages";
 
-import { Motion } from "solid-motionone";
 import { match } from "ts-pattern";
 import dayjs from "dayjs";
 
 import "./Home.css";
+
 import { FaSolidBan, FaSolidCheck, FaSolidChevronLeft, FaSolidChevronRight, FaSolidCircleInfo, FaSolidMapPin, FaSolidPhoneFlip, FaSolidXmark } from "solid-icons/fa";
 import { TbProgressAlert, TbSearch } from "solid-icons/tb";
 import { FiSend } from "solid-icons/fi";
@@ -78,7 +80,6 @@ function NoServices() {
 }
 
 export function Home() {
-
   const [filter, setFilter] = createSignal("");
   const lowerFilter = () => filter().toLowerCase();
 
@@ -109,6 +110,13 @@ export function Home() {
     staleTime: 1000 * 60 * 5,
     throwOnError: false
   }));
+
+  // Updates the services shown once we can filter by employee
+  createEffect(() =>{
+    if (employeeProfile()) {
+      services.refetch();
+    }
+  });
 
   return (
     <Suspense fallback={<Loading message="Cargando servicios..." />}>
