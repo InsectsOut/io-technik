@@ -84,8 +84,8 @@ export function Home() {
 
   const setDay = (days?: number) => {
     return days != null
-      	? () => setDate(day => day.add(days, "day"))
-        : () => setDate(dayjs());
+      ? () => setDate(day => day.add(days, "day"))
+      : () => setDate(dayjs());
   };
 
   const filteredServices = () => services.data?.filter((s) => {
@@ -271,11 +271,13 @@ function HomeActions({ service }: { service: Service }): JSX.Element {
           </span>
         </a>
 
-        <a title="Compartir" href="" onClick={() => Share(service)}>
-          <span class="icon is-left">
-            <FiSend class="is-size-5" aria-hidden="true" />
-          </span>
-        </a>
+        <Show when={'share' in navigator}>
+          <a title="Compartir" href="" onClick={() => Share(service)}>
+            <span class="icon is-left">
+              <FiSend class="is-size-5" aria-hidden="true" />
+            </span>
+          </a>
+        </Show>
       </div>
     </td>
   )
