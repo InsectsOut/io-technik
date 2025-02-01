@@ -40,10 +40,6 @@ h1 {
     border: none !important;
 }
 
-.is-pointer {
-    cursor: pointer;
-}
-
 .is-misaligned {
     position: relative;
     top: 1px;

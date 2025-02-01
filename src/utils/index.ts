@@ -62,3 +62,13 @@ export const delay = (ms: number): Promise<any> => {
         window.setTimeout(resolve, ms);
     })
 }
+
+/** Returns a function that infers the input value */
+export function valueOf<T>(val: T): () => T {
+    return () => val;
+}
+
+/** Compares two strings alphabetically */
+export function compareStrings(s1: string, s2: string): number {
+    return s1.localeCompare(s2);
+}

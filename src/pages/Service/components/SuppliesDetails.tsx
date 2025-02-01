@@ -131,7 +131,7 @@ function SupplyDetail(item: Supply) {
         <tr class={css.slim_pad}>
             <td class="no-pad-left">
                 <span onClick={() => setShowInfo(true)}
-                    class="has-text-link is-pointer"
+                    class="has-text-link is-clickable"
                     title={item.nombre}
                 >
                     {item.nombre}
@@ -147,7 +147,7 @@ function SupplyDetail(item: Supply) {
 
             <td class="text-baselines" style={{ "text-align-last": "center" }}>
                 <span>{delta()} {simpleUnit()}</span>
-                <span class="icon is-right is-pointer">
+                <span class="icon is-right is-clickable">
                     {match(delta())
                         .when(d => d < 0, () => <FaSolidArrowDown class="has-text-success" />)
                         .when(d => d > 0, () => <FaSolidArrowUp class="has-text-danger" />)
@@ -156,7 +156,7 @@ function SupplyDetail(item: Supply) {
             </td>
             <td class="no-pad-right text-baseline" style={{ "text-align-last": "center" }}>
                 <div title="Editar" onClick={() => setShowInfo(true)}>
-                    <span class="icon is-left is-pointer">
+                    <span class="icon is-left is-clickable">
                         <BsPencilSquare class="has-text-warning is-size-4" aria-hidden="true" />
                     </span>
                 </div>

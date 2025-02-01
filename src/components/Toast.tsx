@@ -49,7 +49,7 @@ export function Toast(p: { toasts: ToastData[] }) {
                     <Motion.div {...SlideDownFadeIn} class={`notification ${toast.type}`} id={toast.id}>
                         {toast.message}
                         <span
-                            class={classNames("icon is-small is-pointer", css.toast_icon)}
+                            class={classNames("icon is-small is-clickable", css.toast_icon)}
                             onClick={() => removeToast(toast.id)}
                             title="Cerrar"
                         >

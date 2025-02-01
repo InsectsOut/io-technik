@@ -4,7 +4,7 @@ import { Motion } from "solid-motionone";
 
 import { Service, fetchServices } from "./Home.query";
 
-import { deviceType, DeviceType, SlideDownFadeIn } from "@/utils";
+import { classNames, compareStrings, deviceType, DeviceType, SlideDownFadeIn } from "@/utils";
 import { employeeProfile } from "@/state";
 import { LocaleMX } from "@/constants";
 import { Loading } from "@/components/";
@@ -15,7 +15,8 @@ import dayjs from "dayjs";
 
 import "./Home.css";
 
-import { FaSolidBan, FaSolidCheck, FaSolidChevronLeft, FaSolidChevronRight, FaSolidCircleInfo, FaSolidMapPin, FaSolidPhoneFlip, FaSolidXmark } from "solid-icons/fa";
+import { FaSolidBan, FaSolidCheck, FaSolidChevronDown, FaSolidChevronLeft, FaSolidChevronRight, FaSolidChevronUp, FaSolidCircleInfo, FaSolidMapPin, FaSolidPhoneFlip, FaSolidXmark } from "solid-icons/fa";
+import { getServiceStatus } from "../Service/Service.utils";
 import { TbProgressAlert, TbSearch } from "solid-icons/tb";
 import { FiSend } from "solid-icons/fi";
 
@@ -43,9 +44,17 @@ function getStatusIcon(service: Service) {
   );
 }
 
-function getSimpleTime({ fecha_servicio, horario_servicio }: Service) {
-  return dayjs(`${fecha_servicio}T${horario_servicio}`)
-    .format("hh:mm a");
+function getSimpleDate({ fecha_servicio, horario_servicio }: Service) {
+  return dayjs(`${fecha_servicio}T${horario_servicio}`);
+}
+
+function getSimpleTime(s: Service) {
+  return getSimpleDate(s).format("hh:mm a");
+}
+
+/** Returns the provided service's client name */
+function getClientName({ Clientes: c }: Service): string {
+  return `${c?.nombre ?? ""} ${c?.apellidos ?? ""}`;
 }
 
 const shortDate = () => date()
@@ -68,6 +77,13 @@ function Share(service: Service) {
   });
 }
 
+function scrollIntoView(el: HTMLElement) {
+  window.setTimeout(() => el.scrollIntoView({
+    behavior: "smooth",
+    inline: "end"
+  }), 200);
+}
+
 function NoServices() {
   return (
     <>
@@ -79,9 +95,62 @@ function NoServices() {
   )
 }
 
+type OrderBy = "estatus" | "tel" | "cliente" | "hora" | "folio";
+
+type OrderDir = "asc" | "desc";
+
 export function Home() {
+  const [direction, setDirection] = createSignal<OrderDir>("asc");
+  const [order, setOrder] = createSignal<OrderBy>("hora");
   const [filter, setFilter] = createSignal("");
   const lowerFilter = () => filter().toLowerCase();
+  const setOrderAndDir = (order: OrderBy) => {
+    setDirection(d => d === "asc" ? "desc" : "asc");
+    setOrder(order);
+  }
+
+  function filterServices(s: Service) {
+    if (!lowerFilter()) {
+      return services.data;
+    }
+
+    const folioFilter = parseInt(lowerFilter());
+
+    if (!isNaN(folioFilter)) {
+      return s.folio === folioFilter;
+    }
+
+    return getClientName(s).toLowerCase().includes(lowerFilter());
+  }
+
+  function orderServices(s1: Service, s2: Service) {
+    const dir = direction() === "asc" ? 1 : -1;
+    const tel1 = s1.Clientes?.telefono ?? "";
+    const tel2 = s2.Clientes?.telefono ?? "";
+
+    const newOrder = match(order())
+      .with("estatus", () => getServiceStatus(s1).localeCompare(getServiceStatus(s2)))
+      .with("cliente", () => getClientName(s1).localeCompare(getClientName(s2)))
+      .with("hora", () => getSimpleDate(s1).isBefore(getSimpleDate(s2)) ? -1 : 1)
+      .with("tel", () => compareStrings(tel1, tel2))
+      .otherwise(() => s1.folio - s2.folio);
+
+    return newOrder * dir;
+  }
+
+  function getSortIcon(icon: OrderBy) {
+    const isSelected = icon === order();
+    const iconClass = classNames(
+      "is-size-6 is-clickable",
+      isSelected
+        ? "has-text-primary"
+        : "has-text-grey"
+    );
+
+    return icon !== order() || direction() === "asc"
+      ? <FaSolidChevronDown class={iconClass} />
+      : <FaSolidChevronUp class={iconClass} />;
+  }
 
   const setDay = (days?: number) => {
     return days != null
@@ -89,30 +158,20 @@ export function Home() {
       : () => setDate(dayjs());
   };
 
-  const filteredServices = () => services.data?.filter((s) => {
-    if (!lowerFilter()) {
-      return services.data;
-    }
-
-    const nombreCliente = `${s.Clientes?.nombre} ${s.Clientes?.apellidos}`.toLowerCase();
-    const folioFilter = parseInt(lowerFilter());
-
-    if (!isNaN(folioFilter)) {
-      return s.folio === folioFilter;
-    }
-
-    return nombreCliente.includes(lowerFilter());
-  });
+  const filteredServices = () => services.data
+      ?.filter(filterServices)
+      .toSorted(orderServices);
 
   const services = createQuery(() => ({
     queryKey: [`/service-${shortDate()}`],
-    queryFn: () => fetchServices(date()),
+    queryFn: () => fetchServices(),
+    // queryFn: () => fetchServices(date()),
     staleTime: 1000 * 60 * 5,
     throwOnError: false
   }));
 
   // Updates the services shown once we can filter by employee
-  createEffect(() =>{
+  createEffect(() => {
     if (employeeProfile()) {
       services.refetch();
     }
@@ -176,10 +235,38 @@ export function Home() {
                 <table class="table io-table">
                   <thead>
                     <tr>
-                      <th class="has-text-centered no-pad-left">#</th>
-                      <th>Horario</th>
-                      <th>Cliente</th>
-                      <th class="has-text-centered no-pad-right">Estatus</th>
+                      <th class="has-text-centered no-pad-left" onClick={() => setOrderAndDir("folio")}>
+                        <span class="icon-text is-flex-wrap-nowrap">
+                          <span>#</span>
+                          <span class="icon">
+                            {getSortIcon("folio")}
+                          </span>
+                        </span>
+                      </th>
+                      <th onClick={() => setOrderAndDir("hora")}>
+                        <span class="icon-text is-flex-wrap-nowrap">
+                          <span>Horario</span>
+                          <span class="icon">
+                            {getSortIcon("hora")}
+                          </span>
+                        </span>
+                      </th>
+                      <th onClick={() => setOrderAndDir("cliente")}>
+                        <span class="icon-text is-flex-wrap-nowrap">
+                          <span>Cliente</span>
+                          <span class="icon">
+                            {getSortIcon("cliente")}
+                          </span>
+                        </span>
+                      </th>
+                      <th class="has-text-centered no-pad-right" ref={scrollIntoView} onClick={() => setOrderAndDir("estatus")}>
+                        <span class="icon-text is-flex-wrap-nowrap">
+                          <span>Estatus</span>
+                          <span class="icon">
+                            {getSortIcon("estatus")}
+                          </span>
+                        </span>
+                      </th>
                       <Show when={deviceType() > DeviceType.Mobile}>
                         <th class="is-flex is-justify-content-space-around is-misaligned gap-3">
                           <div class="has-text-centered">Teléfono</div>
@@ -192,43 +279,36 @@ export function Home() {
                   </thead>
                   <tbody>
                     <For each={filteredServices()}>
-                      {service => {
-                        const serviceStatus = match(service)
-                          .with({ realizado: true }, () => "Realizado")
-                          .with({ cancelado: true }, () => "Cancelado")
-                          .otherwise(() => "Pendiente");
-
-                        return (
-                          <>
-                            <tr class="is-pointer" onClick={() => toggleShownService(service)}>
-                              <th class="no-pad-left">{service.folio}</th>
-                              <th>{getSimpleTime(service)}</th>
-                              <td>
-                                <Show when={deviceType() > DeviceType.Mobile} fallback={
-                                  <span>{service.Clientes?.nombre} {service.Clientes?.apellidos}</span>
-                                }>
-                                  <a href={`${Pages.Services}/${service.folio}`}>
-                                    {service.Clientes?.nombre} {service.Clientes?.apellidos}
-                                  </a>
-                                </Show>
-                              </td>
-                              <td class="icon-col has-text-centered no-pad-right">
-                                <div title={serviceStatus}>
-                                  {deviceType() > DeviceType.Tablet ? serviceStatus : getStatusIcon(service)}
-                                </div>
-                              </td>
-                              <Show when={deviceType() > DeviceType.Mobile}>
-                                <HomeActions service={service} />
+                      {service => (
+                        <>
+                          <tr class="is-clickable" onClick={() => toggleShownService(service)}>
+                            <th class="no-pad-left">{service.folio}</th>
+                            <th>{getSimpleTime(service)}</th>
+                            <td>
+                              <Show when={deviceType() > DeviceType.Mobile} fallback={
+                                <span>{service.Clientes?.nombre} {service.Clientes?.apellidos}</span>
+                              }>
+                                <a href={`${Pages.Services}/${service.folio}`}>
+                                  {service.Clientes?.nombre} {service.Clientes?.apellidos}
+                                </a>
                               </Show>
-                            </tr>
-                            <Show when={infoShown() === service.id && deviceType() === DeviceType.Mobile}>
-                              <Motion.tr {...SlideDownFadeIn}>
-                                <HomeActions service={service} />
-                              </Motion.tr>
+                            </td>
+                            <td class="icon-col has-text-centered no-pad-right">
+                              <div title={getServiceStatus(service)}>
+                                {deviceType() > DeviceType.Tablet ? getServiceStatus(service) : getStatusIcon(service)}
+                              </div>
+                            </td>
+                            <Show when={deviceType() > DeviceType.Mobile}>
+                              <HomeActions service={service} />
                             </Show>
-                          </>
-                        );
-                      }}
+                          </tr>
+                          <Show when={infoShown() === service.id && deviceType() === DeviceType.Mobile}>
+                            <Motion.tr {...SlideDownFadeIn}>
+                              <HomeActions service={service} />
+                            </Motion.tr>
+                          </Show>
+                        </>
+                      )}
                     </For>
                   </tbody>
                 </table>
