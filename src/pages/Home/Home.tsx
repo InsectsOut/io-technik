@@ -87,7 +87,9 @@ function scrollIntoView(el: HTMLElement) {
 function NoServices() {
   return (
     <>
-      <h1 class="is-centered no-services">No hay servicios para hoy</h1>
+      <h1 class="is-centered no-services">
+        No hay servicios para {date() === dayjs() ? "hoy" : shortDate()}
+      </h1>
       <div class="is-flex is-justify-content-center">
         <i class="fa-solid fa-beer-mug-empty empty-icon" />
       </div>
@@ -164,8 +166,7 @@ export function Home() {
 
   const services = createQuery(() => ({
     queryKey: [`/service-${shortDate()}`],
-    queryFn: () => fetchServices(),
-    // queryFn: () => fetchServices(date()),
+    queryFn: () => fetchServices(date()),
     staleTime: 1000 * 60 * 5,
     throwOnError: false
   }));

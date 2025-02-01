@@ -11,7 +11,7 @@ export function Profile() {
         return <Show when={!employeeProfile}>Loading...</Show>;
     }
 
-    const { puesto, nombre, organizacion, curp, fecha_nacimiento, telefono } = destructure(employeeProfile()!);
+    const { puesto, nombre, organizacion, curp, fecha_nacimiento, telefono, tipo_rol } = destructure(employeeProfile()!);
     const { email } = destructure(currentSession()!.user);
 
     return (
@@ -26,7 +26,7 @@ export function Profile() {
 
                 <div class="media-content">
                     <div class="content">
-                        <strong>{nombre()}</strong>
+                        <strong>{nombre()} | {tipo_rol()}</strong>
                         <br />
                         <span>@{puesto()}</span>
                         <br />

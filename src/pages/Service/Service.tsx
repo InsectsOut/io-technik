@@ -9,6 +9,7 @@ import { Tables } from "@/supabase";
 import { ContactDetails, SuppliesDetails, ServiceReport } from "./components/";
 import { classNames, FadeInAnimation, useSwipe } from "@/utils";
 import { getLocalTime } from "@/utils/Date";
+import { employeeProfile } from "@/state";
 import { Tabs } from "./Service.types";
 import { Error, Pages } from "..";
 
@@ -22,6 +23,7 @@ import { tabOrder } from "./Service.utils";
 import {
     FaSolidCalendarDays,
     FaSolidCircleQuestion,
+    FaSolidClipboardUser,
     FaSolidClock,
     FaSolidClockRotateLeft,
     FaSolidFilePen,
@@ -201,6 +203,18 @@ export function Service() {
 
                         <Match when={servicio.data && isInfo()}>
                             <form class="hide_scroll">
+                                <Show when={employeeProfile()?.tipo_rol === "superadmin" && servicio.data?.Empleados}>
+                                    <label class="label">Ténico Asignado</label>
+                                    <div class={classNames("field is-flex-direction-column", css.io_field)}>
+                                        <p class="control has-icons-left">
+                                            <input title="Técnico" disabled class="input" type="text" value={servicio.data?.Empleados?.nombre} />
+                                            <span class="icon is-medium is-left">
+                                                <FaSolidClipboardUser />
+                                            </span>
+                                        </p>
+                                    </div>
+                                </Show>
+
                                 <label class="label">Datos del Cliente</label>
                                 <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                     <p class="control has-icons-left">

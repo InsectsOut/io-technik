@@ -17,6 +17,7 @@ export async function getServiceByFolio(folio: string) {
             Clientes(*),
             Direcciones(*),
             Responsables(*),
+            Empleados!Servicios_aplicador_Responsable_fkey(nombre),
             RegistroAplicacion(*, Productos(*))`
         )
         .eq("folio", folio)

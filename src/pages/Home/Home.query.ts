@@ -18,20 +18,21 @@ const query = IO_Database
  * @returns A `promise` that resolves to an array of `Servicios`, null otherwise
  */
 export async function fetchServices(date?: Dayjs) {
-    const { id: employee_id } = employeeProfile() ?? {};
-    if (!employee_id) {
-        return null;
-    }
+    const { id: employee_id, tipo_rol } = employeeProfile() ?? {};
 
-    /** TODO: Remove check here so we can check services by date */
     const serviceQuery = IO_Database
         .from("Servicios")
         .select(`*, Clientes(*), Direcciones(ubicacion)`)
         .order("horario_servicio")
-        .eq("aplicador_Responsable", employee_id);
 
+    // If the user is not a superadmin, only show their assigned services
+    if (employee_id != null && tipo_rol !== "superadmin") {
+        serviceQuery.eq("aplicador_Responsable", employee_id);
+    }
+
+    // If a date is provided, filter by that date
     if (date) {
-        const serviceDate = date.format("YYYY-MM-DD")
+        const serviceDate = date.format("YYYY-MM-DD");
         serviceQuery.eq("fecha_servicio", serviceDate);
     }
 
