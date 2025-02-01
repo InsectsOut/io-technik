@@ -8,6 +8,7 @@ import { Tables } from "@/supabase";
 
 import { ContactDetails, SuppliesDetails, ServiceReport } from "./components/";
 import { classNames, FadeInAnimation, useSwipe } from "@/utils";
+import { getServiceStatus, tabOrder } from "./Service.utils";
 import { getLocalTime } from "@/utils/Date";
 import { employeeProfile } from "@/state";
 import { Tabs } from "./Service.types";
@@ -16,20 +17,22 @@ import { Error, Pages } from "..";
 import { createQuery } from "@tanstack/solid-query";
 import { match } from "ts-pattern";
 
+import { TbProgressAlert } from "solid-icons/tb";
 import css from "./Service.module.css";
-import { tabOrder } from "./Service.utils";
 
 // Font Awesome Icons
 import {
+    FaSolidBriefcase,
     FaSolidCalendarDays,
-    FaSolidCircleQuestion,
+    FaSolidCheck,
     FaSolidClipboardUser,
     FaSolidClock,
     FaSolidClockRotateLeft,
     FaSolidFilePen,
     FaSolidHashtag,
     FaSolidUser,
-    FaSolidWarehouse
+    FaSolidWarehouse,
+    FaSolidXmark
 } from "solid-icons/fa";
 
 /** Tracks if the service component can use swipe gestures */
@@ -142,9 +145,14 @@ export function Service() {
         }
     }
 
+    const StateIcon = () => servicio.data && match(getServiceStatus(servicio.data))
+        .with("Realizado", () => <FaSolidCheck class="is-size-5" />)
+        .with("Cancelado", () => <FaSolidXmark class="is-size-5" />)
+        .otherwise(() => <TbProgressAlert class="is-size-5" />);
+
     onMount(() => {
         if (tabContainer) {
-            const cleanup = useSwipe(tabContainer, handleTabSwipe, { threshold: 80 });
+            const cleanup = useSwipe(tabContainer, handleTabSwipe, { threshold: 70 });
             onCleanup(cleanup); // Ensure cleanup on component unmount
         }
     });
@@ -204,12 +212,19 @@ export function Service() {
                         <Match when={servicio.data && isInfo()}>
                             <form class="hide_scroll">
                                 <Show when={employeeProfile()?.tipo_rol === "superadmin" && servicio.data?.Empleados}>
-                                    <label class="label">Ténico Asignado</label>
-                                    <div class={classNames("field is-flex-direction-column", css.io_field)}>
+                                    <div class={classNames("field is-grouped is-flex-direction-column mb-5", css.io_field)}>
+                                        <label class="label">Técnico Asignado</label>
                                         <p class="control has-icons-left">
                                             <input title="Técnico" disabled class="input" type="text" value={servicio.data?.Empleados?.nombre} />
                                             <span class="icon is-medium is-left">
                                                 <FaSolidClipboardUser />
+                                            </span>
+                                        </p>
+                                        <label class="label">Organización</label>
+                                        <p class="control has-icons-left">
+                                            <input title="Organización" disabled class="input" value={servicio.data?.Empleados?.organizacion ?? 'N/A'} />
+                                            <span class="icon is-small is-left">
+                                                <FaSolidBriefcase />
                                             </span>
                                         </p>
                                     </div>
@@ -280,7 +295,7 @@ export function Service() {
                                             .with({ cancelado: true }, () => "Cancelado")
                                             .otherwise(() => "Pendiente")} />
                                         <span class="icon is-small is-left">
-                                            <FaSolidCircleQuestion />
+                                            {StateIcon()}
                                         </span>
                                     </p>
                                 </div>
