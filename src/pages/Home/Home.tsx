@@ -9,6 +9,7 @@ import { employeeProfile } from "@/state";
 import { LocaleMX } from "@/constants";
 import { Loading } from "@/components/";
 import { Error, Pages } from "@/pages";
+import { InputEvent } from "@/types";
 
 import { match } from "ts-pattern";
 import dayjs from "dayjs";
@@ -59,7 +60,7 @@ function getClientName({ Clientes: c }: Service): string {
 }
 
 const shortDate = () => date()
-  .format("DD/MM/YY");
+  .format("YYYY-MM-DD");
 
 const fullDate = () => date().toDate()
   .toLocaleDateString(LocaleMX, { dateStyle: "full" });
@@ -89,7 +90,7 @@ function NoServices() {
   return (
     <>
       <h1 class="is-centered no-services">
-        No hay servicios para {isToday() ? "hoy" : `el ${shortDate()}`}
+        No hay servicios para {isToday() ? "hoy" : "este día"}
       </h1>
       <div class="is-flex is-justify-content-center">
         <i class="fa-solid fa-beer-mug-empty empty-icon" />
@@ -157,9 +158,11 @@ export function Home() {
       : () => setDate(dayjs());
   };
 
+  const pickDate = (e: InputEvent<HTMLInputElement>) => setDate(dayjs(e.target.value));
+
   const filteredServices = () => services.data
-      ?.filter(filterServices)
-      .toSorted(orderServices);
+    ?.filter(filterServices)
+    .toSorted(orderServices);
 
   const services = createQuery(() => ({
     queryKey: [`/service-${shortDate()}`],
@@ -224,7 +227,7 @@ export function Home() {
 
               <div class="panel-tabs is-align-items-center">
                 <p class="is-borderless" title={fullDate()}>
-                  <strong>{shortDate()}</strong>
+                  <input type="date" name="day" value={shortDate()} onInput={pickDate} />
                 </p>
               </div>
             </div>
