@@ -22,6 +22,7 @@ import { FiSend } from "solid-icons/fi";
 
 const [date, setDate] = createSignal(dayjs());
 const [infoShown, setInfoShown] = createSignal(NaN);
+const isToday = () => date().isSame(dayjs(), "day");
 
 function toggleShownService(service: Service) {
   return setInfoShown(
@@ -88,7 +89,7 @@ function NoServices() {
   return (
     <>
       <h1 class="is-centered no-services">
-        No hay servicios para {date() === dayjs() ? "hoy" : shortDate()}
+        No hay servicios para {isToday() ? "hoy" : `el ${shortDate()}`}
       </h1>
       <div class="is-flex is-justify-content-center">
         <i class="fa-solid fa-beer-mug-empty empty-icon" />
@@ -188,6 +189,7 @@ export function Home() {
         <Match when={services.data}>
           <nav class="panel is-shadowless">
             <h1 class="title no-padding has-text-centered">Servicios</h1>
+            <h2 class="subtitle no-padding has-text-centered">{fullDate()}</h2>
             <div class="panel-block">
               <p class="control has-icons-left">
                 <input onInput={(e) => setFilter(e.target.value)}
@@ -212,7 +214,7 @@ export function Home() {
                   <FaSolidChevronLeft aria-hidden="true" />
                 </button>
 
-                <a class="is-active" onClick={setDay()}>Hoy</a>
+                <a class="is-active" onClick={setDay()}>Ir a hoy</a>
 
                 <button
                   class="button icon is-left"
@@ -225,9 +227,9 @@ export function Home() {
               </p>
 
               <div class="panel-tabs is-align-items-center">
-                <a class="has-text-grey-dark is-borderless" title={fullDate()}>
-                  {shortDate()}
-                </a>
+                <p class="is-borderless" title={fullDate()}>
+                  <strong>{shortDate()}</strong>
+                </p>
               </div>
             </div>
 

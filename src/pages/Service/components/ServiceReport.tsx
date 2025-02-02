@@ -14,7 +14,7 @@ import { EstadosServicio, FrecuenciaServicio, isFrecuencia, isServicioStatus, Se
 import { getServiceImgPath } from "../Service.utils";
 import { setCanSwipe } from "../Service";
 
-import { FaSolidCheck, FaSolidClockRotateLeft, FaSolidCloudArrowUp, FaSolidDoorClosed, FaSolidDoorOpen, FaSolidXmark } from "solid-icons/fa";
+import { FaRegularSquareCheck, FaSolidCheck, FaSolidClockRotateLeft, FaSolidCloudArrowUp, FaSolidDoorClosed, FaSolidDoorOpen, FaSolidXmark } from "solid-icons/fa";
 import { FiSave } from "solid-icons/fi";
 import css from "../Service.module.css";
 import { match } from "ts-pattern";
@@ -25,15 +25,15 @@ type ReportProps = {
     onServiceUpdate?: () => void;
 };
 
-type InputEvent = Event & {
-    currentTarget: HTMLInputElement;
-    target: HTMLInputElement;
-};
+export type InputEvent<T = HTMLElement> = Event & {
+    currentTarget: T;
+    target: T;
+}
 
-type SelectEvent = Event & {
-    currentTarget: HTMLSelectElement;
-    target: HTMLSelectElement;
-};
+export type ClickEvent<T = HTMLElement> = MouseEvent & {
+    currentTarget: T;
+    target: Element;
+}
 
 export function ServiceReport(props: ReportProps) {
     if (!props.service) {
@@ -185,7 +185,7 @@ export function ServiceReport(props: ReportProps) {
         }
     }
 
-    function onTimeChange(event: InputEvent) {
+    function onTimeChange(event: InputEvent<HTMLInputElement>) {
         const { id, value } = event.target;
         const [hour, minutes] = value.split(":");
         const localDate = new Date();
@@ -210,15 +210,31 @@ export function ServiceReport(props: ReportProps) {
         console.log(JSON.stringify(reporte));
     }
 
-    function onFrequencyChange({ target }: SelectEvent) {
+    function onFrequencyChange({ target }: InputEvent<HTMLSelectElement>) {
         if (isFrecuencia(target.value)) {
             reporte.frecuencia = target.value;
         }
     }
 
-    function onServiceStateChange({ target }: SelectEvent) {
+    function onServiceStateChange({ target }: InputEvent<HTMLSelectElement>) {
         if (isServicioStatus(target.value)) {
             reporte.estadoServicio = target.value;
+        }
+    }
+
+    function setTimeToNow(event: "entrada" | "salida") {
+        const localDate = new Date();
+        localDate.setSeconds(0);
+        if (event === "entrada") {
+            reporte.horaInicio = localDate.toLocaleTimeString(LocaleMX, {
+                timeStyle: "medium",
+                hour12: false
+            });
+        } else {
+            reporte.horaSalida = localDate.toLocaleTimeString(LocaleMX, {
+                timeStyle: "medium",
+                hour12: false
+            });
         }
     }
 
@@ -248,7 +264,7 @@ export function ServiceReport(props: ReportProps) {
                 {/* Hora de inicio y salida del servicio */}
                 <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                     <label class="label">Hora de Entrada</label>
-                    <p class="control has-icons-left">
+                    <p class="control has-icons-left has-icons-right">
                         <input title="Hora de entrada" id="hora_entrada" required
                             onChange={onTimeChange}
                             value={reporte.horaInicio}
@@ -258,10 +274,17 @@ export function ServiceReport(props: ReportProps) {
                         <span class="icon is-medium is-left">
                             <FaSolidDoorOpen class="is-brown is-size-5" />
                         </span>
+                        <span onClick={() => setTimeToNow("entrada")}
+                            class="icon is-medium is-right is-clickable mr-5 z-10"
+                            title="Marcar entrada"
+                        >
+                            <span class="mr-2">Ahora</span>
+                            <FaRegularSquareCheck class="is-size-4 has-text-primary" />
+                        </span>
                     </p>
 
                     <label class="label">Hora de Salida</label>
-                    <p class="control has-icons-left">
+                    <p class="control has-icons-left has-icons-right">
                         <input title="Hora de salida" id="hora_salida" required
                             value={reporte.horaSalida}
                             onChange={onTimeChange}
@@ -270,6 +293,13 @@ export function ServiceReport(props: ReportProps) {
                         />
                         <span class="icon is-medium is-left">
                             <FaSolidDoorClosed class="is-brown is-size-5" />
+                        </span>
+                        <span onClick={() => setTimeToNow("salida")}
+                            class="icon is-medium is-right is-clickable mr-5 z-10"
+                            title="Marcar salida"
+                        >
+                            <span class="mr-2">Ahora</span>
+                            <FaRegularSquareCheck class="is-size-4 has-text-primary" />
                         </span>
                     </p>
                 </div>
