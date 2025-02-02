@@ -278,7 +278,7 @@ export function ServiceReport(props: ReportProps) {
                             class="icon is-medium is-right is-clickable mr-5 z-10"
                             title="Marcar entrada"
                         >
-                            <span class="mr-2">Ahora</span>
+                            <span class="mr-2 normal-txt">Ahora</span>
                             <FaRegularSquareCheck class="is-size-4 has-text-primary" />
                         </span>
                     </p>
@@ -298,7 +298,7 @@ export function ServiceReport(props: ReportProps) {
                             class="icon is-medium is-right is-clickable mr-5 z-10"
                             title="Marcar salida"
                         >
-                            <span class="mr-2">Ahora</span>
+                            <span class="mr-2 normal-txt">Ahora</span>
                             <FaRegularSquareCheck class="is-size-4 has-text-primary" />
                         </span>
                     </p>
