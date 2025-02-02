@@ -4,7 +4,7 @@ import { Motion } from "solid-motionone";
 
 import { Service, fetchServices } from "./Home.query";
 
-import { classNames, compareStrings, deviceType, DeviceType, SlideDownFadeIn } from "@/utils";
+import { classNames, deviceType, DeviceType, SlideDownFadeIn } from "@/utils";
 import { employeeProfile } from "@/state";
 import { LocaleMX } from "@/constants";
 import { Loading } from "@/components/";
@@ -98,7 +98,7 @@ function NoServices() {
   )
 }
 
-type OrderBy = "estatus" | "tel" | "cliente" | "hora" | "folio";
+type OrderBy = "estatus" | "cliente" | "hora" | "folio";
 
 type OrderDir = "asc" | "desc";
 
@@ -128,14 +128,10 @@ export function Home() {
 
   function orderServices(s1: Service, s2: Service) {
     const dir = direction() === "asc" ? 1 : -1;
-    const tel1 = s1.Clientes?.telefono ?? "";
-    const tel2 = s2.Clientes?.telefono ?? "";
-
     const newOrder = match(order())
       .with("estatus", () => getServiceStatus(s1).localeCompare(getServiceStatus(s2)))
       .with("cliente", () => getClientName(s1).localeCompare(getClientName(s2)))
       .with("hora", () => getSimpleDate(s1).isBefore(getSimpleDate(s2)) ? -1 : 1)
-      .with("tel", () => compareStrings(tel1, tel2))
       .otherwise(() => s1.folio - s2.folio);
 
     return newOrder * dir;

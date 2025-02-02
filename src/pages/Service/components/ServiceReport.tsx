@@ -9,31 +9,23 @@ import { Buckets, classNames, ImgFile, isOk } from "@/utils";
 import { IO_Database, supabase, Tables } from "@/supabase";
 import { Modal, useToast } from "@/components";
 import { LocaleMX } from "@/constants";
+import { InputEvent } from "@/types";
 
 import { EstadosServicio, FrecuenciaServicio, isFrecuencia, isServicioStatus, ServicioEstatus } from "../Service.types";
 import { getServiceImgPath } from "../Service.utils";
 import { setCanSwipe } from "../Service";
 
 import { FaRegularSquareCheck, FaSolidCheck, FaSolidClockRotateLeft, FaSolidCloudArrowUp, FaSolidDoorClosed, FaSolidDoorOpen, FaSolidXmark } from "solid-icons/fa";
+import { TbProgressAlert } from "solid-icons/tb";
 import { FiSave } from "solid-icons/fi";
+
 import css from "../Service.module.css";
 import { match } from "ts-pattern";
-import { TbProgressAlert } from "solid-icons/tb";
 
 type ReportProps = {
     service?: Tables<"Servicios">
     onServiceUpdate?: () => void;
 };
-
-export type InputEvent<T = HTMLElement> = Event & {
-    currentTarget: T;
-    target: T;
-}
-
-export type ClickEvent<T = HTMLElement> = MouseEvent & {
-    currentTarget: T;
-    target: Element;
-}
 
 export function ServiceReport(props: ReportProps) {
     if (!props.service) {
