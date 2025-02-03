@@ -227,7 +227,7 @@ export function Home() {
 
               <div class="panel-tabs is-align-items-center">
                 <p class="is-borderless" title={fullDate()}>
-                  <input type="date" name="day" value={shortDate()} onInput={pickDate} />
+                  <input class="input" type="date" name="day" value={shortDate()} onInput={pickDate} />
                 </p>
               </div>
             </div>
