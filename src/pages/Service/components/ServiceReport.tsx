@@ -12,8 +12,8 @@ import { LocaleMX } from "@/constants";
 import { InputEvent } from "@/types";
 
 import { EstadosServicio, FrecuenciaServicio, isFrecuencia, isServicioStatus, ServicioEstatus } from "../Service.types";
+import { setCanSwipe, setChangesUnsaved } from "../Service";
 import { getServiceImgPath } from "../Service.utils";
-import { setCanSwipe } from "../Service";
 
 import { FaRegularSquareCheck, FaSolidCheck, FaSolidClockRotateLeft, FaSolidCloudArrowUp, FaSolidDoorClosed, FaSolidDoorOpen, FaSolidXmark } from "solid-icons/fa";
 import { TbProgressAlert } from "solid-icons/tb";
@@ -101,6 +101,7 @@ export function ServiceReport(props: ReportProps) {
     });
 
     function clearSignature() {
+        setChangesUnsaved(true);
         setSignSaved(false);
         signPad?.clear();
         signPad?.on();
@@ -123,6 +124,7 @@ export function ServiceReport(props: ReportProps) {
         if (signSaved()) {
             signPad?.on();
             signPad?.clear();
+            setChangesUnsaved(true);
             return setSignSaved(false);
         }
 
@@ -181,56 +183,49 @@ export function ServiceReport(props: ReportProps) {
         const { id, value } = event.target;
         const [hour, minutes] = value.split(":");
         const localDate = new Date();
+        const timeKey = id === "hora_entrada" ? "horaInicio" : "horaSalida";
+        setChangesUnsaved(true);
         localDate.setHours(
             parseInt(hour), // Set hours
             parseInt(minutes), // Set minutes
             0 // Set seconds
         );
 
-        if (id === "hora_entrada") {
-            reporte.horaInicio = localDate.toLocaleTimeString(LocaleMX, {
-                timeStyle: "medium",
-                hour12: false
-            });
-        } else {
-            reporte.horaSalida = localDate.toLocaleTimeString(LocaleMX, {
-                timeStyle: "medium",
-                hour12: false
-            });
-        }
-
-        console.log(JSON.stringify(reporte));
+        reporte[timeKey] = localDate.toLocaleTimeString(LocaleMX, {
+            timeStyle: "medium",
+            hour12: false
+        });
     }
 
     function onFrequencyChange({ target }: InputEvent<HTMLSelectElement>) {
         if (isFrecuencia(target.value)) {
             reporte.frecuencia = target.value;
+            setChangesUnsaved(true);
         }
     }
 
     function onServiceStateChange({ target }: InputEvent<HTMLSelectElement>) {
         if (isServicioStatus(target.value)) {
             reporte.estadoServicio = target.value;
+            setChangesUnsaved(true);
         }
     }
 
     function setTimeToNow(event: "entrada" | "salida") {
+        const timeKey = event === "entrada" ? "horaInicio" : "horaSalida";
         const localDate = new Date();
         localDate.setSeconds(0);
-        if (event === "entrada") {
-            reporte.horaInicio = localDate.toLocaleTimeString(LocaleMX, {
-                timeStyle: "medium",
-                hour12: false
-            });
-        } else {
-            reporte.horaSalida = localDate.toLocaleTimeString(LocaleMX, {
-                timeStyle: "medium",
-                hour12: false
-            });
-        }
+        setChangesUnsaved(true);
+
+        reporte[timeKey] = localDate.toLocaleTimeString(LocaleMX, {
+            timeStyle: "medium",
+            hour12: false
+        });
     }
 
     async function onServiceUpdate() {
+        setIsSaving(true);
+
         // Updates the service frequency, time and status
         const serviceUpdate = await IO_Database
             .from("Servicios")
@@ -245,6 +240,16 @@ export function ServiceReport(props: ReportProps) {
         if (isOk(serviceUpdate)) {
             props.onServiceUpdate?.();
         }
+
+        if (serviceUpdate.error) {
+            setIsSaving(false);
+            setChangesUnsaved(true);
+            return addToast("Error guardando el servicio", "is-warning");
+        }
+
+        setIsSaving(false);
+        setChangesUnsaved(false);
+        addToast("Servicio guardado correctamente", "is-info");
     }
 
     window.addEventListener("resize", resizeCanvas);
@@ -382,17 +387,7 @@ export function ServiceReport(props: ReportProps) {
 
             {/* Botón para guardar el reporte */}
             <div class="panel-block is-justify-content-center">
-                <button class="button is-success is-outlined is-fullwidth"
-                    onClick={() => {
-                        setIsSaving(true);
-                        onServiceUpdate()
-                            .then(() => {
-                                setIsSaving(false);
-                                addToast("Servicio guardado correctamente", "is-info");
-                            })
-                            .catch(() => setIsSaving(false));
-                    }}
-                >
+                <button class="button is-success is-outlined is-fullwidth" onClick={onServiceUpdate}>
                     <span>Guardar Reporte</span>
                     <span class="icon">
                         <FaSolidCloudArrowUp class="is-size-5" />

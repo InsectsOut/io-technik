@@ -94,10 +94,10 @@ const PWABadge: Component = () => {
           <h2 class="subtitle has-text-centered">Hay una actualización disponible</h2>
 
           <div class="field is-flex is-justify-content-center gap-3">
+            <button class="column button is-danger is-outlined" onClick={close}>Cerrar</button>
             <button class="column button is-success is-outlined" onClick={() => updateServiceWorker(true)}>
               Actualizar
             </button>
-            <button class="column button is-danger is-outlined" onClick={close}>Cerrar</button>
           </div>
         </Show>
       </Modal>

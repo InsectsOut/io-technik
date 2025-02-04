@@ -2,23 +2,23 @@ import { createSignal, Match, onCleanup, onMount, Show, Suspense, Switch } from 
 import { useNavigate, useParams } from "@solidjs/router";
 import { Motion } from "solid-motionone";
 
-import { getServiceByFolio } from "./Service.query";
-import { Loading } from "@/components/Loading";
+import { createQuery } from "@tanstack/solid-query";
 import { Tables } from "@/supabase";
 
 import { ContactDetails, SuppliesDetails, ServiceReport } from "./components/";
-import { classNames, FadeInAnimation, useSwipe } from "@/utils";
 import { getServiceStatus, tabOrder } from "./Service.utils";
+import { getServiceByFolio } from "./Service.query";
+import { Tabs } from "./Service.types";
+
+import { classNames, FadeInAnimation, useSwipe } from "@/utils";
+import { Loading } from "@/components/Loading";
 import { getLocalTime } from "@/utils/Date";
 import { employeeProfile } from "@/state";
-import { Tabs } from "./Service.types";
-import { Error, Pages } from "..";
-
-import { createQuery } from "@tanstack/solid-query";
-import { match } from "ts-pattern";
+import { Modal } from "@/components";
 
 import { TbProgressAlert } from "solid-icons/tb";
-import css from "./Service.module.css";
+import { match } from "ts-pattern";
+import { Error, Pages } from "..";
 
 // Font Awesome Icons
 import {
@@ -35,8 +35,14 @@ import {
     FaSolidXmark
 } from "solid-icons/fa";
 
+import css from "./Service.module.css";
+
 /** Tracks if the service component can use swipe gestures */
 export const [canSwipe, setCanSwipe] = createSignal(true);
+/* Tracks if there are unsaved changes in the service */
+export const [changesUnsaved, setChangesUnsaved] = createSignal(false);
+
+let changeViewEv: Maybe<Event | KeyboardEvent>;
 
 export function Service() {
     const { folio } = useParams();
@@ -44,6 +50,7 @@ export function Service() {
     const goHome = () => navigate(Pages.Home);
 
     const [view, setView] = createSignal<Tabs>("detalles");
+    const [showConfirm, setShowConfirm] = createSignal(false);
     const isSupplies = () => view() === "suministros";
     const isContact = () => view() === "contacto";
     const isReport = () => view() === "reporte";
@@ -81,6 +88,14 @@ export function Service() {
 
     /** Sets the provided tab as the current view and scrolls to it */
     function setViewAndFocus(e: Event | KeyboardEvent) {
+        changeViewEv = e;
+
+        // If there are unsaved changes, prompt the user to save them
+        if (changesUnsaved()) {
+            setShowConfirm(true);
+            return e.preventDefault();
+        }
+
         if (e instanceof KeyboardEvent && e.key !== " " && e.key !== "Enter") {
             return;
         }
@@ -99,6 +114,19 @@ export function Service() {
         window.requestAnimationFrame(() => {
             animateViewChange(direction, nextView);
         });
+
+        changeViewEv = null;
+    }
+
+    function handleUnsavedChanges() {
+        setChangesUnsaved(false);
+        setShowConfirm(false);
+
+        if (changeViewEv) {
+            setViewAndFocus(changeViewEv);
+        }
+
+        changeViewEv = null;
     }
 
     /** Element reference for the tab container  */
@@ -320,6 +348,21 @@ export function Service() {
                         </Match>
                     </Switch>
                 </Motion.template>
+
+                <Show when={showConfirm()}>
+                    <Modal show={true}>
+                        <h2 class="subtitle has-text-centered">Hay cambios sin guardar</h2>
+
+                        <div class="field is-flex is-justify-content-center gap-3">
+                            <button class="column button is-danger is-outlined" onClick={() => setShowConfirm(false)}>
+                                Cancelar
+                            </button>
+                            <button class="column button is-success is-outlined" onClick={() => handleUnsavedChanges()}>
+                                Continuar
+                            </button>
+                        </div>
+                    </Modal>
+                </Show>
 
                 <Show when={!isReport()}>
                     <div class="panel-block is-justify-content-center">
