@@ -14,11 +14,11 @@ import { classNames, FadeInAnimation, useSwipe } from "@/utils";
 import { Loading } from "@/components/Loading";
 import { getLocalTime } from "@/utils/Date";
 import { employeeProfile } from "@/state";
+import { Error, Pages } from "@/pages";
 import { Modal } from "@/components";
 
 import { TbProgressAlert } from "solid-icons/tb";
 import { match } from "ts-pattern";
-import { Error, Pages } from "..";
 
 // Font Awesome Icons
 import {

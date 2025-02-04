@@ -4,19 +4,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { Route, Router } from "@solidjs/router";
 import { render } from "solid-js/web";
 
-import { Login, NotFound } from "@/pages";
+import { About, Feedback, Home, Login, NotFound, Profile, Service } from "@/pages";
 import { AuthGuard } from "@/components";
 import App from "./App";
 
 import "./index.css";
-import { lazy } from "solid-js";
 
 const client = new QueryClient();
-const Home = lazy(() => import("@/pages/Home"));
-const Profile = lazy(() => import("@/pages/Profile"));
-const Feedback = lazy(() => import("@/pages/Feedback"));
-const Service = lazy(() => import("@/pages/Service"));
-const About = lazy(() => import("@/pages/About"));
 
 render(() => (
     <QueryClientProvider client={client}>

@@ -52,6 +52,7 @@ export function Login() {
                     <img width={225} height={225}
                         alt="Logo de Insects Out"
                         src={insectsImg}
+                        loading="lazy"
                     />
 
                     <h2 class="title is-align-self-center">io-technik</h2>
