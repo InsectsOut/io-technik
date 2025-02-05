@@ -1,6 +1,6 @@
 import { destructure } from "@solid-primitives/destructure";
 import { createMutable } from "solid-js/store";
-import { createEffect, createSignal, createUniqueId, Index } from "solid-js";
+import { createEffect, createMemo, createSignal, createUniqueId, Index } from "solid-js";
 
 import { SuggestionPicker } from "./SuggestionPicker";
 import SignaturePad from "signature_pad";
@@ -57,10 +57,10 @@ export function ServiceReport(props: ReportProps) {
         estadoServicio: serviceState(),
     });
 
-    const StateIcon = () => match(reporte.estadoServicio)
+    const StateIcon = createMemo(() => match(reporte.estadoServicio)
         .with("Realizado", () => <FaSolidCheck class="has-text-primary is-size-5" />)
         .with("Cancelado", () => <FaSolidXmark class="has-text-danger is-size-5" />)
-        .otherwise(() => <TbProgressAlert class="has-text-warning is-size-5" />);
+        .otherwise(() => <TbProgressAlert class="has-text-warning is-size-5" />));
 
     /** If the report is being saved currently */
     const [isSaving, setIsSaving] = createSignal(false);

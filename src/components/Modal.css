@@ -1,6 +1,6 @@
 .modal img {
-    max-height: clamp(0, 90vh, 90vh);
-    max-width: clamp(0, 90vw, 90vw);
+    max-height: 80vh;
+    max-width: 90vh;
 }
 
 .modal-content {

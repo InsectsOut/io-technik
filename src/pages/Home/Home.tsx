@@ -1,4 +1,4 @@
-import { For, JSX, Match, Show, Suspense, Switch, createEffect, createSignal } from "solid-js";
+import { For, JSX, Match, Show, Suspense, Switch, createEffect, createMemo, createSignal } from "solid-js";
 import { createQuery } from "@tanstack/solid-query";
 import { Motion } from "solid-motionone";
 
@@ -34,14 +34,14 @@ function toggleShownService(service: Service) {
 }
 
 function getStatusIcon(service: Service) {
-  const StatusIcon = match(service)
+  const StatusIcon = createMemo(() => match(service)
     .with({ realizado: true }, () => <FaSolidCheck class="has-text-primary is-size-4" />)
     .with({ cancelado: true }, () => <FaSolidXmark class="has-text-danger is-size-4" />)
-    .otherwise(() => <TbProgressAlert class="has-text-warning is-size-4" />);
+    .otherwise(() => <TbProgressAlert class="has-text-warning is-size-4" />));
 
   return (
     <span class="icon is-left">
-      {StatusIcon}
+      {StatusIcon()}
     </span>
   );
 }
@@ -227,7 +227,7 @@ export function Home() {
 
               <div class="panel-tabs is-align-items-center">
                 <p class="is-borderless" title={fullDate()}>
-                  <input class="input" type="date" name="day" value={shortDate()} onInput={pickDate} />
+                  <input class="input" type="date" name="day" value={shortDate()} onChange={pickDate} />
                 </p>
               </div>
             </div>

@@ -4,36 +4,39 @@ import { Error } from "@/pages";
 
 import PWABadge from './PWABadge.tsx'
 
-import { ErrorBoundary, createSignal, Show, ParentProps } from 'solid-js';
-import { useBeforeLeave } from '@solidjs/router';
+import { ErrorBoundary, ParentProps } from 'solid-js';
+import { useBeforeLeave } from "@solidjs/router";
 import { Motion } from 'solid-motionone';
 
 import './App.css'
 
-function App(props: ParentProps) {
+export default function App(props: ParentProps) {
   /** Resets the animation state so it shows up on navigation */
-  const [visible, setVisible] = createSignal(true);
   const { toasts } = useToast();
+  let mainRef: Maybe<HTMLElement>;
 
-  useBeforeLeave(() => {
-    setVisible(false);
-    setVisible(true);
+  useBeforeLeave((navEvent) => {
+    navEvent.preventDefault();
+    const animation = mainRef!.animate(
+      [{ opacity: 1 }, { opacity: 0 }],
+      { duration: 350, easing: 'ease-in-out' }
+    );
+
+    animation.onfinish = () => {
+      navEvent.retry(true);
+    };
   });
 
   return (
     <>
       <Toast toasts={toasts()} />
       <Navbar />
-      <Show when={visible()} keyed={true}>
-        <Motion.main {...FadeInAnimation}>
-          <ErrorBoundary fallback={Error}>
-            {props.children}
-          </ErrorBoundary>
-        </Motion.main>
-      </Show>
+      <Motion.main {...FadeInAnimation} ref={mainRef!}>
+        <ErrorBoundary fallback={Error}>
+          {props.children}
+        </ErrorBoundary>
+      </Motion.main>
       <PWABadge />
     </>
   );
 }
-
-export default App;

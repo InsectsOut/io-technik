@@ -1,5 +1,5 @@
-import { createSignal, Match, onCleanup, onMount, Show, Suspense, Switch } from "solid-js";
-import { useNavigate, useParams } from "@solidjs/router";
+import { createMemo, createSignal, Match, onCleanup, onMount, Show, Suspense, Switch } from "solid-js";
+import { BeforeLeaveEventArgs, useBeforeLeave, useNavigate, useParams } from "@solidjs/router";
 import { Motion } from "solid-motionone";
 
 import { createQuery } from "@tanstack/solid-query";
@@ -43,6 +43,8 @@ export const [canSwipe, setCanSwipe] = createSignal(true);
 export const [changesUnsaved, setChangesUnsaved] = createSignal(false);
 
 let changeViewEv: Maybe<Event | KeyboardEvent>;
+let lastSwipe: Maybe<[direction: 'left' | 'right', _distance: number]>;
+let navEvent: Maybe<BeforeLeaveEventArgs>;
 
 export function Service() {
     const { folio } = useParams();
@@ -86,17 +88,33 @@ export function Service() {
         return `${nombre} ${apellidos}`;
     }
 
-    /** Sets the provided tab as the current view and scrolls to it */
-    function setViewAndFocus(e: Event | KeyboardEvent) {
-        changeViewEv = e;
+    function onUnsavedChanges() {
+        if (!changesUnsaved()) return;
 
-        // If there are unsaved changes, prompt the user to save them
-        if (changesUnsaved()) {
-            setShowConfirm(true);
-            return e.preventDefault();
+        setChangesUnsaved(false);
+        setShowConfirm(false);
+
+        if (changeViewEv) {
+            setViewAndFocus(changeViewEv);
         }
 
-        if (e instanceof KeyboardEvent && e.key !== " " && e.key !== "Enter") {
+        if (lastSwipe) {
+            const [direction, _distance] = lastSwipe;
+            onTabSwipe(direction, _distance);
+        }
+
+        if (navEvent) {
+            navEvent.retry(true);
+        }
+
+        changeViewEv = null;
+        lastSwipe = null;
+        navEvent = null;
+    }
+
+    /** Sets the provided tab as the current view and scrolls to it */
+    function setViewAndFocus(e: Event | KeyboardEvent) {
+        if (e instanceof KeyboardEvent && !["Enter", " "].includes(e.key)) {
             return;
         }
 
@@ -106,6 +124,13 @@ export function Service() {
         // Return if the next tab is the same as the current one
         if (nextTab === view()) return;
 
+        // If there are unsaved changes, prompt the user to save them
+        if (changesUnsaved()) {
+            changeViewEv = e;
+            setShowConfirm(true);
+            return e.preventDefault();
+        }
+
         const currViewIndex = tabOrder.findIndex(t => t === view());
         const nextViewIndex = tabOrder.findIndex(t => t == nextTab);
         const direction = currViewIndex < nextViewIndex ? "left" : "right";
@@ -114,27 +139,19 @@ export function Service() {
         window.requestAnimationFrame(() => {
             animateViewChange(direction, nextView);
         });
-
-        changeViewEv = null;
-    }
-
-    function handleUnsavedChanges() {
-        setChangesUnsaved(false);
-        setShowConfirm(false);
-
-        if (changeViewEv) {
-            setViewAndFocus(changeViewEv);
-        }
-
-        changeViewEv = null;
     }
 
     /** Element reference for the tab container  */
     let tabContainer: Maybe<HTMLTemplateElement>;
 
     /** Handles swiping between the different tab views  */
-    const handleTabSwipe = (direction: 'left' | 'right', _distance: number) => {
+    const onTabSwipe = (direction: 'left' | 'right', _distance: number) => {
         if (!canSwipe()) return;
+
+        if (changesUnsaved()) {
+            lastSwipe = [direction, _distance];
+            return setShowConfirm(true);
+        }
 
         const currentTab = tabOrder.findIndex((tab) => tab === view());
         const nextTab = direction === "left"
@@ -152,7 +169,7 @@ export function Service() {
             : "translateX(100%)";
 
         if (nextView) {
-            const animation = tabContainer?.animate(
+            const animation = tabContainer!.animate(
                 [
                     { transform: "translateX(0)", opacity: 1 }, // Starting state
                     { transform: transformEnd, opacity: 0 }, // Ending state
@@ -163,7 +180,7 @@ export function Service() {
                 }
             );
 
-            if (animation) animation.onfinish = () => {
+            animation.onfinish = () => {
                 const el = document.getElementById(view());
                 window.requestAnimationFrame(() => {
                     el?.scrollIntoView({ behavior: "smooth", inline: "center" });
@@ -173,15 +190,25 @@ export function Service() {
         }
     }
 
-    const StateIcon = () => servicio.data && match(getServiceStatus(servicio.data))
+    const StateIcon = createMemo(() => servicio.data && match(getServiceStatus(servicio.data))
         .with("Realizado", () => <FaSolidCheck class="is-size-5" />)
         .with("Cancelado", () => <FaSolidXmark class="is-size-5" />)
-        .otherwise(() => <TbProgressAlert class="is-size-5" />);
+        .otherwise(() => <TbProgressAlert class="is-size-5" />));
 
     onMount(() => {
         if (tabContainer) {
-            const cleanup = useSwipe(tabContainer, handleTabSwipe, { threshold: 70 });
-            onCleanup(cleanup); // Ensure cleanup on component unmount
+            const cleanup = useSwipe(tabContainer, onTabSwipe, { threshold: 70 });
+            // Ensure cleanup on component unmount
+            onCleanup(cleanup);
+        }
+    });
+
+    // Check if there are unsaved changes before leaving the page
+    useBeforeLeave((leaveEvent) => {
+        if (changesUnsaved()) {
+            leaveEvent.preventDefault();
+            navEvent = leaveEvent;
+            setShowConfirm(true);
         }
     });
 
@@ -357,7 +384,7 @@ export function Service() {
                             <button class="column button is-danger is-outlined" onClick={() => setShowConfirm(false)}>
                                 Cancelar
                             </button>
-                            <button class="column button is-success is-outlined" onClick={() => handleUnsavedChanges()}>
+                            <button class="column button is-success is-outlined" onClick={() => onUnsavedChanges()}>
                                 Continuar
                             </button>
                         </div>
