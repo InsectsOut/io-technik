@@ -94,10 +94,10 @@ export function SuppliesDetails(props: SuppliesDetails) {
         <table class="table is-striped fullwidth mb-4" style={viewWidth}>
             <thead>
                 <tr class={css.slim_pad}>
-                    <th class="no-pad-left">Nombre</th>
+                    <th class="pl-0">Nombre</th>
                     <th>Cantidad</th>
                     <th class="has-text-centered">Delta</th>
-                    <th class="has-text-centered no-pad-right">Editar</th>
+                    <th class="has-text-centered pr-0">Editar</th>
                 </tr>
             </thead>
 
@@ -129,7 +129,7 @@ function SupplyDetail(item: Supply) {
 
     return (
         <tr class={css.slim_pad}>
-            <td class="no-pad-left">
+            <td class="pl-0">
                 <span onClick={() => setShowInfo(true)}
                     class="has-text-link is-clickable"
                     title={item.nombre}
@@ -154,7 +154,7 @@ function SupplyDetail(item: Supply) {
                         .otherwise(() => null)}
                 </span>
             </td>
-            <td class="no-pad-right text-baseline" style={{ "text-align-last": "center" }}>
+            <td class="pr-0 text-baseline" style={{ "text-align-last": "center" }}>
                 <div title="Editar" onClick={() => setShowInfo(true)}>
                     <span class="icon is-left is-clickable">
                         <BsPencilSquare class="has-text-warning is-size-4" aria-hidden="true" />

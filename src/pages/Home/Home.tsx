@@ -107,24 +107,23 @@ export function Home() {
   const [direction, setDirection] = createSignal<OrderDir>("asc");
   const [order, setOrder] = createSignal<OrderBy>("hora");
   const [filter, setFilter] = createSignal("");
-  const lowerFilter = () => filter().toLowerCase();
+  const nameFilter = () => filter().toLowerCase();
+  const folioFilter = () => parseInt(nameFilter());
   const setOrderAndDir = (order: OrderBy) => {
     setDirection(d => d === "asc" ? "desc" : "asc");
     setOrder(order);
   }
 
   function filterServices(s: Service) {
-    if (!lowerFilter()) {
+    if (!nameFilter()) {
       return services.data;
     }
 
-    const folioFilter = parseInt(lowerFilter());
-
-    if (!isNaN(folioFilter)) {
-      return s.folio === folioFilter;
+    if (!isNaN(folioFilter())) {
+      return s.folio.toString().startsWith(nameFilter());
     }
 
-    return getClientName(s).toLowerCase().includes(lowerFilter());
+    return getClientName(s).toLowerCase().includes(nameFilter());
   }
 
   function orderServices(s1: Service, s2: Service) {
@@ -187,8 +186,8 @@ export function Home() {
 
         <Match when={services.data}>
           <nav class="panel is-shadowless">
-            <h1 class="title no-padding has-text-centered">Servicios</h1>
-            <h2 class="subtitle no-padding has-text-centered">{fullDate()}</h2>
+            <h1 class="title p-0 has-text-centered">Servicios</h1>
+            <h2 class="subtitle p-0 has-text-centered">{fullDate()}</h2>
             <div class="panel-block">
               <p class="control has-icons-left">
                 <input onInput={(e) => setFilter(e.target.value)}
@@ -233,27 +232,30 @@ export function Home() {
             </div>
 
             <Show when={services.data?.length} fallback={<NoServices />}>
-              <div class="table-container io-table-container hide_scroll">
+              <div class="table-container io-table-container hide_scroll is-clickable">
                 <table class="table io-table">
                   <thead>
                     <tr>
-                      <th class="has-text-centered no-pad-left" onClick={() => setOrderAndDir("folio")}>
-                        <span class="icon-text is-flex-wrap-nowrap">
+                      <th onClick={() => setOrderAndDir("folio")}
+                        class="has-text-centered pl-0"
+                        title="Folio"
+                      >
+                        <span class="icon-text is-flex-wrap-nowrap is-clickable">
                           <span>#</span>
                           <span class="icon">
                             {getSortIcon("folio")}
                           </span>
                         </span>
                       </th>
-                      <th onClick={() => setOrderAndDir("hora")}>
-                        <span class="icon-text is-flex-wrap-nowrap">
+                      <th onClick={() => setOrderAndDir("hora")} title="Horario">
+                        <span class="icon-text is-flex-wrap-nowrap is-clickable">
                           <span>Horario</span>
                           <span class="icon">
                             {getSortIcon("hora")}
                           </span>
                         </span>
                       </th>
-                      <th onClick={() => setOrderAndDir("cliente")}>
+                      <th onClick={() => setOrderAndDir("cliente")} title="Cliente">
                         <span class="icon-text is-flex-wrap-nowrap">
                           <span>Cliente</span>
                           <span class="icon">
@@ -261,7 +263,11 @@ export function Home() {
                           </span>
                         </span>
                       </th>
-                      <th class="has-text-centered no-pad-right" ref={scrollIntoView} onClick={() => setOrderAndDir("estatus")}>
+                      <th onClick={() => setOrderAndDir("estatus")}
+                        class="has-text-centered is-clickable"
+                        ref={scrollIntoView}
+                        title="Estatus"
+                      >
                         <span class="icon-text is-flex-wrap-nowrap">
                           <span>Estatus</span>
                           <span class="icon">
@@ -271,10 +277,10 @@ export function Home() {
                       </th>
                       <Show when={deviceType() > DeviceType.Mobile}>
                         <th class="is-flex is-justify-content-space-around is-misaligned gap-3">
-                          <div class="has-text-centered">Teléfono</div>
-                          <div class="has-text-centered">Información</div>
-                          <div class="has-text-centered">Ubicación</div>
-                          <div class="has-text-centered">Compartir</div>
+                          <div title="Teléfono" class="has-text-centered">Teléfono</div>
+                          <div title="Información" class="has-text-centered">Información</div>
+                          <div title="Ubicación" class="has-text-centered">Ubicación</div>
+                          <div title="Compartir" class="has-text-centered">Compartir</div>
                         </th>
                       </Show>
                     </tr>
@@ -284,7 +290,7 @@ export function Home() {
                       {service => (
                         <>
                           <tr class="is-clickable" onClick={() => toggleShownService(service)}>
-                            <th class="no-pad-left">{service.folio}</th>
+                            <th class="pl-0">{service.folio}</th>
                             <th>{getSimpleTime(service)}</th>
                             <td>
                               <Show when={deviceType() > DeviceType.Mobile} fallback={
@@ -295,7 +301,7 @@ export function Home() {
                                 </a>
                               </Show>
                             </td>
-                            <td class="icon-col has-text-centered no-pad-right">
+                            <td class="icon-col has-text-centered">
                               <div title={getServiceStatus(service)}>
                                 {deviceType() > DeviceType.Tablet ? getServiceStatus(service) : getStatusIcon(service)}
                               </div>

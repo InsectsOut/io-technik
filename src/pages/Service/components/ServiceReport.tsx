@@ -355,7 +355,7 @@ export function ServiceReport(props: ReportProps) {
                         }}
                     />
 
-                    <div class="field is-grouped is-justify-content-center gapless">
+                    <div class="field is-grouped is-justify-content-center gap-0">
                         <div class="control">
                             <button type="button" class="button sign-btn is-danger is-dark" onClick={clearSignature}>
                                 Limpiar

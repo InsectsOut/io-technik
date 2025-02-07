@@ -95,7 +95,7 @@ export function Feedback() {
 
     return (
         <section>
-            <h1 class="title no-padding">Reportar un Problema</h1>
+            <h1 class="title p-0">Reportar un Problema</h1>
             <div class="field">
                 <label class="label">Nombre</label>
                 <div class="control">

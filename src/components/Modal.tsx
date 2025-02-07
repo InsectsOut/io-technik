@@ -28,7 +28,7 @@ export function Modal(p: ModalProps) {
 
     return (
         <div class={classNames("modal", ["is-active", p.show])}>
-            <div class="modal-background" title="Cerrar" onClick={p.onClose} />
+            <div class="modal-background is-clickable" title="Cerrar" onClick={p.onClose} />
             <div class="modal-content mb-6">
                 <Show when={p.show} keyed={true}>
                     <Motion.div class="box is-flex is-flex-direction-column p-4 is-shadowless"

@@ -26,14 +26,6 @@ main {
   color: saddlebrown;
 }
 
-.no-pad-left {
-  padding-left: unset !important;
-}
-
-.no-pad-right {
-  padding-right: unset !important;
-}
-
 .normal-txt {
   color: light-dark(black, white);
 }
@@ -43,6 +35,7 @@ main {
   width: 100%;
 }
 
+/* Flex / Grid gap helpers */
 .gap-0 {
   gap: 0 !important;
 }
