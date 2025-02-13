@@ -271,7 +271,7 @@ export function Home() {
                       </th>
                       <th onClick={() => setOrderAndDir("estatus")}
                         class="has-text-centered is-clickable"
-                        ref={scrollIntoView}
+                        ref={(el) => scrollIntoView(el)}
                         title="Estatus"
                       >
                         <span class="icon-text is-flex-wrap-nowrap">
