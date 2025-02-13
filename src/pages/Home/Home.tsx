@@ -102,24 +102,24 @@ export function Home() {
   const [order, setOrder] = createSignal<OrderBy>("hora");
   const [useFolio, setUseFolio] = createSignal(false);
   const [search, setSearch] = createSignal("");
-  const nameFilter = () => search().toLowerCase();
-  const folioFilter = () => parseInt(nameFilter());
-  const setFilter = debounce(setSearch, 400);
+  const folioFilter = () => parseInt(search(), 10);
+  const updateSearch = debounce(setSearch, 400);
   const setOrderAndDir = (order: OrderBy) => {
     setDirection(d => d === "asc" ? "desc" : "asc");
     setOrder(order);
   }
 
   function filterServices(s: Service) {
-    if (!nameFilter()) {
+    if (!search()) {
       return services.data;
     }
 
     if (!isNaN(folioFilter())) {
-      return s.folio.toString().startsWith(nameFilter());
+      return s.folio.toString().startsWith(search());
     }
 
-    return getClientName(s).toLowerCase().includes(nameFilter());
+    return getClientName(s).toLowerCase()
+      .includes(search().toLowerCase());
   }
 
   function orderServices(s1: Service, s2: Service) {
@@ -190,8 +190,8 @@ export function Home() {
             <h2 class="subtitle p-0 has-text-centered">{fullDate()}</h2>
             <div class="panel-block p-0 pb-2 is-flex is-gap-1">
               <p class="control has-icons-left">
-                <input onInput={(e) => setFilter(e.target.value)}
-                  placeholder="Buscar por cliente o folio..."
+                <input onInput={(e) => updateSearch(e.target.value)}
+                  placeholder={useFolio() ? "Buscar folio..." : "Filtrar por nombre o folio..."}
                   value={search()}
                   class="input"
                   type="text"
