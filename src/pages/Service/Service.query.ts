@@ -1,5 +1,10 @@
 import { IO_Database } from "@/supabase";
 
+/** Return type of a fetched Service */
+export type ServiceDetails = NonNullable<
+    Awaited<ReturnType<typeof getServiceByFolio>>
+>;
+
 /**
  * Fetches insects out services and their related clients
  * @param folio Unique key to reference the service

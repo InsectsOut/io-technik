@@ -21,7 +21,7 @@ export function Login() {
         .signIn(email(), pass())
         .then(({ data, error }) => {
             if (!data.user || error) {
-                addToast("Correo o contraseña incorrecta", "is-info");
+                addToast("Correo o contraseña incorrecta", "is-warning");
             } else {
                 navigate("/home", { replace: true });
             }
@@ -58,7 +58,7 @@ export function Login() {
                     <h2 class="title is-align-self-center">io-technik</h2>
                 </div>
 
-                <form class={css.loginBody}>
+                <form class={css.loginBody} onKeyDown={(e) => e.key === "Enter" && signIn()}>
                     <p class="control has-icons-left has-icons-right">
                         <input type="email"
                             onInput={(e) => setEmail(e.target.value)}

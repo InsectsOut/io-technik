@@ -1,10 +1,11 @@
 import { For, JSX, Match, Show, Suspense, Switch, createEffect, createMemo, createSignal } from "solid-js";
+import { debounce } from "@solid-primitives/scheduled";
 import { createQuery } from "@tanstack/solid-query";
 import { Motion } from "solid-motionone";
 
 import { Service, fetchServices } from "./Home.query";
 
-import { classNames, deviceType, DeviceType, SlideDownFadeIn } from "@/utils";
+import { classNames, deviceType, DeviceType, isUltrathin, scrollIntoView, SlideDownFadeIn } from "@/utils";
 import { employeeProfile } from "@/state";
 import { LocaleMX } from "@/constants";
 import { Loading } from "@/components/";
@@ -14,12 +15,12 @@ import { InputEvent } from "@/types";
 import { match } from "ts-pattern";
 import dayjs from "dayjs";
 
-import "./Home.css";
-
 import { FaSolidBan, FaSolidCheck, FaSolidChevronDown, FaSolidChevronLeft, FaSolidChevronRight, FaSolidChevronUp, FaSolidCircleInfo, FaSolidMapPin, FaSolidPhoneFlip, FaSolidXmark } from "solid-icons/fa";
 import { getServiceStatus } from "../Service/Service.utils";
 import { TbProgressAlert, TbSearch } from "solid-icons/tb";
 import { FiSend } from "solid-icons/fi";
+
+import "./Home.css";
 
 const [date, setDate] = createSignal(dayjs());
 const [infoShown, setInfoShown] = createSignal(NaN);
@@ -73,17 +74,10 @@ function Share(service: Service) {
   const { Clientes: c, folio } = service;
 
   navigator.share({
-    title: `Servicio con folio #${folio}`,
+    title: `Servicio #${folio}`,
     text: `${c.nombre} ${c.apellidos} - ${service.fecha_servicio}`,
     url: `${Pages.Services}/${folio}`
   });
-}
-
-function scrollIntoView(el: HTMLElement) {
-  window.setTimeout(() => el.scrollIntoView({
-    behavior: "smooth",
-    inline: "end"
-  }), 200);
 }
 
 function NoServices() {
@@ -106,9 +100,11 @@ type OrderDir = "asc" | "desc";
 export function Home() {
   const [direction, setDirection] = createSignal<OrderDir>("asc");
   const [order, setOrder] = createSignal<OrderBy>("hora");
-  const [filter, setFilter] = createSignal("");
-  const nameFilter = () => filter().toLowerCase();
+  const [useFolio, setUseFolio] = createSignal(false);
+  const [search, setSearch] = createSignal("");
+  const nameFilter = () => search().toLowerCase();
   const folioFilter = () => parseInt(nameFilter());
+  const setFilter = debounce(setSearch, 400);
   const setOrderAndDir = (order: OrderBy) => {
     setDirection(d => d === "asc" ? "desc" : "asc");
     setOrder(order);
@@ -163,9 +159,13 @@ export function Home() {
     ?.filter(filterServices)
     .toSorted(orderServices);
 
+  const serviceQuery = (): Promise<Service[] | null> => useFolio()
+    ? fetchServices(date(), folioFilter())
+    : fetchServices(date());
+
   const services = createQuery(() => ({
     queryKey: [`/service-${shortDate()}`],
-    queryFn: () => fetchServices(date()),
+    queryFn: serviceQuery,
     staleTime: 1000 * 60 * 5,
     throwOnError: false
   }));
@@ -188,11 +188,11 @@ export function Home() {
           <nav class="panel is-shadowless">
             <h1 class="title p-0 has-text-centered">Servicios</h1>
             <h2 class="subtitle p-0 has-text-centered">{fullDate()}</h2>
-            <div class="panel-block">
+            <div class="panel-block p-0 pb-2 is-flex is-gap-1">
               <p class="control has-icons-left">
                 <input onInput={(e) => setFilter(e.target.value)}
                   placeholder="Buscar por cliente o folio..."
-                  value={filter()}
+                  value={search()}
                   class="input"
                   type="text"
                 />
@@ -200,8 +200,14 @@ export function Home() {
                   <TbSearch aria-hidden="true" class="is-size-4" />
                 </span>
               </p>
+              <button
+                class={classNames("button is-outlined", useFolio() ? "is-success" : "is-info")}
+                onClick={() => setUseFolio(x => !x)}
+              >
+                Folio
+              </button>
             </div>
-            <div class="panel-tabs is-align-items-center is-justify-content-space-between">
+            <div class="panel-tabs is-align-items-center is-justify-content-space-between borderless">
               <p class="panel-tabs is-align-items-center is-borderless">
                 <button
                   class="button icon is-left"
@@ -290,8 +296,8 @@ export function Home() {
                       {service => (
                         <>
                           <tr class="is-clickable" onClick={() => toggleShownService(service)}>
-                            <th class="pl-0">{service.folio}</th>
-                            <th>{getSimpleTime(service)}</th>
+                            <td class="pl-0"><strong>{service.folio}</strong></td>
+                            <td><strong>{getSimpleTime(service)}</strong></td>
                             <td>
                               <Show when={deviceType() > DeviceType.Mobile} fallback={
                                 <span>{service.Clientes?.nombre} {service.Clientes?.apellidos}</span>
@@ -310,7 +316,7 @@ export function Home() {
                               <HomeActions service={service} />
                             </Show>
                           </tr>
-                          <Show when={infoShown() === service.id && deviceType() === DeviceType.Mobile}>
+                          <Show when={infoShown() === service.id && deviceType() <= DeviceType.Mobile}>
                             <Motion.tr {...SlideDownFadeIn}>
                               <HomeActions service={service} />
                             </Motion.tr>
@@ -323,14 +329,13 @@ export function Home() {
               </div>
             </Show>
 
-            <Show when={filter()}>
+            <Show when={search() || useFolio()}>
               <div class="panel-block reset-filter">
-                <button
-                  type="button"
-                  onClick={() => setFilter("")}
+                <button type="button"
+                  onClick={() => setSearch("") || setUseFolio(false)}
                   class="button is-link is-outlined is-fullwidth"
                 >
-                  Ver todos
+                  Quitar filtros
                 </button>
               </div>
             </Show>
@@ -345,36 +350,43 @@ function HomeActions({ service }: { service: Service }): JSX.Element {
   const { folio, Clientes, Direcciones: dir } = service;
 
   return (
-    <td colSpan={4} class="icon-col">
-      <div class="is-flex is-justify-content-space-around">
-        <a title="Teléfono" href={`tel:${Clientes?.telefono}`}>
-          <span class="icon is-left">
-            <FaSolidPhoneFlip class="has-text-primary is-size-5" aria-hidden="true" />
-          </span>
-        </a>
-
-        <a title="Información" href={`${Pages.Services}/${folio}`}>
-          <span class="icon is-left">
-            <FaSolidCircleInfo class="has-text-info is-size-5" aria-hidden="true" />
-          </span>
-        </a>
-
-        <a classList={{ "disabled": !dir?.ubicacion }} rel="noopener" title="Ubicación" target="_blank" href={dir?.ubicacion!}>
-          <span class="icon is-left">
-            {dir?.ubicacion
-              ? <FaSolidMapPin class="is-size-5 has-text-danger" aria-hidden="true" />
-              : <FaSolidBan class="is-size-5 has-text-grey" aria-hidden="true" />}
-          </span>
-        </a>
-
-        <Show when={'share' in navigator}>
-          <a title="Compartir" href="" onClick={() => Share(service)}>
+    <>
+      <Show when={isUltrathin()}>
+        <td class="pl-0 has-text-centered">
+          <FaSolidChevronRight />
+        </td>
+      </Show>
+      <td colSpan={4} class="icon-col">
+        <div class="is-flex is-justify-content-space-around">
+          <a title="Teléfono" href={`tel:${Clientes?.telefono}`}>
             <span class="icon is-left">
-              <FiSend class="is-size-5" aria-hidden="true" />
+              <FaSolidPhoneFlip class="has-text-primary is-size-5" aria-hidden="true" />
             </span>
           </a>
-        </Show>
-      </div>
-    </td>
+
+          <a title="Información" href={`${Pages.Services}/${folio}`}>
+            <span class="icon is-left">
+              <FaSolidCircleInfo class="has-text-info is-size-5" aria-hidden="true" />
+            </span>
+          </a>
+
+          <a classList={{ "disabled": !dir?.ubicacion }} rel="noopener" title="Ubicación" target="_blank" href={dir?.ubicacion!}>
+            <span class="icon is-left">
+              {dir?.ubicacion
+                ? <FaSolidMapPin class="is-size-5 has-text-danger" aria-hidden="true" />
+                : <FaSolidBan class="is-size-5 has-text-grey" aria-hidden="true" />}
+            </span>
+          </a>
+
+          <Show when={'share' in navigator}>
+            <a title="Compartir" href="" onClick={() => Share(service)}>
+              <span class="icon is-left">
+                <FiSend class="is-size-5" aria-hidden="true" />
+              </span>
+            </a>
+          </Show>
+        </div>
+      </td>
+    </>
   )
 }

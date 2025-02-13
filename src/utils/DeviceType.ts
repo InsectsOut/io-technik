@@ -2,6 +2,8 @@ import { createWindowSize } from "@solid-primitives/resize-observer";
 
 /** Types of devices by their max width */
 export const enum DeviceType {
+    /** Max width size for a ultrathin device */
+    Ultrathin = 350,
     /** Max width size for a mobile device */
     Mobile = 700,
     /** Max width size for a tablet device */
@@ -28,6 +30,8 @@ export const deviceType = () => getDeviceType(windowSize.width);
  */
 export function getDeviceType(width: number): DeviceType {
     switch (true) {
+        case width <= DeviceType.Ultrathin:
+            return DeviceType.Ultrathin;
         case width <= DeviceType.Mobile:
             return DeviceType.Mobile;
         case width <= DeviceType.Tablet:
@@ -37,6 +41,11 @@ export function getDeviceType(width: number): DeviceType {
         default:
             return DeviceType.Ultrawide;
     }
+}
+
+/** Returns if the current device type is ultrathing */
+export function isUltrathin() {
+    return deviceType() === DeviceType.Ultrathin;
 }
 
 /** Returns if the current device type is a mobile device */

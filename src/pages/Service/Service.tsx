@@ -6,11 +6,11 @@ import { createQuery } from "@tanstack/solid-query";
 import { Tables } from "@/supabase";
 
 import { ContactDetails, SuppliesDetails, ServiceReport } from "./components/";
+import { getServiceByFolio, ServiceDetails } from "./Service.query";
 import { getServiceStatus, tabOrder } from "./Service.utils";
-import { getServiceByFolio } from "./Service.query";
 import { Tabs } from "./Service.types";
 
-import { classNames, FadeInAnimation, useSwipe } from "@/utils";
+import { classNames, FadeInAnimation, scrollIntoView, useSwipe } from "@/utils";
 import { Loading } from "@/components/Loading";
 import { getLocalTime } from "@/utils/Date";
 import { employeeProfile } from "@/state";
@@ -18,6 +18,7 @@ import { Error, Pages } from "@/pages";
 import { Modal } from "@/components";
 
 import { TbProgressAlert } from "solid-icons/tb";
+import { FiShare } from "solid-icons/fi";
 import { match } from "ts-pattern";
 
 // Font Awesome Icons
@@ -42,16 +43,34 @@ export const [canSwipe, setCanSwipe] = createSignal(true);
 /* Tracks if there are unsaved changes in the service */
 export const [changesUnsaved, setChangesUnsaved] = createSignal(false);
 
+/** Shares a service's details with the current tab as its target */
+function Share(service: ServiceDetails, tab: Tabs) {
+    const { Clientes: c, folio } = service;
+    if (!c || !folio) return;
+
+    const firstChar = tab?.charAt(0);
+    const tabToUpper = tab?.replace(firstChar, firstChar.toUpperCase());
+
+    navigator.share({
+        title: `Servicio #${folio} | ${tabToUpper}`,
+        text: `${c.nombre} ${c.apellidos} - ${service.fecha_servicio}`,
+        url: `${Pages.Services}/${folio}/${tab}`
+    });
+}
+
+/** Route parameters for the service page */
+type ServiceParams = { folio: string; tab?: Tabs };
+
 let changeViewEv: Maybe<Event | KeyboardEvent>;
 let lastSwipe: Maybe<[direction: 'left' | 'right', _distance: number]>;
 let navEvent: Maybe<BeforeLeaveEventArgs>;
 
 export function Service() {
-    const { folio } = useParams();
+    const { folio, tab } = useParams<ServiceParams>();
     const navigate = useNavigate();
     const goHome = () => navigate(Pages.Home);
 
-    const [view, setView] = createSignal<Tabs>("detalles");
+    const [view, setView] = createSignal(tab ?? "detalles");
     const [showConfirm, setShowConfirm] = createSignal(false);
     const isSupplies = () => view() === "suministros";
     const isContact = () => view() === "contacto";
@@ -60,27 +79,30 @@ export function Service() {
 
     /** Updates the service cache if requested by a child */
     document.addEventListener("UpdateService",
-        () => servicio.refetch().then(() => {
+        () => serviceQuery.refetch().then(() => {
             setView("detalles");
             setView("suministros");
         }));
 
     const onServiceUpdate = () => window.setTimeout(
-        () => servicio.refetch().then(() => {
+        () => serviceQuery.refetch().then(() => {
             setView("detalles");
             setView("reporte");
         }), 1000);
 
     /** Creates a query to fetch the requested service, caches data for 1m */
-    const servicio = createQuery(() => ({
+    const serviceQuery = createQuery(() => ({
         queryKey: [`service/${folio}`],
         queryFn: () => getServiceByFolio(folio),
         staleTime: 1000 * 60 * 3,
         throwOnError: false
     }));
 
-    const fechaServicio = () => servicio.data
-        ? new Date(`${servicio.data?.fecha_servicio}T${servicio.data?.horario_servicio}`)
+    /** Service entry associated with this page's `folio` */
+    const service = () => serviceQuery.data;
+
+    const fechaServicio = () => service()
+        ? new Date(`${service()?.fecha_servicio}T${service()?.horario_servicio}`)
         : undefined;
 
     function getClientName(cliente: Tables<"Clientes">) {
@@ -95,7 +117,7 @@ export function Service() {
         setShowConfirm(false);
 
         if (changeViewEv) {
-            setViewAndFocus(changeViewEv);
+            setAndFocusTab(changeViewEv);
         }
 
         if (lastSwipe) {
@@ -113,7 +135,7 @@ export function Service() {
     }
 
     /** Sets the provided tab as the current view and scrolls to it */
-    function setViewAndFocus(e: Event | KeyboardEvent) {
+    function setAndFocusTab(e: Event | KeyboardEvent) {
         if (e instanceof KeyboardEvent && !["Enter", " "].includes(e.key)) {
             return;
         }
@@ -180,17 +202,16 @@ export function Service() {
                 }
             );
 
-            animation.onfinish = () => {
-                const el = document.getElementById(view());
+            animation.onfinish ??= () => {
                 window.requestAnimationFrame(() => {
-                    el?.scrollIntoView({ behavior: "smooth", inline: "center" });
-                    setView(nextView);
+                    const el = document.getElementById(setView(nextView));
+                    scrollIntoView(el!);
                 });
             }
         }
     }
 
-    const StateIcon = createMemo(() => servicio.data && match(getServiceStatus(servicio.data))
+    const StateIcon = createMemo(() => service() && match(getServiceStatus(service()!))
         .with("Realizado", () => <FaSolidCheck class="is-size-5" />)
         .with("Cancelado", () => <FaSolidXmark class="is-size-5" />)
         .otherwise(() => <TbProgressAlert class="is-size-5" />));
@@ -201,6 +222,8 @@ export function Service() {
             // Ensure cleanup on component unmount
             onCleanup(cleanup);
         }
+
+        window.setTimeout(() => scrollIntoView(document.getElementById(view())!), 300);
     });
 
     // Check if there are unsaved changes before leaving the page
@@ -221,32 +244,32 @@ export function Service() {
 
                 <p class="panel-tabs is-justify-content-start scrollable hide_scroll">
                     <a class={classNames(["is-active", isInfo()])}
-                        onKeyDown={setViewAndFocus}
-                        onClick={setViewAndFocus}
+                        onKeyDown={setAndFocusTab}
+                        onClick={setAndFocusTab}
                         id="detalles"
                         tabindex={0}
                     >
                         Detalles
                     </a>
                     <a class={classNames(["is-active", isContact()])}
-                        onKeyDown={setViewAndFocus}
-                        onClick={setViewAndFocus}
+                        onKeyDown={setAndFocusTab}
+                        onClick={setAndFocusTab}
                         id="contacto"
                         tabindex={0}
                     >
                         Contacto
                     </a>
                     <a class={classNames(["is-active", isSupplies()])}
-                        onKeyDown={setViewAndFocus}
-                        onClick={setViewAndFocus}
+                        onKeyDown={setAndFocusTab}
+                        onClick={setAndFocusTab}
                         id="suministros"
                         tabindex={0}
                     >
                         Suministros
                     </a>
                     <a class={classNames(["is-active", isReport()])}
-                        onKeyDown={setViewAndFocus}
-                        onClick={setViewAndFocus}
+                        onKeyDown={setAndFocusTab}
+                        onClick={setAndFocusTab}
                         id="reporte"
                         tabindex={0}
                     >
@@ -260,24 +283,24 @@ export function Service() {
                     id={view()}
                 >
                     <Switch>
-                        <Match when={servicio.error}>
+                        <Match when={serviceQuery.error}>
                             <Error title="Error cargando el servicio 🚧" subtitle=" " />
                         </Match>
 
-                        <Match when={servicio.data && isInfo()}>
+                        <Match when={service() && isInfo()}>
                             <form class="hide_scroll">
-                                <Show when={employeeProfile()?.tipo_rol === "superadmin" && servicio.data?.Empleados}>
+                                <Show when={employeeProfile()?.tipo_rol === "superadmin" && service()?.Empleados}>
                                     <div class={classNames("field is-grouped is-flex-direction-column mb-5", css.io_field)}>
                                         <label class="label">Técnico Asignado</label>
                                         <p class="control has-icons-left">
-                                            <input title="Técnico" disabled class="input" type="text" value={servicio.data?.Empleados?.nombre} />
+                                            <input title="Técnico" disabled class="input" type="text" value={service()?.Empleados?.nombre} />
                                             <span class="icon is-medium is-left">
                                                 <FaSolidClipboardUser />
                                             </span>
                                         </p>
                                         <label class="label">Organización</label>
                                         <p class="control has-icons-left">
-                                            <input title="Organización" disabled class="input" value={servicio.data?.Empleados?.organizacion ?? 'N/A'} />
+                                            <input title="Organización" disabled class="input" value={service()?.Empleados?.organizacion ?? 'N/A'} />
                                             <span class="icon is-small is-left">
                                                 <FaSolidBriefcase />
                                             </span>
@@ -288,13 +311,13 @@ export function Service() {
                                 <label class="label">Datos del Cliente</label>
                                 <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                     <p class="control has-icons-left">
-                                        <input title="Folio" disabled class="input has-text-link" type="text" value={`Folio: ${servicio.data?.folio}`} />
+                                        <input title="Folio" disabled class="input has-text-link" type="text" value={`Folio: ${service()?.folio}`} />
                                         <span class="icon is-medium is-left">
                                             <FaSolidHashtag class="has-text-link" />
                                         </span>
                                     </p>
                                     <p class="control has-icons-left">
-                                        <input title="Cliente" disabled class="input" value={getClientName(servicio.data?.Clientes!)} />
+                                        <input title="Cliente" disabled class="input" value={getClientName(service()?.Clientes!)} />
                                         <span class="icon is-small is-left">
                                             <FaSolidUser />
                                         </span>
@@ -304,7 +327,7 @@ export function Service() {
                                 <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                     <label class="label">Fecha de Servicio</label>
                                     <p class="control has-icons-left">
-                                        <input title="Fecha de servicio" disabled class="input" type="text" value={servicio.data?.fecha_servicio ?? "No asignada"} />
+                                        <input title="Fecha de servicio" disabled class="input" type="text" value={service()?.fecha_servicio ?? "No asignada"} />
                                         <span class="icon is-medium is-left">
                                             <FaSolidCalendarDays />
                                         </span>
@@ -321,14 +344,14 @@ export function Service() {
                                 <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                     <label class="label">Frecuencia del Servicio</label>
                                     <p class="control has-icons-left">
-                                        <input title="Frecuencia de servicio" disabled class="input" type="text" value={servicio.data?.frecuencia_recomendada || "No asignada"} />
+                                        <input title="Frecuencia de servicio" disabled class="input" type="text" value={service()?.frecuencia_recomendada || "No asignada"} />
                                         <span class="icon is-medium is-left">
                                             <FaSolidClockRotateLeft />
                                         </span>
                                     </p>
                                     <label class="label">Tipo de Servicio</label>
                                     <p class="control has-icons-left">
-                                        <input title="Tipo de servicio" disabled class="input" value={servicio.data?.tipo_servicio || "Sin tipo"} />
+                                        <input title="Tipo de servicio" disabled class="input" value={service()?.tipo_servicio || "Sin tipo"} />
                                         <span class="icon is-small is-left">
                                             <FaSolidWarehouse />
                                         </span>
@@ -338,14 +361,14 @@ export function Service() {
                                 <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                     <label class="label">Tipo de Folio</label>
                                     <p class="control has-icons-left">
-                                        <input title="Tipo de folio" disabled class="input" type="text" value={servicio.data?.tipo_folio || "Sin tipo"} />
+                                        <input title="Tipo de folio" disabled class="input" type="text" value={service()?.tipo_folio || "Sin tipo"} />
                                         <span class="icon is-medium is-left">
                                             <FaSolidFilePen />
                                         </span>
                                     </p>
                                     <label class="label">Estado del Servicio</label>
                                     <p class="control has-icons-left">
-                                        <input title="Estado del servicio" disabled class="input" value={match(servicio.data)
+                                        <input title="Estado del servicio" disabled class="input" value={match(service())
                                             .with({ realizado: true }, () => "Realizado")
                                             .with({ cancelado: true }, () => "Cancelado")
                                             .otherwise(() => "Pendiente")} />
@@ -357,21 +380,21 @@ export function Service() {
                             </form>
                         </Match>
 
-                        <Match when={servicio.data && isSupplies()}>
+                        <Match when={service() && isSupplies()}>
                             <SuppliesDetails
-                                registros={servicio.data!.RegistroAplicacion || []}
+                                registros={service()!.RegistroAplicacion || []}
                             />
                         </Match>
 
-                        <Match when={servicio.data && isContact()}>
+                        <Match when={service() && isContact()}>
                             <ContactDetails
-                                responsable={servicio.data?.Responsables!}
-                                direccion={servicio.data?.Direcciones!}
+                                responsable={service()?.Responsables!}
+                                direccion={service()?.Direcciones!}
                             />
                         </Match>
 
-                        <Match when={servicio.data && isReport()}>
-                            <ServiceReport service={servicio.data ?? undefined} onServiceUpdate={onServiceUpdate} />
+                        <Match when={service() && isReport()}>
+                            <ServiceReport service={service() ?? undefined} onServiceUpdate={onServiceUpdate} />
                         </Match>
                     </Switch>
                 </Motion.template>
@@ -392,10 +415,27 @@ export function Service() {
                 </Show>
 
                 <Show when={!isReport()}>
-                    <div class="panel-block is-justify-content-center">
-                        <button type="button" class="button is-link is-outlined is-fullwidth" onClick={goHome}>
-                            Regresar a servicios
+                    <div class="field is-flex is-justify-content-center gap-3 mt-4">
+                        <button
+                            class="column button is-link is-outlined"
+                            onClick={goHome}
+                            type="button"
+                        >
+                            <span class="text-top">Regresar a servicios</span>
                         </button>
+
+                        <Show when={navigator.share}>
+                            <button
+                                onClick={() => Share(service()!, view())}
+                                class="column button is-info is-outlined"
+                                type="button"
+                            >
+                                <span class="text-top">Compartir</span>
+                                <span class="icon text-sub">
+                                    <FiShare class="is-size-5" aria-hidden="true" />
+                                </span>
+                            </button>
+                        </Show>
                     </div>
                 </Show>
             </nav>

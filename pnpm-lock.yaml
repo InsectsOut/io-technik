@@ -18,6 +18,9 @@ importers:
       '@solid-primitives/resize-observer':
         specifier: ^2.0.26
         version: 2.0.26(solid-js@1.8.17)
+      '@solid-primitives/scheduled':
+        specifier: ^1.5.0
+        version: 1.5.0(solid-js@1.8.17)
       '@solidjs/router':
         specifier: ^0.13.5
         version: 0.13.5(solid-js@1.8.17)
@@ -1170,8 +1173,8 @@ packages:
     peerDependencies:
       solid-js: ^1.6.12
 
-  '@solid-primitives/scheduled@1.4.3':
-    resolution: {integrity: sha512-HfWN5w7b7FEc6VPLBKnnE302h90jsLMuR28Fcf7neRGGf8jBj6wm6/UFQ00VlKexHFMR6KQ2u4VBh5a1ZcqM8g==}
+  '@solid-primitives/scheduled@1.5.0':
+    resolution: {integrity: sha512-RVw24IRNh1FQ4DCMb3OahB70tXIwc5vH8nhR4nNPsXwUPQeuOkLsDI5BlxaPk0vyZgqw9lDpufgI3HnPwplgDw==}
     peerDependencies:
       solid-js: ^1.6.12
 
@@ -4065,7 +4068,7 @@ snapshots:
       '@solid-primitives/keyboard': 1.2.8(solid-js@1.8.17)
       '@solid-primitives/platform': 0.1.2(solid-js@1.8.17)
       '@solid-primitives/rootless': 1.4.5(solid-js@1.8.17)
-      '@solid-primitives/scheduled': 1.4.3(solid-js@1.8.17)
+      '@solid-primitives/scheduled': 1.5.0(solid-js@1.8.17)
       '@solid-primitives/static-store': 0.0.5(solid-js@1.8.17)
       '@solid-primitives/utils': 6.2.3(solid-js@1.8.17)
       solid-js: 1.8.17
@@ -4077,7 +4080,7 @@ snapshots:
       '@solid-primitives/media': 2.2.9(solid-js@1.8.17)
       '@solid-primitives/refs': 1.0.8(solid-js@1.8.17)
       '@solid-primitives/rootless': 1.4.5(solid-js@1.8.17)
-      '@solid-primitives/scheduled': 1.4.3(solid-js@1.8.17)
+      '@solid-primitives/scheduled': 1.5.0(solid-js@1.8.17)
       '@solid-primitives/static-store': 0.0.5(solid-js@1.8.17)
       '@solid-primitives/styles': 0.0.111(solid-js@1.8.17)
       '@solid-primitives/utils': 6.2.3(solid-js@1.8.17)
@@ -4153,7 +4156,7 @@ snapshots:
       '@solid-primitives/utils': 6.2.3(solid-js@1.8.17)
       solid-js: 1.8.17
 
-  '@solid-primitives/scheduled@1.4.3(solid-js@1.8.17)':
+  '@solid-primitives/scheduled@1.5.0(solid-js@1.8.17)':
     dependencies:
       solid-js: 1.8.17
 

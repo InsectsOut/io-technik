@@ -72,3 +72,10 @@ export function valueOf<T>(val: T): () => T {
 export function compareStrings(s1: string, s2: string): number {
     return s1.localeCompare(s2);
 }
+
+export function scrollIntoView(el: HTMLElement) {
+    window.setTimeout(() => el.scrollIntoView({
+      behavior: "smooth",
+      inline: "end"
+    }), 200);
+  }
