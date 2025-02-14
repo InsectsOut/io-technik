@@ -1,11 +1,11 @@
-import { For, JSX, Match, Show, Suspense, Switch, createEffect, createMemo, createSignal } from "solid-js";
+import { For, JSX, Match, Show, Suspense, Switch, createMemo, createSignal, onMount } from "solid-js";
 import { debounce } from "@solid-primitives/scheduled";
 import { createQuery } from "@tanstack/solid-query";
 import { Motion } from "solid-motionone";
 
 import { Service, fetchServices } from "./Home.query";
 
-import { classNames, deviceType, DeviceType, isUltrathin, scrollIntoView, SlideDownFadeIn } from "@/utils";
+import { classNames, deviceType, DeviceType, scrollIntoView, SlideDownFadeIn } from "@/utils";
 import { employeeProfile } from "@/state";
 import { LocaleMX } from "@/constants";
 import { Loading } from "@/components/";
@@ -15,7 +15,7 @@ import { InputEvent } from "@/types";
 import { match } from "ts-pattern";
 import dayjs from "dayjs";
 
-import { FaSolidBan, FaSolidCheck, FaSolidChevronDown, FaSolidChevronLeft, FaSolidChevronRight, FaSolidChevronUp, FaSolidCircleInfo, FaSolidMapPin, FaSolidPhoneFlip, FaSolidXmark } from "solid-icons/fa";
+import { FaSolidBan, FaSolidCheck, FaSolidChevronDown, FaSolidChevronLeft, FaSolidChevronRight, FaSolidChevronUp, FaSolidCircleInfo, FaSolidFilter, FaSolidMagnifyingGlassArrowRight, FaSolidMapPin, FaSolidPhoneFlip, FaSolidXmark } from "solid-icons/fa";
 import { getServiceStatus } from "../Service/Service.utils";
 import { TbProgressAlert, TbSearch } from "solid-icons/tb";
 import { FiSend } from "solid-icons/fi";
@@ -24,7 +24,6 @@ import "./Home.css";
 
 const [date, setDate] = createSignal(dayjs());
 const [infoShown, setInfoShown] = createSignal(NaN);
-const isToday = () => date().isSame(dayjs(), "day");
 
 function toggleShownService(service: Service) {
   return setInfoShown(
@@ -80,11 +79,11 @@ function Share(service: Service) {
   });
 }
 
-function NoServices() {
+function NoServices(message: string) {
   return (
     <>
       <h1 class="is-centered no-services">
-        No hay servicios para {isToday() ? "hoy" : "este día"}
+        {message}
       </h1>
       <div class="is-flex is-justify-content-center">
         <i class="fa-solid fa-beer-mug-empty empty-icon" />
@@ -100,13 +99,27 @@ type OrderDir = "asc" | "desc";
 export function Home() {
   const [direction, setDirection] = createSignal<OrderDir>("asc");
   const [order, setOrder] = createSignal<OrderBy>("hora");
-  const [useFolio, setUseFolio] = createSignal(false);
+  const [searchByFolio, setUseFolio] = createSignal(false);
   const [search, setSearch] = createSignal("");
   const folioFilter = () => parseInt(search(), 10);
   const updateSearch = debounce(setSearch, 400);
-  const setOrderAndDir = (order: OrderBy) => {
+
+  function setOrderAndDir(order: OrderBy) {
     setDirection(d => d === "asc" ? "desc" : "asc");
     setOrder(order);
+  }
+
+  function toggleSearch() {
+    const folioSearch = setUseFolio(x => !x);
+    const validFolio = !isNaN(folioFilter());
+
+    if (validFolio) {
+      services.refetch();
+    }
+
+    if (!folioSearch) {
+      setSearch("");
+    }
   }
 
   function filterServices(s: Service) {
@@ -147,31 +160,47 @@ export function Home() {
       : <FaSolidChevronUp class={iconClass} />;
   }
 
-  const setDay = (days?: number) => {
+  function setDay(days?: number) {
     return days != null
       ? () => setDate(day => day.add(days, "day"))
       : () => setDate(dayjs());
-  };
+  }
 
   const pickDate = (e: InputEvent<HTMLInputElement>) => setDate(dayjs(e.target.value));
 
-  const filteredServices = () => services.data
-    ?.filter(filterServices)
-    .toSorted(orderServices);
+  const filteredServices = () => {
+    if (searchByFolio()) {
+      return services.data?.filter(s => s.folio === folioFilter());
+    }
 
-  const serviceQuery = (): Promise<Service[] | null> => useFolio()
+    return services.data
+      ?.filter(filterServices)
+      .toSorted(orderServices);
+  };
+
+  const emptyMessage = () => {
+    if (searchByFolio()) {
+      return "No se encontró un servicio con ese folio";
+    }
+
+    return search() || searchByFolio()
+      ? "No hay servicios con ese filtro"
+      : "No hay servicios para este día";
+  };
+
+  const serviceQuery = (): Promise<Service[] | null> => searchByFolio()
     ? fetchServices(date(), folioFilter())
     : fetchServices(date());
 
   const services = createQuery(() => ({
-    queryKey: [`/service-${shortDate()}`],
+    queryKey: [`/service-${searchByFolio() ? folioFilter() : date()}`],
     queryFn: serviceQuery,
     staleTime: 1000 * 60 * 5,
     throwOnError: false
   }));
 
   // Updates the services shown once we can filter by employee
-  createEffect(() => {
+  onMount(() => {
     if (employeeProfile()) {
       services.refetch();
     }
@@ -191,7 +220,7 @@ export function Home() {
             <div class="panel-block p-0 pb-2 is-flex is-gap-1 is-borderless">
               <p class="control has-icons-left">
                 <input onInput={(e) => updateSearch(e.target.value)}
-                  placeholder={useFolio() ? "Buscar folio..." : "Filtrar por nombre o folio..."}
+                  placeholder={searchByFolio() ? "Buscar folio..." : "Filtrar por nombre o folio..."}
                   value={search()}
                   class="input"
                   type="text"
@@ -201,43 +230,48 @@ export function Home() {
                 </span>
               </p>
               <button
-                class={classNames("button is-outlined", useFolio() ? "is-success" : "is-warning")}
-                onClick={() => setUseFolio(x => !x)}
+                style={{ width: "100px" }}
+                class={classNames("button is-outlined is-flex gap-2", searchByFolio() ? "is-success" : "is-warning")}
+                onClick={toggleSearch}
               >
-                {useFolio() ? "Filtrar" : "Buscar"}
+                {searchByFolio() ? "Filtrar" : "Buscar"}
+                {searchByFolio() ? <FaSolidFilter /> : <FaSolidMagnifyingGlassArrowRight />}
               </button>
             </div>
-            <div class="panel-tabs is-align-items-center is-justify-content-space-between is-borderless">
-              <p class="panel-tabs is-align-items-center is-borderless">
-                <button
-                  class="button icon is-left"
-                  onClick={setDay(-1)}
-                  type="button"
-                  title="Ayer"
-                >
-                  <FaSolidChevronLeft aria-hidden="true" />
-                </button>
 
-                <a class="is-active" onClick={setDay()}>Ir a hoy</a>
+            <Show when={!searchByFolio()}>
+              <div class="panel-tabs is-align-items-center is-justify-content-space-between is-borderless">
+                <p class="panel-tabs is-align-items-center is-borderless">
+                  <button
+                    class="button icon is-left"
+                    onClick={setDay(-1)}
+                    type="button"
+                    title="Ayer"
+                  >
+                    <FaSolidChevronLeft aria-hidden="true" />
+                  </button>
 
-                <button
-                  class="button icon is-left"
-                  onClick={setDay(+1)}
-                  title="Mañana"
-                  type="button"
-                >
-                  <FaSolidChevronRight aria-hidden="true" />
-                </button>
-              </p>
+                  <a class="is-active" onClick={setDay()}>Ir a hoy</a>
 
-              <div class="panel-tabs is-align-items-center">
-                <p class="is-borderless" title={fullDate()}>
-                  <input class="input" type="date" name="day" value={shortDate()} onChange={pickDate} />
+                  <button
+                    class="button icon is-left"
+                    onClick={setDay(+1)}
+                    title="Mañana"
+                    type="button"
+                  >
+                    <FaSolidChevronRight aria-hidden="true" />
+                  </button>
                 </p>
-              </div>
-            </div>
 
-            <Show when={services.data?.length} fallback={<NoServices />}>
+                <div class="panel-tabs is-align-items-center">
+                  <p class="is-borderless" title={fullDate()}>
+                    <input class="input" type="date" name="day" value={shortDate()} onChange={pickDate} />
+                  </p>
+                </div>
+              </div>
+            </Show>
+
+            <Show when={filteredServices()?.length} fallback={NoServices(emptyMessage())}>
               <div class="table-container io-table-container hide_scroll is-clickable">
                 <table class="table io-table">
                   <thead>
@@ -283,9 +317,15 @@ export function Home() {
                       </th>
                       <Show when={deviceType() > DeviceType.Mobile}>
                         <th class="is-flex is-justify-content-space-around is-misaligned gap-3">
-                          <div title="Teléfono" class="has-text-centered">Teléfono</div>
-                          <div title="Información" class="has-text-centered">Información</div>
                           <div title="Ubicación" class="has-text-centered">Ubicación</div>
+                        </th>
+                        <th>
+                          <div title="Información" class="has-text-centered">Información</div>
+                        </th>
+                        <th>
+                          <div title="Teléfono" class="has-text-centered">Teléfono</div>
+                        </th>
+                        <th>
                           <div title="Compartir" class="has-text-centered">Compartir</div>
                         </th>
                       </Show>
@@ -329,16 +369,14 @@ export function Home() {
               </div>
             </Show>
 
-            <Show when={search() || useFolio()}>
-              <div class="panel-block reset-filter">
-                <button type="button"
-                  onClick={() => setSearch("") || setUseFolio(false)}
-                  class="button is-link is-outlined is-fullwidth"
-                >
-                  Quitar filtros
-                </button>
-              </div>
-            </Show>
+            <div class="panel-block reset-filter">
+              <button type="button"
+                onClick={() => setSearch("") || setUseFolio(false)}
+                class="button is-link is-outlined is-fullwidth"
+              >
+                Quitar filtros
+              </button>
+            </div>
           </nav>
         </Match>
       </Switch>
@@ -351,11 +389,12 @@ function HomeActions({ service }: { service: Service }): JSX.Element {
 
   return (
     <>
-      <Show when={isUltrathin()}>
-        <td class="pl-0 has-text-centered">
+      <Show when={deviceType() <= DeviceType.Mobile}>
+        <td class="pl-0 has-text-left">
           <FaSolidChevronRight />
         </td>
       </Show>
+
       <td colSpan={4} class="icon-col">
         <div class="is-flex is-justify-content-space-around">
           <a title="Teléfono" href={`tel:${Clientes?.telefono}`}>

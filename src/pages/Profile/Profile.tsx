@@ -16,7 +16,7 @@ export function Profile() {
 
     return (
         <div class={css.container}>
-            <section class={`media is-flex-direction-row ${css.section}`}>
+            <section class={`media is-flex-direction-row ${css.section} p-3`}>
 
                 <div class="media-left">
                     <figure class="image is-64x64">
