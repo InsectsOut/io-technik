@@ -188,7 +188,7 @@ export function Home() {
           <nav class="panel is-shadowless">
             <h1 class="title p-0 has-text-centered">Servicios</h1>
             <h2 class="subtitle p-0 has-text-centered">{fullDate()}</h2>
-            <div class="panel-block p-0 pb-2 is-flex is-gap-1">
+            <div class="panel-block p-0 pb-2 is-flex is-gap-1 is-borderless">
               <p class="control has-icons-left">
                 <input onInput={(e) => updateSearch(e.target.value)}
                   placeholder={useFolio() ? "Buscar folio..." : "Filtrar por nombre o folio..."}
@@ -201,13 +201,13 @@ export function Home() {
                 </span>
               </p>
               <button
-                class={classNames("button is-outlined", useFolio() ? "is-success" : "is-info")}
+                class={classNames("button is-outlined", useFolio() ? "is-success" : "is-warning")}
                 onClick={() => setUseFolio(x => !x)}
               >
-                Folio
+                {useFolio() ? "Filtrar" : "Buscar"}
               </button>
             </div>
-            <div class="panel-tabs is-align-items-center is-justify-content-space-between borderless">
+            <div class="panel-tabs is-align-items-center is-justify-content-space-between is-borderless">
               <p class="panel-tabs is-align-items-center is-borderless">
                 <button
                   class="button icon is-left"
