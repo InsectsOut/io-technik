@@ -311,18 +311,14 @@ export function Home() {
                         </span>
                       </th>
                       <Show when={deviceType() > DeviceType.Mobile}>
-                        <th class="is-flex is-justify-content-space-around is-misaligned gap-3">
-                          <div title="Ubicación" class="has-text-centered">Ubicación</div>
-                        </th>
-                        <th>
-                          <div title="Información" class="has-text-centered">Información</div>
-                        </th>
-                        <th>
-                          <div title="Teléfono" class="has-text-centered">Teléfono</div>
-                        </th>
-                        <th>
-                          <div title="Compartir" class="has-text-centered">Compartir</div>
-                        </th>
+                        <td colSpan={4} class="icon-col">
+                          <div class="is-flex is-justify-content-space-around">
+                            <div title="Teléfono" class="has-text-centered "><strong>Teléfono</strong></div>
+                            <div title="Información" class="has-text-centered"><strong>Información</strong></div>
+                            <div title="Ubicación" class="has-text-centered"><strong>Ubicación</strong></div>
+                            <div title="Compartir" class="has-text-centered"><strong>Compartir</strong></div>
+                          </div>
+                        </td>
                       </Show>
                     </tr>
                   </thead>

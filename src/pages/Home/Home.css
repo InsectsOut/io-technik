@@ -16,7 +16,8 @@ h1 {
 
 .io-table-container {
     overflow-y: auto !important;
-    height: calc(60vh - 2rem);
+    margin: unset !important;
+    height: 65vh;
 }
 
 .io-table {
@@ -46,8 +47,7 @@ h1 {
 }
 
 .no-services {
-    margin-bottom: var(--bulma-block-spacing);
-    height: calc(60vh - 2rem);
+    height: 65vh;
     text-align: center;
     font-size: 2rem;
     padding: 2rem;
