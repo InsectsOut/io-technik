@@ -16,7 +16,7 @@ h1 {
 
 .io-table-container {
     overflow-y: auto !important;
-    height: calc(70vh - 1rem);
+    height: calc(60vh - 2rem);
 }
 
 .io-table {
@@ -46,9 +46,11 @@ h1 {
 }
 
 .no-services {
-    padding: 2rem;
+    margin-bottom: var(--bulma-block-spacing);
+    height: calc(60vh - 2rem);
     text-align: center;
     font-size: 2rem;
+    padding: 2rem;
 }
 
 .empty-icon {

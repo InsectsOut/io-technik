@@ -81,14 +81,9 @@ function Share(service: Service) {
 
 function NoServices(message: string) {
   return (
-    <>
-      <h1 class="is-centered no-services">
-        {message}
-      </h1>
-      <div class="is-flex is-justify-content-center">
-        <i class="fa-solid fa-beer-mug-empty empty-icon" />
-      </div>
-    </>
+    <h1 class="is-centered no-services">
+      {message}
+    </h1>
   )
 }
 
