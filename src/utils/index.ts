@@ -74,8 +74,8 @@ export function compareStrings(s1: string, s2: string): number {
 }
 
 export function scrollIntoView(el: HTMLElement) {
-    window.setTimeout(() => el.scrollIntoView({
-      behavior: "smooth",
-      inline: "end"
+    el && window.setTimeout(() => el.scrollIntoView({
+        behavior: "smooth",
+        inline: "end"
     }), 200);
-  }
+}

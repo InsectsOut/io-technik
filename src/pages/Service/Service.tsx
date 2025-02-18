@@ -209,7 +209,7 @@ export function Service() {
             animation.onfinish ??= () => {
                 window.requestAnimationFrame(() => {
                     const el = document.getElementById(setView(nextView));
-                    scrollIntoView(el!);
+                    el && scrollIntoView(el);
                 });
             }
         }
