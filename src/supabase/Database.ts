@@ -165,6 +165,7 @@ export type Database = {
           curp: string | null
           direccion: number | null
           fecha_nacimiento: string | null
+          Firma: string | null
           id: number
           imss: string | null
           ine: string | null
@@ -186,6 +187,7 @@ export type Database = {
           curp?: string | null
           direccion?: number | null
           fecha_nacimiento?: string | null
+          Firma?: string | null
           id?: number
           imss?: string | null
           ine?: string | null
@@ -207,6 +209,7 @@ export type Database = {
           curp?: string | null
           direccion?: number | null
           fecha_nacimiento?: string | null
+          Firma?: string | null
           id?: number
           imss?: string | null
           ine?: string | null
@@ -299,6 +302,7 @@ export type Database = {
           nombre: string | null
           presentacion: string | null
           registro: string | null
+          tipo_de_producto: Database["public"]["Enums"]["tipo_producto"] | null
         }
         Insert: {
           dosis_max?: string | null
@@ -308,6 +312,7 @@ export type Database = {
           nombre?: string | null
           presentacion?: string | null
           registro?: string | null
+          tipo_de_producto?: Database["public"]["Enums"]["tipo_producto"] | null
         }
         Update: {
           dosis_max?: string | null
@@ -317,6 +322,7 @@ export type Database = {
           nombre?: string | null
           presentacion?: string | null
           registro?: string | null
+          tipo_de_producto?: Database["public"]["Enums"]["tipo_producto"] | null
         }
         Relationships: []
       }
@@ -364,6 +370,9 @@ export type Database = {
           cantidad: number | null
           cantidad_usada: number | null
           created_at: string
+          dosis_recomendada:
+            | Database["public"]["Enums"]["dosis_recomendada"]
+            | null
           id: number
           producto_id: number | null
           servicio_id: number
@@ -377,6 +386,9 @@ export type Database = {
           cantidad?: number | null
           cantidad_usada?: number | null
           created_at?: string
+          dosis_recomendada?:
+            | Database["public"]["Enums"]["dosis_recomendada"]
+            | null
           id?: number
           producto_id?: number | null
           servicio_id: number
@@ -390,6 +402,9 @@ export type Database = {
           cantidad?: number | null
           cantidad_usada?: number | null
           created_at?: string
+          dosis_recomendada?:
+            | Database["public"]["Enums"]["dosis_recomendada"]
+            | null
           id?: number
           producto_id?: number | null
           servicio_id?: number
@@ -465,7 +480,6 @@ export type Database = {
       }
       Servicios: {
         Row: {
-          aplicador_Responsable: number | null
           cancelado: boolean | null
           cliente_id: number
           created_at: string | null
@@ -485,6 +499,7 @@ export type Database = {
           organizacion: string | null
           realizado: boolean | null
           responsable_id: number | null
+          tecnico_id: number | null
           tipo_folio: string | null
           tipo_plaga_array_id: number[] | null
           tipo_plaga_id: number | null
@@ -493,7 +508,6 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
-          aplicador_Responsable?: number | null
           cancelado?: boolean | null
           cliente_id: number
           created_at?: string | null
@@ -513,6 +527,7 @@ export type Database = {
           organizacion?: string | null
           realizado?: boolean | null
           responsable_id?: number | null
+          tecnico_id?: number | null
           tipo_folio?: string | null
           tipo_plaga_array_id?: number[] | null
           tipo_plaga_id?: number | null
@@ -521,7 +536,6 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
-          aplicador_Responsable?: number | null
           cancelado?: boolean | null
           cliente_id?: number
           created_at?: string | null
@@ -541,6 +555,7 @@ export type Database = {
           organizacion?: string | null
           realizado?: boolean | null
           responsable_id?: number | null
+          tecnico_id?: number | null
           tipo_folio?: string | null
           tipo_plaga_array_id?: number[] | null
           tipo_plaga_id?: number | null
@@ -549,13 +564,6 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "Servicios_aplicador_Responsable_fkey"
-            columns: ["aplicador_Responsable"]
-            isOneToOne: false
-            referencedRelation: "Empleados"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "Servicios_cliente_id_fkey"
             columns: ["cliente_id"]
@@ -575,6 +583,13 @@ export type Database = {
             columns: ["responsable_id"]
             isOneToOne: false
             referencedRelation: "Responsables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "Servicios_tecnico_id_fkey"
+            columns: ["tecnico_id"]
+            isOneToOne: false
+            referencedRelation: "Empleados"
             referencedColumns: ["id"]
           },
           {
@@ -601,6 +616,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      dosis_recomendada: "min" | "max"
       FrecuenciaServicio:
         | "Ninguna"
         | "Semanal"
@@ -611,6 +627,7 @@ export type Database = {
         | "Semestral"
         | "Anual"
       RolesEmpleado: "tecnico" | "administrador" | "superadmin"
+      tipo_producto: "plaguicida" | "trampa" | "cebo" | "gel"
     }
     CompositeTypes: {
       [_ in never]: never

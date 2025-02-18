@@ -18,6 +18,18 @@ main {
   padding: 0 1rem;
 }
 
+.two_col_grid {
+  gap: 0.375rem;
+
+  @media screen and (width > 550px) {
+    grid-template-columns: 50% 50%;
+    grid-template-rows: auto auto;
+    grid-auto-flow: column;
+    display: grid;
+    width: auto;
+  }
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .hide_scroll::-webkit-scrollbar {
   display: none;

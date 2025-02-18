@@ -34,7 +34,7 @@ export async function fetchServices(date?: Dayjs, folio?: number) {
 
     // If the user is not a superadmin, only show their assigned services
     if (!isSuperAdmin && employee_id != null) {
-        serviceQuery.eq("aplicador_Responsable", employee_id);
+        serviceQuery.eq("tecnico_id", employee_id);
     }
 
     // If a date is provided, filter by that date

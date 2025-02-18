@@ -1,10 +1,10 @@
 import { destructure } from "@solid-primitives/destructure";
-import { createSignal, For } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 
 import { classNames, DeviceType, deviceType } from "@/utils";
 import { getSimpleUnit } from "../Service.utils";
 import { Modal, useToast } from "@/components";
-import { supabase, Tables } from "@/supabase";
+import { Enums, supabase, Tables } from "@/supabase";
 
 import css from "../Service.module.css"
 import { BsPencilSquare } from "solid-icons/bs";
@@ -29,6 +29,8 @@ type Supply = {
     unidad: string;
     dosis_min: string;
     dosis_max: string;
+    tipo_producto?: Enums<"tipo_producto">;
+    dosis_recomendada?: Enums<"dosis_recomendada">;
 }
 
 const { addToast } = useToast();
@@ -74,7 +76,9 @@ export function SuppliesDetails(props: SuppliesDetails) {
         );
     }
 
-    const suministros = props.registros.map((r) => ({
+    const suministros: Supply[] = props.registros.map((r) => ({
+        tipo_producto: r.Productos?.tipo_de_producto!,
+        dosis_recomendada: r.dosis_recomendada!,
         dosis_min: r.Productos?.dosis_min || "0",
         dosis_max: r.Productos?.dosis_max || "0",
         cantidad_usada: r.cantidad_usada || 0,
@@ -130,12 +134,15 @@ function SupplyDetail(item: Supply) {
     return (
         <tr class={css.slim_pad}>
             <td class="pl-0">
-                <span onClick={() => setShowInfo(true)}
-                    class="has-text-link is-clickable"
+                <div onClick={() => setShowInfo(true)}
+                    class="has-text-link is-clickable is-flex gap-3 is-flex-wrap-wrap"
                     title={item.nombre}
                 >
+                    <Show when={item.tipo_producto}>
+                        <span class="tag is-info">{item.tipo_producto}</span>
+                    </Show>
                     {item.nombre}
-                </span>
+                </div>
             </td>
 
             <td>
@@ -193,7 +200,7 @@ function SupplyDetail(item: Supply) {
                         </p>
                     </div>
 
-                    <div class={classNames("field is-grouped is-flex-direction-column hide_scroll scrollable", css.io_field)}>
+                    <div class="field is-flex-direction-column two_col_grid">
                         <label class="label">Dosis Mínima</label>
                         <p class="control has-icons-left">
                             <input id="p_presentacion" disabled
@@ -204,6 +211,11 @@ function SupplyDetail(item: Supply) {
                             <span class="icon is-medium is-left">
                                 <FaSolidMinus class="has-text-danger is-size-5" />
                             </span>
+                            <Show when={item.dosis_recomendada === "min"}>
+                                <span class={classNames("tag is-success ml-2 z-10", css.dosis_tag)}>
+                                    Recomendado
+                                </span>
+                            </Show>
                         </p>
 
                         <label class="label">Dosis Máxima</label>
@@ -216,6 +228,11 @@ function SupplyDetail(item: Supply) {
                             <span class="icon is-medium is-left">
                                 <FaSolidPlus class="has-text-success is-size-5" />
                             </span>
+                            <Show when={item.dosis_recomendada === "max"}>
+                                <span class={classNames("tag is-success ml-2 z-10", css.dosis_tag)}>
+                                    Recomendado
+                                </span>
+                            </Show>
                         </p>
 
                     </div>

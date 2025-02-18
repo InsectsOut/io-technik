@@ -35,7 +35,7 @@ export function SuggestionPicker(props: PickerProps) {
     const { id: servicioId, folio } = destructure(props.servicio);
     const { addToast } = useToast();
 
-    const recomendacionesQuery = createQuery(() => ({
+    const query = createQuery(() => ({
         queryKey: [`recomendaciones/${servicioId()}`],
         queryFn: () => getRecomendaciones(servicioId().toString()),
         throwOnError: false
@@ -62,7 +62,7 @@ export function SuggestionPicker(props: PickerProps) {
 
     // Load the suggestions from the DB and maps them to the local state
     createEffect(() => {
-        const loadedData = recomendacionesQuery.data;
+        const loadedData = query.data;
 
         if (!loadedData) {
             return;
@@ -144,7 +144,7 @@ export function SuggestionPicker(props: PickerProps) {
             .remove([sugerencia.imagen?.id ?? ""]);
 
         if (deleted?.error === null) {
-            recomendacionesQuery.refetch();
+            query.refetch();
             setSugerencias(sugerencias.filter((s) => s.id !== sugerencia.id));
             console.log(deleted, imageDeleted);
         }

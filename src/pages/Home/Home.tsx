@@ -15,9 +15,9 @@ import { InputEvent } from "@/types";
 import { match } from "ts-pattern";
 import dayjs from "dayjs";
 
-import { FaSolidBan, FaSolidCheck, FaSolidChevronDown, FaSolidChevronLeft, FaSolidChevronRight, FaSolidChevronUp, FaSolidCircleInfo, FaSolidFilter, FaSolidMagnifyingGlassArrowRight, FaSolidMapPin, FaSolidPhoneFlip, FaSolidXmark } from "solid-icons/fa";
+import { FaSolidBan, FaSolidCheck, FaSolidChevronDown, FaSolidChevronLeft, FaSolidChevronRight, FaSolidChevronUp, FaSolidCircleInfo, FaSolidFilter, FaSolidMagnifyingGlass, FaSolidMapPin, FaSolidPhoneFlip, FaSolidXmark } from "solid-icons/fa";
 import { getServiceStatus } from "../Service/Service.utils";
-import { TbProgressAlert, TbSearch } from "solid-icons/tb";
+import { TbProgressAlert } from "solid-icons/tb";
 import { FiSend } from "solid-icons/fi";
 
 import "./Home.css";
@@ -213,24 +213,21 @@ export function Home() {
             <h1 class="title p-0 has-text-centered">Servicios</h1>
             <h2 class="subtitle p-0 has-text-centered">{fullDate()}</h2>
             <div class="panel-block p-0 pb-2 is-flex is-gap-1 is-borderless">
-              <p class="control has-icons-left">
+              <p class="control">
                 <input onInput={(e) => updateSearch(e.target.value)}
                   placeholder={searchByFolio() ? "Buscar folio..." : "Filtrar por nombre o folio..."}
                   value={search()}
                   class="input"
                   type="text"
                 />
-                <span class="icon is-left">
-                  <TbSearch aria-hidden="true" class="is-size-4" />
-                </span>
               </p>
               <button
                 style={{ width: "100px" }}
-                class={classNames("button is-outlined is-flex gap-2", searchByFolio() ? "is-success" : "is-warning")}
+                class={classNames("button is-outlined is-flex gap-2", searchByFolio() ? "is-success" : "is-info")}
                 onClick={toggleSearch}
               >
                 {searchByFolio() ? "Filtrar" : "Buscar"}
-                {searchByFolio() ? <FaSolidFilter /> : <FaSolidMagnifyingGlassArrowRight />}
+                {searchByFolio() ? <FaSolidFilter /> : <FaSolidMagnifyingGlass />}
               </button>
             </div>
 
@@ -312,7 +309,7 @@ export function Home() {
                       </th>
                       <Show when={deviceType() > DeviceType.Mobile}>
                         <td colSpan={4} class="icon-col">
-                          <div class="is-flex is-justify-content-space-around">
+                          <div class="is-flex is-justify-content-space-around gap-3">
                             <div title="Teléfono" class="has-text-centered "><strong>Teléfono</strong></div>
                             <div title="Información" class="has-text-centered"><strong>Información</strong></div>
                             <div title="Ubicación" class="has-text-centered"><strong>Ubicación</strong></div>

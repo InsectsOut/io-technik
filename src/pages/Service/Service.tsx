@@ -79,19 +79,19 @@ export function Service() {
 
     /** Updates the service cache if requested by a child */
     document.addEventListener("UpdateService",
-        () => serviceQuery.refetch().then(() => {
+        () => query.refetch().then(() => {
             setView("detalles");
             setView("suministros");
         }));
 
     const onServiceUpdate = () => window.setTimeout(
-        () => serviceQuery.refetch().then(() => {
+        () => query.refetch().then(() => {
             setView("detalles");
             setView("reporte");
         }), 1000);
 
     /** Creates a query to fetch the requested service, caches data for 1m */
-    const serviceQuery = createQuery(() => ({
+    const query = createQuery(() => ({
         queryKey: [`service/${folio}`],
         queryFn: () => getServiceByFolio(folio),
         staleTime: 1000 * 60 * 3,
@@ -99,7 +99,11 @@ export function Service() {
     }));
 
     /** Service entry associated with this page's `folio` */
-    const service = () => serviceQuery.data;
+    const service = () => query.data;
+    const cliente = () => service()?.Clientes;
+    const empleado = () => service()?.Empleados;
+    const direccion = () => service()?.Direcciones;
+    const responsable = () => service()?.Responsables;
 
     const fechaServicio = () => service()
         ? new Date(`${service()?.fecha_servicio}T${service()?.horario_servicio}`)
@@ -167,11 +171,11 @@ export function Service() {
     let tabContainer: Maybe<HTMLTemplateElement>;
 
     /** Handles swiping between the different tab views  */
-    const onTabSwipe = (direction: 'left' | 'right', _distance: number) => {
+    const onTabSwipe = (direction: 'left' | 'right', distance: number) => {
         if (!canSwipe()) return;
 
         if (changesUnsaved()) {
-            lastSwipe = [direction, _distance];
+            lastSwipe = [direction, distance];
             return setShowConfirm(true);
         }
 
@@ -223,7 +227,10 @@ export function Service() {
             onCleanup(cleanup);
         }
 
-        window.setTimeout(() => scrollIntoView(document.getElementById(view())!), 300);
+        window.requestAnimationFrame(() => {
+            const el = document.getElementById(view());
+            el && window.setTimeout(() => scrollIntoView(el), 300);
+        });
     });
 
     // Check if there are unsaved changes before leaving the page
@@ -283,24 +290,24 @@ export function Service() {
                     id={view()}
                 >
                     <Switch>
-                        <Match when={serviceQuery.error}>
+                        <Match when={query.error}>
                             <Error title="Error cargando el servicio 🚧" subtitle=" " />
                         </Match>
 
                         <Match when={service() && isInfo()}>
                             <form class="hide_scroll">
-                                <Show when={employeeProfile()?.tipo_rol === "superadmin" && service()?.Empleados}>
+                                <Show when={employeeProfile()?.tipo_rol === "superadmin" && empleado()}>
                                     <div class={classNames("field is-grouped is-flex-direction-column mb-5", css.io_field)}>
                                         <label class="label">Técnico Asignado</label>
                                         <p class="control has-icons-left">
-                                            <input title="Técnico" disabled class="input" type="text" value={service()?.Empleados?.nombre} />
+                                            <input title="Técnico" disabled class="input" type="text" value={empleado()?.nombre} />
                                             <span class="icon is-medium is-left">
                                                 <FaSolidClipboardUser />
                                             </span>
                                         </p>
                                         <label class="label">Organización</label>
                                         <p class="control has-icons-left">
-                                            <input title="Organización" disabled class="input" value={service()?.Empleados?.organizacion ?? 'N/A'} />
+                                            <input title="Organización" disabled class="input" value={empleado()?.organizacion ?? 'N/A'} />
                                             <span class="icon is-small is-left">
                                                 <FaSolidBriefcase />
                                             </span>
@@ -317,7 +324,7 @@ export function Service() {
                                         </span>
                                     </p>
                                     <p class="control has-icons-left">
-                                        <input title="Cliente" disabled class="input" value={getClientName(service()?.Clientes!)} />
+                                        <input title="Cliente" disabled class="input" value={getClientName(cliente()!)} />
                                         <span class="icon is-small is-left">
                                             <FaSolidUser />
                                         </span>
@@ -388,8 +395,8 @@ export function Service() {
 
                         <Match when={service() && isContact()}>
                             <ContactDetails
-                                responsable={service()?.Responsables!}
-                                direccion={service()?.Direcciones!}
+                                responsable={responsable()!}
+                                direccion={direccion()!}
                             />
                         </Match>
 
