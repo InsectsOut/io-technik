@@ -57,7 +57,7 @@ export function ContactDetails(props: ContactProps) {
                 </p>
             </div>
 
-            <div class={classNames("field is-flex-direction-column", css.two_col_grid)}>
+            <div class="field is-flex-direction-column two_col_grid">
                 <Show when={email() && telefono()}>
                     <label class="label">Correo</label>
                     <p class={classNames("control has-icons-left", css.no_overflow)}>
