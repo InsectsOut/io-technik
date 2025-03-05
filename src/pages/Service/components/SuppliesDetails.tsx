@@ -4,7 +4,7 @@ import { createSignal, For, Show } from "solid-js";
 import { classNames, DeviceType, deviceType } from "@/utils";
 import { getSimpleUnit } from "../Service.utils";
 import { Modal, useToast } from "@/components";
-import { Enums, supabase, Tables } from "@/supabase";
+import { supabase, Tables } from "@/supabase";
 
 import css from "../Service.module.css"
 import { BsPencilSquare } from "solid-icons/bs";
@@ -17,21 +17,7 @@ type SuppliesDetails = {
     }>;
 }
 
-type Supply = {
-    id: number;
-    nombre: string;
-    ingrediente: string;
-    presentacion: string;
-    registro: string;
-    tipo: string;
-    cantidad: number;
-    cantidad_usada: number,
-    unidad: string;
-    dosis_min: string;
-    dosis_max: string;
-    tipo_producto?: Enums<"tipo_producto">;
-    dosis_recomendada?: Enums<"dosis_recomendada">;
-}
+type Supply = ReturnType<typeof getSuppliesList>[number];
 
 const { addToast } = useToast();
 
@@ -57,6 +43,28 @@ async function updateUsedProduct(item: Supply, cantidad: number) {
     }
 }
 
+/** Maps the supply details to a renderable list of supplies */
+function getSuppliesList(supplies: SuppliesDetails["registros"]) {
+    return supplies.map((r) => ({
+        area_aplicacion: r.area_aplicacion?.toUpperCase(),
+        tipo_producto: r.Productos?.tipo_de_producto!.toUpperCase(),
+        dosis_recomendada: r.dosis_recomendada!,
+        dosis_min: r.Productos?.dosis_min || "0",
+        dosis_max: r.Productos?.dosis_max || "0",
+        cantidad_usada: r.cantidad_usada || 0,
+
+        registro: r.Productos?.registro || "Sin registro",
+        nombre: r.Productos?.nombre || "N/A",
+        cantidad: r.cantidad || 0,
+        unidad: r.unidad || "unidades",
+        id: r.id,
+
+        ingrediente: r.Productos?.ingrediente_activo || "N/A",
+        presentacion: r.Productos?.presentacion || "N/A",
+        tipo: r.tipo_aplicacion || "N/A",
+    }));
+}
+
 /**
  * Component that shows the supplies details tab
  * @param props The supplies props to be rendered
@@ -76,24 +84,6 @@ export function SuppliesDetails(props: SuppliesDetails) {
         );
     }
 
-    const suministros: Supply[] = props.registros.map((r) => ({
-        tipo_producto: r.Productos?.tipo_de_producto!,
-        dosis_recomendada: r.dosis_recomendada!,
-        dosis_min: r.Productos?.dosis_min || "0",
-        dosis_max: r.Productos?.dosis_max || "0",
-        cantidad_usada: r.cantidad_usada || 0,
-
-        registro: r.Productos?.registro || "Sin registro",
-        nombre: r.Productos?.nombre || "N/A",
-        cantidad: r.cantidad || 0,
-        unidad: r.unidad || "unidades",
-        id: r.id,
-
-        ingrediente: r.Productos?.ingrediente_activo || "N/A",
-        presentacion: r.Productos?.presentacion || "N/A",
-        tipo: r.tipo_aplicacion || "N/A",
-    }));
-
     return (
         <table class="table is-striped fullwidth mb-4" style={viewWidth}>
             <thead>
@@ -106,7 +96,7 @@ export function SuppliesDetails(props: SuppliesDetails) {
             </thead>
 
             <tbody>
-                <For each={suministros}>{SupplyDetail}</For>
+                <For each={getSuppliesList(registros())}>{SupplyDetail}</For>
             </tbody>
         </table>
     );
@@ -138,6 +128,11 @@ function SupplyDetail(item: Supply) {
                     class="has-text-link is-clickable is-flex gap-3 is-flex-wrap-wrap"
                     title={item.nombre}
                 >
+                    <Show when={item.area_aplicacion}>
+                        <span class="tag is-warning has-text-weight-bold" style={{ "min-width": "175px" }}>
+                            {item.area_aplicacion}
+                        </span>
+                    </Show>
                     <Show when={item.tipo_producto}>
                         <span class="tag is-info">{item.tipo_producto}</span>
                     </Show>

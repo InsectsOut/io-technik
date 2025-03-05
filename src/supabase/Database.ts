@@ -613,7 +613,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_temporal_folio: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
     }
     Enums: {
       dosis_recomendada: "min" | "max"
