@@ -2,6 +2,11 @@
 # publish = "dist"
 # command = "pnpm run build"
 
+[build.environment]
+# This enables postinstall scripts which are needed for native dependencies like sharp
+NPM_CONFIG_IGNORE_SCRIPTS = "false"
+PNPM_IGNORE_SCRIPTS = "false"
+
 [[redirects]]
 from = "/*"
 to = "/index.html"
