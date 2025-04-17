@@ -36,6 +36,9 @@ importers:
       dayjs:
         specifier: ^1.11.11
         version: 1.11.11
+      sharp:
+        specifier: 0.32.6
+        version: 0.32.6
       signature_pad:
         specifier: ^5.0.3
         version: 5.0.3
