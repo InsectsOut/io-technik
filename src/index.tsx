@@ -19,7 +19,7 @@ render(() => (
             <Route path="/" component={AuthGuard}>
                 <Route path="/about" component={About} />
                 <Route path="/feedback" component={Feedback} />
-                <Route path="/services/:folio/:tab?" component={Service} />
+                <Route path="/services/:org/:folio/:tab?" component={Service} />
                 <Route path={["/home", "/"]} component={Home} />
                 <Route path="/user" component={Profile} />
             </Route>

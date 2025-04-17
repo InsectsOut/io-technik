@@ -59,14 +59,14 @@ function Share(service: ServiceDetails, tab: Tabs) {
 }
 
 /** Route parameters for the service page */
-type ServiceParams = { folio: string; tab?: Tabs };
+type ServiceParams = { folio: string; org: string, tab?: Tabs };
 
 let changeViewEv: Maybe<Event | KeyboardEvent>;
 let lastSwipe: Maybe<[direction: 'left' | 'right', _distance: number]>;
 let navEvent: Maybe<BeforeLeaveEventArgs>;
 
 export function Service() {
-    const { folio, tab } = useParams<ServiceParams>();
+    const { org, folio, tab } = useParams<ServiceParams>();
     const navigate = useNavigate();
     const goHome = () => navigate(Pages.Home);
 
@@ -92,8 +92,8 @@ export function Service() {
 
     /** Creates a query to fetch the requested service, caches data for 1m */
     const query = createQuery(() => ({
-        queryKey: [`service/${folio}`],
-        queryFn: () => getServiceByFolio(folio),
+        queryKey: [`service/${folio}/${org}`],
+        queryFn: () => getServiceByFolio(folio, org),
         staleTime: 1000 * 60 * 3,
         throwOnError: false
     }));
@@ -246,8 +246,11 @@ export function Service() {
         <Suspense fallback={<Loading />}>
             <nav class="panel is-shadowless">
                 <h1 class="title has-text-centered">
-                    Servicio #{folio}
+                    Servicio #{folio.toString().replace("-", "FT-")}
                 </h1>
+                <h2 class="subtitle has-text-centered">
+                    {org}
+                </h2>
 
                 <p class="panel-tabs is-justify-content-start scrollable hide_scroll">
                     <a class={classNames(["is-active", isInfo()])}
@@ -318,7 +321,9 @@ export function Service() {
                                 <label class="label">Datos del Cliente</label>
                                 <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                     <p class="control has-icons-left">
-                                        <input title="Folio" disabled class="input has-text-link" type="text" value={`Folio: ${service()?.folio}`} />
+                                        <input title="Folio" disabled class="input has-text-link" type="text"
+                                            value={`Folio: ${service()?.folio.toString().replace("-", "FT-")}`}
+                                        />
                                         <span class="icon is-medium is-left">
                                             <FaSolidHashtag class="has-text-link" />
                                         </span>

@@ -10,8 +10,8 @@ export type ServiceDetails = NonNullable<
  * @param folio Unique key to reference the service
  * @returns A `promise` that resolves to a `Servicio` object, null otherwise
 */
-export async function getServiceByFolio(folio: string) {
-    if (!folio) {
+export async function getServiceByFolio(folio: string, org: string) {
+    if (!folio || !org) {
         return null;
     }
 
@@ -25,6 +25,7 @@ export async function getServiceByFolio(folio: string) {
             Empleados!Servicios_tecnico_id_fkey(nombre, organizacion),
             RegistroAplicacion(*, Productos(*))`
         )
+        .eq("organizacion", org)
         .eq("folio", folio)
         .limit(1)
         .maybeSingle();

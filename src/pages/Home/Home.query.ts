@@ -2,6 +2,7 @@ import { QueryData } from "@supabase/supabase-js";
 import { IO_Database } from "@/supabase";
 
 import { employeeProfile } from "@/state";
+import { match } from "ts-pattern";
 import { Dayjs } from "dayjs";
 
 /** Return type for a service query */
@@ -18,30 +19,41 @@ const query = IO_Database
  * @returns A `promise` that resolves to an array of `Servicios`, null otherwise
  */
 export async function fetchServices(date?: Dayjs, folio?: number) {
-    const { id: employee_id, tipo_rol } = employeeProfile() ?? {};
+    const { id: employee_id, tipo_rol, organizacion } = employeeProfile() ?? {};
     const useFolio = folio != null && !isNaN(folio);
-    const isSuperAdmin = tipo_rol === "superadmin";
-
     const serviceQuery = IO_Database
         .from("Servicios")
         .select(`*, Clientes(*), Direcciones(ubicacion)`)
         .order("horario_servicio");
 
-    // If a folio is provided, filter by that folio
-    if (isSuperAdmin && useFolio) {
-        serviceQuery.eq("folio", folio);
-    }
+    const filteredQuery = match(tipo_rol)
+        .with("superadmin", () => {
+            const superQuery = useFolio ? serviceQuery.eq("folio", folio) : serviceQuery;
+            const serviceDate = date?.format("YYYY-MM-DD");
+            return serviceDate && !useFolio
+                ? superQuery.eq("fecha_servicio", serviceDate)
+                : superQuery;
+        })
+        .with("administrador", () => {
+            const serviceDate = date?.format("YYYY-MM-DD");
+            const adminQuery = serviceQuery.eq("organizacion", organizacion ?? "")
+            const folioQuery = useFolio ? adminQuery.eq("folio", folio) : adminQuery;
 
-    // If the user is not a superadmin, only show their assigned services
-    if (!isSuperAdmin && employee_id != null) {
-        serviceQuery.eq("tecnico_id", employee_id);
-    }
+            return serviceDate && !useFolio
+                ? folioQuery.eq("fecha_servicio", serviceDate)
+                : folioQuery;
+        })
+        .with("tecnico", () => {
+            const serviceDate = date?.format("YYYY-MM-DD");
+            const userQuery = serviceQuery
+                .eq("organizacion", organizacion ?? "")
+                .eq("tecnico_id", employee_id ?? "");
 
-    // If a date is provided, filter by that date
-    if (date && !useFolio) {
-        const serviceDate = date.format("YYYY-MM-DD");
-        serviceQuery.eq("fecha_servicio", serviceDate);
-    }
+            return serviceDate
+                ? userQuery.eq("fecha_servicio", serviceDate)
+                : userQuery;
+        })
+        .otherwise(() => serviceQuery);
 
-    return (await serviceQuery).data;
+    return (await filteredQuery).data;
 }

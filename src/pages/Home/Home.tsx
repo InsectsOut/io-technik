@@ -70,12 +70,12 @@ function Share(service: Service) {
     return;
   }
 
-  const { Clientes: c, folio } = service;
+  const { Clientes: c, folio, organizacion: org } = service;
 
   navigator.share({
     title: `Servicio #${folio}`,
     text: `${c.nombre} ${c.apellidos} - ${service.fecha_servicio}`,
-    url: `${Pages.Services}/${folio}`
+    url: `${Pages.Services}/${org}/${folio}`
   });
 }
 
@@ -321,32 +321,41 @@ export function Home() {
                   </thead>
                   <tbody>
                     <For each={filteredServices()}>
-                      {service => (
+                      {s => (
                         <>
-                          <tr class="is-clickable" onClick={() => toggleShownService(service)}>
-                            <td class="pl-0"><strong>{service.folio}</strong></td>
-                            <td><strong>{getSimpleTime(service)}</strong></td>
+                          <tr class="is-clickable" onClick={() => toggleShownService(s)}>
+                            <td class="pl-0 has-text-centered">
+                              <div class="control">
+                                <div class="tags has-addons is-flex-wrap-nowrap">
+                                  <span class="tag is-info">{s.organizacion}</span>
+                                  <span class="tag is-dark">
+                                    {s.folio.toString().replace("-", "FT-")}
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
+                            <td><strong>{getSimpleTime(s)}</strong></td>
                             <td>
                               <Show when={deviceType() > DeviceType.Mobile} fallback={
-                                <span>{service.Clientes?.nombre} {service.Clientes?.apellidos}</span>
+                                <span>{s.Clientes?.nombre} {s.Clientes?.apellidos}</span>
                               }>
-                                <a href={`${Pages.Services}/${service.folio}`}>
-                                  {service.Clientes?.nombre} {service.Clientes?.apellidos}
+                                <a href={`${Pages.Services}/${s.organizacion}/${s.folio}`}>
+                                  {s.Clientes?.nombre} {s.Clientes?.apellidos}
                                 </a>
                               </Show>
                             </td>
                             <td class="icon-col has-text-centered">
-                              <div title={getServiceStatus(service)}>
-                                {deviceType() > DeviceType.Tablet ? getServiceStatus(service) : getStatusIcon(service)}
+                              <div title={getServiceStatus(s)}>
+                                {deviceType() > DeviceType.Tablet ? getServiceStatus(s) : getStatusIcon(s)}
                               </div>
                             </td>
                             <Show when={deviceType() > DeviceType.Mobile}>
-                              <HomeActions service={service} />
+                              <HomeActions service={s} />
                             </Show>
                           </tr>
-                          <Show when={infoShown() === service.id && deviceType() <= DeviceType.Mobile}>
+                          <Show when={infoShown() === s.id && deviceType() <= DeviceType.Mobile}>
                             <Motion.tr {...SlideDownFadeIn}>
-                              <HomeActions service={service} />
+                              <HomeActions service={s} />
                             </Motion.tr>
                           </Show>
                         </>
@@ -373,47 +382,50 @@ export function Home() {
 }
 
 function HomeActions({ service }: { service: Service }): JSX.Element {
-  const { folio, Clientes, Direcciones: dir } = service;
+  const { folio, Clientes: c, Direcciones: dir, organizacion: org } = service;
 
   return (
     <>
-      <Show when={deviceType() <= DeviceType.Mobile}>
-        <td class="pl-0 has-text-left">
-          <FaSolidChevronRight />
-        </td>
-      </Show>
+      <td class="has-text-centered">
+        <a title="Teléfono" href={`tel:${c?.telefono}`}>
+          <span class="icon is-left">
+            <FaSolidPhoneFlip class="has-text-primary is-size-5" aria-hidden="true" />
+          </span>
+        </a>
+      </td>
 
-      <td colSpan={4} class="icon-col">
-        <div class="is-flex is-justify-content-space-around">
-          <a title="Teléfono" href={`tel:${Clientes?.telefono}`}>
+      <td class="has-text-centered">
+        <a title="Información" href={`${Pages.Services}/${org}/${folio}`}>
+          <span class="icon is-left">
+            <FaSolidCircleInfo class="has-text-info is-size-5" aria-hidden="true" />
+          </span>
+        </a>
+      </td>
+
+      <td class="has-text-centered">
+        <a classList={{ "disabled": !dir?.ubicacion }}
+          href={dir?.ubicacion!}
+          title="Ubicación"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="icon is-left">
+            {dir?.ubicacion
+              ? <FaSolidMapPin class="is-size-5 has-text-danger" aria-hidden="true" />
+              : <FaSolidBan class="is-size-5 has-text-grey" aria-hidden="true" />}
+          </span>
+        </a>
+      </td>
+
+      <td class="has-text-centered">
+        <Show when={'share' in navigator}>
+          <a title="Compartir" href="" onClick={() => Share(service)}>
             <span class="icon is-left">
-              <FaSolidPhoneFlip class="has-text-primary is-size-5" aria-hidden="true" />
+              <FiSend class="is-size-5" aria-hidden="true" />
             </span>
           </a>
-
-          <a title="Información" href={`${Pages.Services}/${folio}`}>
-            <span class="icon is-left">
-              <FaSolidCircleInfo class="has-text-info is-size-5" aria-hidden="true" />
-            </span>
-          </a>
-
-          <a classList={{ "disabled": !dir?.ubicacion }} rel="noopener" title="Ubicación" target="_blank" href={dir?.ubicacion!}>
-            <span class="icon is-left">
-              {dir?.ubicacion
-                ? <FaSolidMapPin class="is-size-5 has-text-danger" aria-hidden="true" />
-                : <FaSolidBan class="is-size-5 has-text-grey" aria-hidden="true" />}
-            </span>
-          </a>
-
-          <Show when={'share' in navigator}>
-            <a title="Compartir" href="" onClick={() => Share(service)}>
-              <span class="icon is-left">
-                <FiSend class="is-size-5" aria-hidden="true" />
-              </span>
-            </a>
-          </Show>
-        </div>
+        </Show>
       </td>
     </>
-  )
+  );
 }

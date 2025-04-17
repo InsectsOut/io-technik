@@ -129,7 +129,7 @@ function SupplyDetail(item: Supply) {
                     title={item.nombre}
                 >
                     <Show when={item.area_aplicacion}>
-                        <span class="tag is-warning has-text-weight-bold" style={{ "min-width": "175px" }}>
+                        <span class="tag is-warning has-text-weight-bold">
                             {item.area_aplicacion}
                         </span>
                     </Show>
