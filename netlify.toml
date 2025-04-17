@@ -1,11 +1,12 @@
-# [build]
-# publish = "dist"
-# command = "pnpm run build"
+[build]
+command = "pnpm run build"
+publish = "dist"
 
 [build.environment]
-# This enables postinstall scripts which are needed for native dependencies like sharp
+NODE_VERSION = "18"
 NPM_CONFIG_IGNORE_SCRIPTS = "false"
 PNPM_IGNORE_SCRIPTS = "false"
+SHARP_IGNORE_GLOBAL_LIBVIPS = "1"
 
 [[redirects]]
 from = "/*"
