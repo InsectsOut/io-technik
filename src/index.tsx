@@ -12,20 +12,21 @@ import App from "./App";
 import "./index.css";
 
 const client = new QueryClient();
-await Auth.initSession();
+Auth.initSession().then(() => {
+    render(() => (
+        <QueryClientProvider client={client}>
+            <Router root={App}>
+                <Route path="/login" component={Login} />
+                <Route path="/" component={AuthGuard}>
+                    <Route path="/about" component={About} />
+                    <Route path="/feedback" component={Feedback} />
+                    <Route path="/services/:org/:folio/:tab?" component={Service} />
+                    <Route path={["/home", "/"]} component={Home} />
+                    <Route path="/user" component={Profile} />
+                </Route>
+                <Route path="*404" component={NotFound} />
+            </Router>
+        </QueryClientProvider>
+    ), document.getElementById("root")!);
+});
 
-render(() => (
-    <QueryClientProvider client={client}>
-        <Router root={App}>
-            <Route path="/login" component={Login} />
-            <Route path="/" component={AuthGuard}>
-                <Route path="/about" component={About} />
-                <Route path="/feedback" component={Feedback} />
-                <Route path="/services/:org/:folio/:tab?" component={Service} />
-                <Route path={["/home", "/"]} component={Home} />
-                <Route path="/user" component={Profile} />
-            </Route>
-            <Route path="*404" component={NotFound} />
-        </Router>
-    </QueryClientProvider>
-), document.getElementById("root")!);
