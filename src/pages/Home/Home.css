@@ -61,3 +61,7 @@ h1 {
 .reset-filter {
     padding: unset;
 }
+
+.tag-w {
+    min-width: 70px;
+}

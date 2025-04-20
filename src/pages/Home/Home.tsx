@@ -20,18 +20,9 @@ import { getServiceStatus } from "../Service/Service.utils";
 import { TbProgressAlert } from "solid-icons/tb";
 import { FiSend } from "solid-icons/fi";
 
+import { useSearchParams } from "@solidjs/router";
+import { getShortDate } from "@/utils/Date";
 import "./Home.css";
-
-const [date, setDate] = createSignal(dayjs());
-const [infoShown, setInfoShown] = createSignal(NaN);
-
-function toggleShownService(service: Service) {
-  return setInfoShown(
-    id => id !== service.id
-      ? service.id
-      : NaN
-  );
-}
 
 function getStatusIcon(service: Service) {
   const StatusIcon = createMemo(() => match(service)
@@ -59,12 +50,6 @@ function getClientName({ Clientes: c }: Service): string {
   return `${c?.nombre ?? ""} ${c?.apellidos ?? ""}`;
 }
 
-const shortDate = () => date()
-  .format("YYYY-MM-DD");
-
-const fullDate = () => date().toDate()
-  .toLocaleDateString(LocaleMX, { dateStyle: "full" });
-
 function Share(service: Service) {
   if (!service.Clientes) {
     return;
@@ -76,6 +61,18 @@ function Share(service: Service) {
     title: `Servicio #${folio}`,
     text: `${c.nombre} ${c.apellidos} - ${service.fecha_servicio}`,
     url: `${Pages.Services}/${org}/${folio}`
+  });
+}
+
+function ShareQuery() {
+  const { searchParams } = new URL(window.location.href);
+  const params = new URLSearchParams(searchParams);
+  const info = params.get("search") || params.get("filter") || "Todos";
+
+  navigator.share({
+    title: "IO-Technik | Servicios",
+    text: `Fecha: ${params.get("date")} ${info}`,
+    url: window.location.href
   });
 }
 
@@ -91,20 +88,71 @@ type OrderBy = "estatus" | "cliente" | "hora" | "folio";
 
 type OrderDir = "asc" | "desc";
 
+type HomeQueryParams = {
+  direction?: OrderDir;
+  order?: OrderBy;
+  filter?: string;
+  search?: string;
+  date?: string;
+};
+
 export function Home() {
-  const [direction, setDirection] = createSignal<OrderDir>("asc");
-  const [order, setOrder] = createSignal<OrderBy>("hora");
-  const [searchByFolio, setUseFolio] = createSignal(false);
-  const [search, setSearch] = createSignal("");
+  const [searchParams, updateParams] = useSearchParams<HomeQueryParams>();
+  const [date, setDate] = createSignal(searchParams.date ? dayjs(searchParams.date) : dayjs());
+  const [searchByFolio, setUseFolio] = createSignal(!!searchParams.search || false);
+  const [direction, setDirection] = createSignal(searchParams.direction ?? "asc");
+  const [order, setOrder] = createSignal(searchParams.order ?? "hora");
+  const [search, setSearch] = createSignal(searchParams.search ?? "");
+  const [infoShown, setInfoShown] = createSignal(NaN);
   const folioFilter = () => parseInt(search(), 10);
-  const updateSearch = debounce(setSearch, 400);
+  const shortDate = () => getShortDate(date());
+
+  const fullDate = () => date().toDate()
+    .toLocaleDateString(LocaleMX, { dateStyle: "full" });
+
+  const updateSearch = debounce((search: string) => {
+    setSearch(search);
+    updateParams(
+      { [searchByFolio() ? "search" : "filter"]: search },
+      { replace: false }
+    );
+  }, 400);
+
+  function toggleShownService(service: Service) {
+    return setInfoShown(
+      id => id !== service.id
+        ? service.id
+        : NaN
+    );
+  }
+
+  function clearFilters() {
+    const today = setDate(dayjs());
+    setDirection("asc");
+    setUseFolio(false);
+    setOrder("hora");
+    setSearch("");
+
+    updateParams(
+      {
+        date: getShortDate(today),
+        direction: undefined,
+        search: undefined,
+        filter: undefined,
+        order: undefined
+      },
+      { replace: false }
+    );
+  }
 
   function setOrderAndDir(order: OrderBy) {
-    setDirection(d => d === "asc" ? "desc" : "asc");
+    const direction = setDirection(d => d === "asc" ? "desc" : "asc");
+    updateParams({ order, direction }, { replace: false });
     setOrder(order);
   }
 
   function toggleSearch() {
+    updateParams({ search: undefined, filter: undefined }, { replace: false });
     const folioSearch = setUseFolio(x => !x);
     const validFolio = !isNaN(folioFilter());
 
@@ -156,12 +204,18 @@ export function Home() {
   }
 
   function setDay(days?: number) {
-    return days != null
-      ? () => setDate(day => day.add(days, "day"))
-      : () => setDate(dayjs());
+    const date = getShortDate(days
+      ? setDate(day => day.add(days, "day"))
+      : setDate(dayjs())
+    );
+
+    updateParams({ date }, { replace: false });
   }
 
-  const pickDate = (e: InputEvent<HTMLInputElement>) => setDate(dayjs(e.target.value));
+  const pickDate = (e: InputEvent<HTMLInputElement>) => {
+    updateParams({ date: e.target.value }, { replace: false });
+    setDate(dayjs(e.target.value));
+  };
 
   const filteredServices = () => {
     if (searchByFolio()) {
@@ -236,18 +290,20 @@ export function Home() {
                 <p class="panel-tabs is-align-items-center is-borderless">
                   <button
                     class="button icon is-left"
-                    onClick={setDay(-1)}
+                    onClick={() => setDay(-1)}
                     type="button"
                     title="Ayer"
                   >
                     <FaSolidChevronLeft aria-hidden="true" />
                   </button>
 
-                  <a class="is-active" onClick={setDay()}>Ir a hoy</a>
+                  <a class="is-active" onClick={() => setDay()}>
+                    Ir a hoy
+                  </a>
 
                   <button
                     class="button icon is-left"
-                    onClick={setDay(+1)}
+                    onClick={() => setDay(+1)}
                     title="Mañana"
                     type="button"
                   >
@@ -327,7 +383,9 @@ export function Home() {
                             <td class="pl-0 has-text-centered">
                               <div class="control">
                                 <div class="tags has-addons is-flex-wrap-nowrap">
-                                  <span class="tag is-info">{s.organizacion}</span>
+                                  <span class="tag is-info tag-w">
+                                    {s.organizacion}
+                                  </span>
                                   <span class="tag is-dark">
                                     {s.folio.toString().replace("-", "FT-")}
                                   </span>
@@ -366,13 +424,22 @@ export function Home() {
               </div>
             </Show>
 
-            <div class="panel-block reset-filter">
+            <div class="panel-block reset-filter gap-3">
               <button type="button"
-                onClick={() => setSearch("") || setUseFolio(false)}
-                class="button is-link is-outlined is-fullwidth"
+                onClick={clearFilters}
+                class="button is-danger is-outlined is-fullwidth"
               >
                 Quitar filtros
               </button>
+
+              <Show when={'share' in navigator}>
+                <button type="button"
+                  onClick={ShareQuery}
+                  class="button is-info is-outlined is-fullwidth"
+                >
+                  Compartir búsqueda
+                </button>
+              </Show>
             </div>
           </nav>
         </Match>

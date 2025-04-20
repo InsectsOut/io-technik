@@ -6,11 +6,13 @@ import { render } from "solid-js/web";
 
 import { About, Feedback, Home, Login, NotFound, Profile, Service } from "@/pages";
 import { AuthGuard } from "@/components";
+import { Auth } from "./supabase";
 import App from "./App";
 
 import "./index.css";
 
 const client = new QueryClient();
+await Auth.initSession();
 
 render(() => (
     <QueryClientProvider client={client}>

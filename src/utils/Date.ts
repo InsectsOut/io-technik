@@ -1,4 +1,5 @@
 import { LocaleMX } from "@/constants";
+import dayjs from "dayjs";
 
 /**
  * Gets a user friendly time string.
@@ -11,4 +12,8 @@ export function getLocalTime(date?: Date | null): string {
         hour: "2-digit",
         hour12: true,
     }) ?? "";
+}
+
+export function getShortDate(date: dayjs.Dayjs) {
+    return date?.format("YYYY-MM-DD") ?? "";
 }
