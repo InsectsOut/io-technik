@@ -99,10 +99,10 @@ type HomeQueryParams = {
 export function Home() {
   const [searchParams, updateParams] = useSearchParams<HomeQueryParams>();
   const [date, setDate] = createSignal(searchParams.date ? dayjs(searchParams.date) : dayjs());
+  const [search, setSearch] = createSignal(searchParams.search ?? searchParams.filter ?? "");
   const [searchByFolio, setUseFolio] = createSignal(!!searchParams.search || false);
   const [direction, setDirection] = createSignal(searchParams.direction ?? "asc");
   const [order, setOrder] = createSignal(searchParams.order ?? "hora");
-  const [search, setSearch] = createSignal(searchParams.search ?? "");
   const [infoShown, setInfoShown] = createSignal(NaN);
   const folioFilter = () => parseInt(search(), 10);
   const shortDate = () => getShortDate(date());

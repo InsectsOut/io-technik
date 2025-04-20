@@ -29,11 +29,11 @@ export default defineConfig({
       registerType: "prompt",
       injectRegister: false,
 
-      pwaAssets: {
-        htmlPreset: "2023",
-        disabled: false,
-        config: true,
-      },
+      // pwaAssets: {
+      //   htmlPreset: "2023",
+      //   disabled: false,
+      //   config: true,
+      // },
 
       manifest: {
         name: "io-technik",
