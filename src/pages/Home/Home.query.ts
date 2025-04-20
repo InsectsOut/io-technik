@@ -19,7 +19,10 @@ const query = IO_Database
  * @returns A `promise` that resolves to an array of `Servicios`, null otherwise
  */
 export async function fetchServices(date?: Dayjs, folio?: number) {
-    const { id: employee_id, tipo_rol, organizacion } = employeeProfile() ?? {};
+    const employeeData = employeeProfile();
+    if (!employeeData) return null;
+
+    const { id: employee_id, tipo_rol, organizacion } = employeeData;
     const useFolio = folio != null && !isNaN(folio);
     const serviceQuery = IO_Database
         .from("Servicios")

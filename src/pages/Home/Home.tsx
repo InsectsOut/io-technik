@@ -5,7 +5,7 @@ import { Motion } from "solid-motionone";
 
 import { Service, fetchServices } from "./Home.query";
 
-import { classNames, deviceType, DeviceType, scrollIntoView, SlideDownFadeIn } from "@/utils";
+import { classNames, delay, deviceType, DeviceType, scrollIntoView, SlideDownFadeIn } from "@/utils";
 import { employeeProfile } from "@/state";
 import { LocaleMX } from "@/constants";
 import { Loading } from "@/components/";
@@ -237,12 +237,15 @@ export function Home() {
       : "No hay servicios para este día";
   };
 
-  const serviceQuery = (): Promise<Service[] | null> => searchByFolio()
-    ? fetchServices(date(), folioFilter())
-    : fetchServices(date());
+  /** Query that fetches service data by query after a delay of `500ms` */
+  const serviceQuery = (): Promise<Service[] | null> => delay(500).then(() =>
+    fetchServices(date(), searchByFolio() ? folioFilter() : undefined)
+  );
+
+  const serviceQueryKey = () => `/service-${searchByFolio() ? folioFilter() : date()}`
 
   const services = createQuery(() => ({
-    queryKey: [`/service-${searchByFolio() ? folioFilter() : date()}`],
+    queryKey: [serviceQueryKey()],
     queryFn: serviceQuery,
     staleTime: 1000 * 60 * 5,
     throwOnError: false

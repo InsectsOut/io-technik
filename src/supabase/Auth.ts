@@ -85,12 +85,5 @@ export const Auth = Object.freeze({
         return data
             ? setSession(data.session)
             : null;
-    },
-
-    async initSession() {
-        const { data } = await supabase.auth.getSession();
-        if (data) {
-            setSession(data.session);
-        }
     }
 });
