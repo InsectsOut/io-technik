@@ -1,3 +1,4 @@
+import { employeeProfile } from "@/state";
 import { IO_Database } from "@/supabase";
 
 /** Return type of a fetched Service */
@@ -11,6 +12,8 @@ export type ServiceDetails = NonNullable<
  * @returns A `promise` that resolves to a `Servicio` object, null otherwise
 */
 export async function getServiceByFolio(folio: string, org: string) {
+    const employeeData = employeeProfile();
+    if (!employeeData || !employeeData.tipo_rol) return null;
     if (!folio || !org) {
         return null;
     }

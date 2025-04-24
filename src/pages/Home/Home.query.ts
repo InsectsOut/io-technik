@@ -23,6 +23,8 @@ export async function fetchServices(date?: Dayjs, folio?: number) {
     if (!employeeData) return null;
 
     const { id: employee_id, tipo_rol, organizacion } = employeeData;
+    if (!tipo_rol) return null;
+
     const useFolio = folio != null && !isNaN(folio);
     const serviceQuery = IO_Database
         .from("Servicios")
