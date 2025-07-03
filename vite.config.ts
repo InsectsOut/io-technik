@@ -38,7 +38,7 @@ export default defineConfig({
         start_url: "/login",
         lang: "es",
         id: "/",
-        
+
         screenshots: [
           {
             label: "Desktop layout io-technik",
@@ -56,23 +56,26 @@ export default defineConfig({
           }
         ],
 
-        // icons: [
-        //   {
-        //     src: "icon-192x192.png",
-        //     type: "image/png",
-        //     sizes: "192x192",
-        //   },
-        //   {
-        //     src: "icon-512x512.png",
-        //     type: "image/png",
-        //     sizes: "512x512",
-        //   },
-        //   {
-        //     src: "favicon-gear.svg",
-        //     type: "image/svg+xml",
-        //     sizes: "any",
-        //   }
-        // ]
+        icons: [
+          {
+            src: "/pwa-192x192.png",
+            type: "image/png",
+            sizes: "192x192",
+            purpose: "any"
+          },
+          {
+            src: "/pwa-512x512.png",
+            type: "image/png",
+            sizes: "512x512",
+            purpose: "any"
+          },
+          {
+            src: "/favicon-gear.svg",
+            type: "image/svg+xml",
+            sizes: "any",
+            purpose: "any"
+          }
+        ]
       },
 
       workbox: {
