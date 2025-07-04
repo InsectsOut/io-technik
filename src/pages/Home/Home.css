@@ -14,10 +14,15 @@ h1 {
     vertical-align: middle !important;
 }
 
+.test {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
 .io-table-container {
     overflow-y: auto !important;
     margin: unset !important;
-    height: 65vh;
 }
 
 .io-table {
@@ -47,7 +52,7 @@ h1 {
 }
 
 .no-services {
-    height: 65vh;
+    height: 65dvh;
     text-align: center;
     font-size: 2rem;
     padding: 2rem;

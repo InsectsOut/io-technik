@@ -5,7 +5,7 @@ import { Motion } from "solid-motionone";
 
 import { Service, fetchServices } from "./Home.query";
 
-import { classNames, delay, deviceType, DeviceType, scrollIntoView, SlideDownFadeIn } from "@/utils";
+import { classNames, delay, deviceType, DeviceType, SlideDownFadeIn } from "@/utils";
 import { employeeProfile } from "@/state";
 import { LocaleMX } from "@/constants";
 import { Loading } from "@/components/";
@@ -266,64 +266,64 @@ export function Home() {
         </Match>
 
         <Match when={services.data}>
-          <nav class="panel is-shadowless">
-            <h1 class="title p-0 has-text-centered">Servicios</h1>
-            <h2 class="subtitle p-0 has-text-centered">{fullDate()}</h2>
-            <div class="panel-block p-0 pb-2 is-flex is-gap-1 is-borderless">
-              <p class="control">
-                <input onInput={(e) => updateSearch(e.target.value)}
-                  placeholder={searchByFolio() ? "Buscar folio..." : "Filtrar por nombre o folio..."}
-                  value={search()}
-                  class="input"
-                  type="text"
-                />
+          <h1 class="title p-0 has-text-centered">Servicios</h1>
+          <h2 class="subtitle p-0 has-text-centered">{fullDate()}</h2>
+          <div class="panel-block p-0 pb-2 is-flex is-gap-1 is-borderless">
+            <p class="control">
+              <input onInput={(e) => updateSearch(e.target.value)}
+                placeholder={searchByFolio() ? "Buscar folio..." : "Filtrar por nombre o folio..."}
+                value={search()}
+                class="input"
+                type="text"
+              />
+            </p>
+            <button
+              style={{ width: "100px" }}
+              class={classNames("button is-outlined is-flex gap-2", searchByFolio() ? "is-success" : "is-info")}
+              onClick={toggleSearch}
+            >
+              {searchByFolio() ? "Filtrar" : "Buscar"}
+              {searchByFolio() ? <FaSolidFilter /> : <FaSolidMagnifyingGlass />}
+            </button>
+          </div>
+
+          <Show when={!searchByFolio()}>
+            <div class="panel-tabs is-align-items-center is-justify-content-space-between is-borderless">
+              <p class="panel-tabs is-align-items-center is-borderless">
+                <button
+                  class="button icon is-left"
+                  onClick={() => setDay(-1)}
+                  type="button"
+                  title="Ayer"
+                >
+                  <FaSolidChevronLeft aria-hidden="true" />
+                </button>
+
+                <a class="is-active" onClick={() => setDay()}>
+                  Ir a hoy
+                </a>
+
+                <button
+                  class="button icon is-left"
+                  onClick={() => setDay(+1)}
+                  title="Mañana"
+                  type="button"
+                >
+                  <FaSolidChevronRight aria-hidden="true" />
+                </button>
               </p>
-              <button
-                style={{ width: "100px" }}
-                class={classNames("button is-outlined is-flex gap-2", searchByFolio() ? "is-success" : "is-info")}
-                onClick={toggleSearch}
-              >
-                {searchByFolio() ? "Filtrar" : "Buscar"}
-                {searchByFolio() ? <FaSolidFilter /> : <FaSolidMagnifyingGlass />}
-              </button>
-            </div>
 
-            <Show when={!searchByFolio()}>
-              <div class="panel-tabs is-align-items-center is-justify-content-space-between is-borderless">
-                <p class="panel-tabs is-align-items-center is-borderless">
-                  <button
-                    class="button icon is-left"
-                    onClick={() => setDay(-1)}
-                    type="button"
-                    title="Ayer"
-                  >
-                    <FaSolidChevronLeft aria-hidden="true" />
-                  </button>
-
-                  <a class="is-active" onClick={() => setDay()}>
-                    Ir a hoy
-                  </a>
-
-                  <button
-                    class="button icon is-left"
-                    onClick={() => setDay(+1)}
-                    title="Mañana"
-                    type="button"
-                  >
-                    <FaSolidChevronRight aria-hidden="true" />
-                  </button>
+              <div class="panel-tabs is-align-items-center">
+                <p class="is-borderless" title={fullDate()}>
+                  <input class="input" type="date" name="day" value={shortDate()} onChange={pickDate} />
                 </p>
-
-                <div class="panel-tabs is-align-items-center">
-                  <p class="is-borderless" title={fullDate()}>
-                    <input class="input" type="date" name="day" value={shortDate()} onChange={pickDate} />
-                  </p>
-                </div>
               </div>
-            </Show>
+            </div>
+          </Show>
 
-            <Show when={filteredServices()?.length} fallback={NoServices(emptyMessage())}>
-              <div class="table-container io-table-container hide_scroll is-clickable">
+          <Show when={filteredServices()?.length} fallback={NoServices(emptyMessage())}>
+            <div class="scroll-hint-wrapper hide-scroll test">
+              <div class="table-container io-table-container hide-scroll is-clickable">
                 <table class="table io-table">
                   <thead>
                     <tr>
@@ -356,7 +356,6 @@ export function Home() {
                       </th>
                       <th onClick={() => setOrderAndDir("estatus")}
                         class="has-text-centered is-clickable"
-                        ref={(el) => scrollIntoView(el)}
                         title="Estatus"
                       >
                         <span class="icon-text is-flex-wrap-nowrap">
@@ -425,26 +424,27 @@ export function Home() {
                   </tbody>
                 </table>
               </div>
-            </Show>
-
-            <div class="panel-block reset-filter gap-3">
-              <button type="button"
-                onClick={clearFilters}
-                class="button is-danger is-outlined is-fullwidth"
-              >
-                Quitar filtros
-              </button>
-
-              <Show when={'share' in navigator}>
-                <button type="button"
-                  onClick={ShareQuery}
-                  class="button is-info is-outlined is-fullwidth"
-                >
-                  Compartir búsqueda
-                </button>
-              </Show>
+              <div class="scroll-hint-right" />
             </div>
-          </nav>
+          </Show>
+
+          <div class="panel-block reset-filter gap-3 p-0" style={{ height: "5dvh"}}>
+            <button type="button"
+              onClick={clearFilters}
+              class="button is-danger is-outlined is-fullwidth"
+            >
+              Quitar filtros
+            </button>
+
+            <Show when={'share' in navigator}>
+              <button type="button"
+                onClick={ShareQuery}
+                class="button is-info is-outlined is-fullwidth"
+              >
+                Compartir búsqueda
+              </button>
+            </Show>
+          </div>
         </Match>
       </Switch>
     </Suspense>

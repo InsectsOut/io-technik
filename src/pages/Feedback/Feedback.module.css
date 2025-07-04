@@ -2,7 +2,7 @@ section {
     padding: 0px clamp(0px, calc(10vw - 75px), 30%);
     flex-direction: column;
     display: flex;
-    height: 85vh;
+    height: 85dvh;
 }
 
 h1 {

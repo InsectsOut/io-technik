@@ -252,7 +252,7 @@ export function Service() {
                     {org}
                 </h2>
 
-                <p class="panel-tabs is-justify-content-start scrollable hide_scroll">
+                <p class="panel-tabs is-justify-content-start scrollable hide-scroll">
                     <a class={classNames(["is-active", isInfo()])}
                         onKeyDown={setAndFocusTab}
                         onClick={setAndFocusTab}
@@ -298,7 +298,7 @@ export function Service() {
                         </Match>
 
                         <Match when={service() && isInfo()}>
-                            <form class="hide_scroll">
+                            <form class="hide-scroll">
                                 <Show when={employeeProfile()?.tipo_rol === "superadmin" && empleado()}>
                                     <div class={classNames("field is-grouped is-flex-direction-column mb-5", css.io_field)}>
                                         <label class="label">Técnico Asignado</label>

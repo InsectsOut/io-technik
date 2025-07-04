@@ -489,7 +489,7 @@ export function SuggestionPicker(props: PickerProps) {
             </Modal>
 
             {/* List that shows the added reports, allows deleting and editing */}
-            <div class="table-container scrollable hide_scroll">
+            <div class="table-container scrollable hide-scroll">
                 <table class="table is-striped fullwidth">
                     <thead>
                         <tr>

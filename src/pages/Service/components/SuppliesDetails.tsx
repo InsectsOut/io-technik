@@ -72,7 +72,7 @@ function getSuppliesList(supplies: SuppliesDetails["registros"]) {
  */
 export function SuppliesDetails(props: SuppliesDetails) {
     const { registros } = destructure(props);
-    const viewWidth = { height: "65vh" };
+    const viewWidth = { height: "65dvh" };
 
     if (!registros()?.length) {
         return (
@@ -168,8 +168,8 @@ function SupplyDetail(item: Supply) {
                 <h1 class="title mb-2">{item.nombre}</h1>
                 <h2>{item.registro}</h2>
 
-                <form class="scrollable hide_scroll mb-4 paddingless" style={{ height: "50vh" }} onKeyDown={handleEnterKey}>
-                    <div class={classNames("field is-grouped is-flex-direction-column hide_scroll scrollable", css.io_field)}>
+                <form class="scrollable hide-scroll mb-4 paddingless" style={{ height: "50dvh" }} onKeyDown={handleEnterKey}>
+                    <div class={classNames("field is-grouped is-flex-direction-column hide-scroll scrollable", css.io_field)}>
                         <label class="label">Presentación</label>
                         <p class="control has-icons-left">
                             <input id="p_presentacion" disabled
@@ -233,7 +233,7 @@ function SupplyDetail(item: Supply) {
                     </div>
 
                     <div class={classNames(
-                        "field is-grouped is-flex-direction-column hide_scroll scrollable",
+                        "field is-grouped is-flex-direction-column hide-scroll scrollable",
                         css.io_field, [css.three_cols, deviceType() > DeviceType.Mobile])}
                     >
                         <label class="label">Tipo Aplicación</label>

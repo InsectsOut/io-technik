@@ -18,9 +18,14 @@ ul {
 
 .scrollable {
     overflow-y: scroll;
-    height: 90vh;
+    height: 90dvh;
 
     & > * {
         height: auto;
+        padding: 0 !important;
     }
+}
+
+.section {
+    padding: 0;
 }

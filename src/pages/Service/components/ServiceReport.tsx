@@ -257,7 +257,7 @@ export function ServiceReport(props: ReportProps) {
 
     return (
         <>
-            <form class="hide_scroll">
+            <form class="hide-scroll">
                 {/* Hora de inicio y salida del servicio */}
                 <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                     <label class="label">Hora de Entrada</label>
