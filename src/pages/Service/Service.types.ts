@@ -46,6 +46,8 @@ export type Recomendacion = {
     id?: string;
     /** Acciones de esta sugerencia */
     acciones: string[];
+    /** Acciones adicionales a tomar */
+    otras: string[];
     /** Problema encontrado en el servicio */
     problema: string;
     /** Imagen opcional adjunta al reporte */

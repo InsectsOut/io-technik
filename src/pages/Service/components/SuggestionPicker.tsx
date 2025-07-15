@@ -9,18 +9,13 @@ import { Modal, useToast } from "@/components";
 
 import { getImageId, getServiceImgPath } from "../Service.utils"
 import { Recomendacion } from "../Service.types";
+import { InputEvent } from "@/types";
 
 import { AccionesRecomendadas } from "./Suggestion.constants";
 import { getRecomendaciones } from "./Suggestion.query";
 
-import { FaRegularEyeSlash, FaRegularImage, FaSolidBug, FaSolidCamera, FaSolidCircleInfo, FaSolidCirclePlus, FaSolidTrashCan, FaSolidUpload, FaSolidXmark } from "solid-icons/fa";
+import { FaRegularEyeSlash, FaRegularImage, FaSolidBug, FaSolidCamera, FaSolidCircleInfo, FaSolidCirclePlus, FaSolidListCheck, FaSolidTrashCan, FaSolidUpload, FaSolidXmark } from "solid-icons/fa";
 import { BsPencilSquare } from "solid-icons/bs";
-
-/** Extends the `InputEvent` with its target set to an `HTMLInputElement` */
-type FileInputEvent = InputEvent & {
-    currentTarget: HTMLInputElement;
-    target: HTMLInputElement;
-};
 
 /** Props for the suggestion picker component */
 type PickerProps = {
@@ -55,6 +50,7 @@ export function SuggestionPicker(props: PickerProps) {
     const report = createMutable<Recomendacion>({
         acciones: [],
         problema: "",
+        otras: [],
     });
 
     const isWideScreen = () => windowSize.width > 900;
@@ -103,7 +99,7 @@ export function SuggestionPicker(props: PickerProps) {
      * Handles adding an image file to the reports list
      * @param e An event that has the image payload
      */
-    function handleFileUpload(e: FileInputEvent) {
+    function handleFileUpload(e: InputEvent<HTMLInputElement>) {
         const { files } = e.target || {};
         const [file] = files || [];
         if (!file) return;
@@ -113,6 +109,25 @@ export function SuggestionPicker(props: PickerProps) {
             id: getImageId(),
             file
         };
+    }
+
+    /**
+     * Adds a new action to the other's list
+     * @param action The action to be added to the list
+     */
+    function addOtherAction(e?: InputEvent<HTMLInputElement>) {
+        const action = e?.target?.value.trim();
+        if (!action) {
+            return;
+        }
+
+        if (AccionesRecomendadas.includes(action)) {
+            return addToast("No puedes agregar una acción recomendada como otra acción", "is-warning");
+        }
+
+        report.otras.push(action);
+        // Clear the input field after adding the action
+        e!.target.value = "";
     }
 
     /**
@@ -157,9 +172,13 @@ export function SuggestionPicker(props: PickerProps) {
     function loadSuggestionForEdit(index: number) {
         const sugerencia = sugerencias[index];
         report.problema = sugerencia.problema;
-        report.acciones = sugerencia.acciones;
         report.imagen = sugerencia.imagen;
         report.id = sugerencia.id;
+
+        // Sets the others list to the actions that are not in the recommended actions
+        report.acciones = sugerencia.acciones.filter(a => AccionesRecomendadas.includes(a));
+        // Sets the default actions to the ones that are in the recommended actions
+        report.otras = sugerencia.acciones.filter(a => !AccionesRecomendadas.includes(a));
 
         if (suggestionsRef) {
             // Wait for the next frame to select the options in the report
@@ -194,8 +213,8 @@ export function SuggestionPicker(props: PickerProps) {
             .from("Recomendaciones")
             .upsert({
                 id: parseInt(report.id ?? "") || undefined,
+                acciones: [...new Set(report.acciones.concat(report.otras))],
                 imagen: imgUpload?.data?.path,
-                acciones: report.acciones,
                 problema: report.problema,
                 servicio_id: servicioId(),
             })
@@ -221,8 +240,9 @@ export function SuggestionPicker(props: PickerProps) {
     function clearReportForm() {
         report.imagen = undefined;
         report.id = undefined;
-        report.acciones = [];
         report.problema = "";
+        report.acciones = [];
+        report.otras = [];
 
         if (!suggestionsRef) {
             return;
@@ -270,7 +290,7 @@ export function SuggestionPicker(props: PickerProps) {
                     <td>{entry.problema}</td>
                     <td>
                         <ol>
-                            <Index each={entry.acciones}>
+                            <Index each={entry.acciones.concat(entry.otras).filter(Boolean)}>
                                 {(suggestion) => (
                                     <li>{suggestion()}</li>
                                 )}
@@ -378,7 +398,7 @@ export function SuggestionPicker(props: PickerProps) {
             }}>
                 <form class="form fixed-grid has-3-cols marginless paddingless height-auto">
                     <div class="is-flex is-justify-content-space-between">
-                        <h2 class="subtitle pl-0">
+                        <h2 class="subtitle pl-0 mb-2">
                             Nueva Recomendación
                         </h2>
                         <span class="icon is-left">
@@ -386,8 +406,8 @@ export function SuggestionPicker(props: PickerProps) {
                         </span>
                     </div>
 
-                    <div class="file has-name is-boxed is-flex-direction-column">
-                        <label class="label">Fotografía</label>
+                    <div class="file has-name is-boxed is-flex-direction-column mb-1">
+                        <label class="label my-1">Fotografía</label>
                         <label class="file-label">
                             <input onInput={handleFileUpload} multiple={false} class="file-input" type="file" accept="image/*" />
                             <span class="file-cta" style={{ "border-radius": report.imagen ? undefined : "6px" }}>
@@ -414,7 +434,7 @@ export function SuggestionPicker(props: PickerProps) {
                     </div>
 
                     <div class="cell">
-                        <label class="label">Problema Detectado</label>
+                        <label class="label my-1">Problema Detectado</label>
                         <p class="control has-icons-left">
                             <textarea
                                 onInput={(e => report.problema = e.target.value)}
@@ -430,17 +450,15 @@ export function SuggestionPicker(props: PickerProps) {
                         </p>
                     </div>
 
-                    <div class="block" />
-
                     <div class="cell field is-flex-direction-column mb-0">
-                        <label class="label">Recomendaciones</label>
+                        <label class="label my-1">Recomendaciones</label>
                         <div class={classNames("control is-expanded", ["has-icons-left", isWideScreen()])}>
                             <div class="select is-fullwidth is-multiple">
                                 <select ref={suggestionsRef} required
                                     onChange={(e => setActions(e.target.selectedOptions))}
                                     multiple name="recomendaciones"
                                     title="Elegir sugerencias"
-                                    size="4"
+                                    size="3"
                                 >
                                     <Index each={AccionesRecomendadas}>
                                         {(accion) =>
@@ -456,6 +474,45 @@ export function SuggestionPicker(props: PickerProps) {
                                 </div>
                             </Show>
                         </div>
+                    </div>
+                    
+                    { /* Show the additional actions list when not empty */}
+                    <div class="cell field is-flex-direction-column mb-1">
+                        <label class="label my-1">Otras recomendaciones</label>
+
+                        <div class="is-flex is-align-items-center is-justify-content-space-between gap-2">
+                            <input title="Otra recomendación" id="other"
+                                onChange={addOtherAction}
+                                placeholder="Recomendación adicional..."
+                                maxlength={50}
+                                class="input"
+                                type="text"
+                            />
+
+                            <button type="button" class="column button is-info is-outlined p-2">
+                                <span class="text-top">Agregar</span>
+                                <span class="icon">
+                                    <FaSolidListCheck />
+                                </span>
+                            </button>
+                        </div>
+
+                        <Show when={report.otras.length}>
+                            <ol class="has-text-weight-semibold p-1 scrollable hide-scroll mt-2" style={{ "max-height": "75px" }}>
+                                <Index each={report.otras}>
+                                    {(accion, index) => (
+                                        <li class="is-flex is-align-items-center is-justify-content-space-between gap-2">
+                                            <span>{index + 1}. {accion()}</span>
+                                            <div title="Borrar" onClick={() => report.otras.splice(index, 1)}>
+                                                <span class="icon is-clickable">
+                                                    <FaSolidTrashCan class="is-size-5 has-text-danger" aria-hidden="true" />
+                                                </span>
+                                            </div>
+                                        </li>
+                                    )}
+                                </Index>
+                            </ol>
+                        </Show>
                     </div>
 
                     <div class="field is-flex is-justify-content-center gap-3 mt-5">
