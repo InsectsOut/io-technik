@@ -323,18 +323,17 @@ export function Home() {
           <div class="panel-block p-0 pb-2 is-flex is-gap-1 is-borderless">
             <p class="control">
               <input onInput={(e) => updateSearch(e.target.value)}
-                placeholder={searchByFolio() ? "Buscar folio..." : "Filtrar por nombre o folio..."}
+                placeholder={searchByFolio() ? "Escribe el folio a buscar..." : "Filtrar por nombre o folio..."}
                 value={search()}
                 class="input"
                 type="text"
               />
             </p>
             <button
-              style={{ width: "100px" }}
               class={classNames("button is-outlined is-flex gap-2", searchByFolio() ? "is-success" : "is-info")}
               onClick={toggleSearch}
             >
-              {searchByFolio() ? "Filtrar" : "Buscar"}
+              {searchByFolio() ? "Ver servicios" : "Buscar folio"}
               {searchByFolio() ? <FaSolidFilter /> : <FaSolidMagnifyingGlass />}
             </button>
           </div>
@@ -386,6 +385,18 @@ export function Home() {
                         "dropdown-content is-flex")
                       }>
                         <div class="cell field mx-1">
+                          <label class="label">Organización</label>
+                          <div class="select is-normal">
+                            <select id="org-filter" onChange={setOrgFilter}>
+                              <option value="">TODAS</option>
+                              <Index each={Array.from(organizaciones())}>
+                                {(org) => <option>{org()}</option>}
+                              </Index>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="cell field mx-1">
                           <label class="label">Estatus</label>
                           <div class="select is-normal">
                             <select id="status-filter" onChange={setStatusFilter}>
@@ -399,19 +410,12 @@ export function Home() {
 
                         <div class="cell field mx-1">
                           <label class="label">Hora</label>
-                          <input id="time-filter" class="input is-block" type="time" onChange={setTimeFilter} />
-                        </div>
-
-                        <div class="cell field mx-1">
-                          <label class="label">Organización</label>
-                          <div class="select is-normal">
-                            <select id="org-filter" onChange={setOrgFilter}>
-                              <option value="">TODAS</option>
-                              <Index each={Array.from(organizaciones())}>
-                                {(org) => <option>{org()}</option>}
-                              </Index>
-                            </select>
-                          </div>
+                          <input id="time-filter"
+                            onChange={setTimeFilter}
+                            class="input is-block"
+                            placeholder="HH:mm"
+                            type="time"
+                          />
                         </div>
 
                         <div class="cell field mx-1">
