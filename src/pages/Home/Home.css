@@ -20,6 +20,12 @@ h1 {
     min-height: 0;
 }
 
+.dropdown-menu .cell *:not(svg) {
+    @media (width < 700px) {
+        width: 100% !important;
+    }
+}
+
 .io-table-container {
     overflow-y: auto !important;
     margin: unset !important;

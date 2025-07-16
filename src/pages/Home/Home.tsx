@@ -1,4 +1,4 @@
-import { For, JSX, Match, Show, Suspense, Switch, createMemo, createSignal, onMount } from "solid-js";
+import { For, Index, JSX, Match, Show, Suspense, Switch, createEffect, createMemo, createSignal, onMount } from "solid-js";
 import { debounce } from "@solid-primitives/scheduled";
 import { createQuery } from "@tanstack/solid-query";
 import { Motion } from "solid-motionone";
@@ -15,7 +15,7 @@ import { InputEvent } from "@/types";
 import { match } from "ts-pattern";
 import dayjs from "dayjs";
 
-import { FaSolidBan, FaSolidCheck, FaSolidChevronDown, FaSolidChevronLeft, FaSolidChevronRight, FaSolidChevronUp, FaSolidCircleInfo, FaSolidFilter, FaSolidMagnifyingGlass, FaSolidMapPin, FaSolidPhoneFlip, FaSolidXmark } from "solid-icons/fa";
+import { FaSolidBan, FaSolidCheck, FaSolidChevronDown, FaSolidChevronLeft, FaSolidChevronRight, FaSolidChevronUp, FaSolidCircleInfo, FaSolidFilter, FaSolidMagnifyingGlass, FaSolidMapPin, FaSolidPhoneFlip, FaSolidTrashCan, FaSolidXmark } from "solid-icons/fa";
 import { getServiceStatus } from "../Service/Service.utils";
 import { TbProgressAlert } from "solid-icons/tb";
 import { FiSend } from "solid-icons/fi";
@@ -84,6 +84,12 @@ function NoServices(message: string) {
   )
 }
 
+type LocalFilter = {
+  estatus?: "realizado" | "cancelado" | "pendiente",
+  organizacion?: "Leon" | "Queretaro" | "San Luis",
+  hora?: string
+};
+
 type OrderBy = "estatus" | "cliente" | "hora" | "folio";
 
 type OrderDir = "asc" | "desc";
@@ -102,10 +108,15 @@ export function Home() {
   const [search, setSearch] = createSignal(searchParams.search ?? searchParams.filter ?? "");
   const [searchByFolio, setUseFolio] = createSignal(!!searchParams.search || false);
   const [direction, setDirection] = createSignal(searchParams.direction ?? "asc");
+  const organizaciones = () => new Set(services.data?.map(s => s.organizacion));
   const [order, setOrder] = createSignal(searchParams.order ?? "hora");
+  const [showFilters, setShowFilters] = createSignal(false);
+  const [localFilter, setLocalFilter] = createSignal<LocalFilter>();
   const [infoShown, setInfoShown] = createSignal(NaN);
   const folioFilter = () => parseInt(search(), 10);
   const shortDate = () => getShortDate(date());
+
+  createEffect(() => console.log("Local filter:", localFilter()));
 
   const fullDate = () => date().toDate()
     .toLocaleDateString(LocaleMX, { dateStyle: "full" });
@@ -151,6 +162,31 @@ export function Home() {
     setOrder(order);
   }
 
+  function setStatusFilter(e?: InputEvent<HTMLSelectElement>) {
+    const estatus = e?.target.value as LocalFilter["estatus"];
+    setLocalFilter(filter => ({ ...filter, estatus }));
+  }
+
+  function setTimeFilter(e?: InputEvent<HTMLInputElement>) {
+    setLocalFilter(filter => ({ ...filter, hora: e?.target.value || "" }));
+  }
+
+  function setOrgFilter(e?: InputEvent<HTMLSelectElement>) {
+    const organizacion = e?.target.value as LocalFilter["organizacion"];
+    setLocalFilter(filter => ({ ...filter, organizacion }));
+  }
+
+  function resetLocalFilter() {
+    setLocalFilter(undefined);
+    const statusFilter = document.getElementById("status-filter") as HTMLSelectElement;
+    const orgFilter = document.getElementById("org-filter") as HTMLSelectElement;
+    const timeFilter = document.getElementById("time-filter") as HTMLInputElement;
+
+    statusFilter.value = "";
+    timeFilter.value = "";
+    orgFilter.value = "";
+  }
+
   function toggleSearch() {
     updateParams({ search: undefined, filter: undefined }, { replace: false });
     const folioSearch = setUseFolio(x => !x);
@@ -165,17 +201,33 @@ export function Home() {
     }
   }
 
-  function filterServices(s: Service) {
+  function filterServices(s: Service): boolean {
     if (!search()) {
-      return services.data;
+      return filterLocal(s);
     }
 
     if (!isNaN(folioFilter())) {
-      return s.folio.toString().startsWith(search());
+      return filterLocal(s) && s.folio.toString().startsWith(search());
     }
 
-    return getClientName(s).toLowerCase()
+    return filterLocal(s) && getClientName(s).toLowerCase()
       .includes(search().toLowerCase());
+  }
+
+  function filterLocal(s: Service) {
+    const filter = localFilter();
+    if (!filter) {
+      return true;
+    }
+
+    const { estatus, organizacion, hora } = filter;
+    const serviceStatus = getServiceStatus(s).toLowerCase();
+    const serviceTime = getSimpleDate(s).format("HH:mm");
+    const serviceOrg = s.organizacion?.toLowerCase();
+
+    return (!estatus || serviceStatus === estatus.toLowerCase())
+      && (!organizacion || serviceOrg === organizacion.toLowerCase())
+      && (!hora || serviceTime.startsWith(hora));
   }
 
   function orderServices(s1: Service, s2: Service) {
@@ -313,10 +365,71 @@ export function Home() {
                 </button>
               </p>
 
-              <div class="panel-tabs is-align-items-center">
+              <div class="panel-tabs is-align-items-center is-gap-1">
                 <p class="is-borderless" title={fullDate()}>
                   <input class="input" type="date" name="day" value={shortDate()} onChange={pickDate} />
                 </p>
+
+                <Show when={true}>
+                  <div class={classNames("dropdown is-right", ["is-active", showFilters()])}>
+                    <div class="dropdown-trigger" onClick={() => setShowFilters(x => !x)}>
+                      <button class="button" style={{ width: "100px" }} type="button">
+                        <span class="text-top">Filtrar</span>
+                        <span class="icon">
+                          <FaSolidFilter />
+                        </span>
+                      </button>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                      <div class={classNames(
+                        ["is-flex-direction-column", deviceType() <= DeviceType.Mobile],
+                        "dropdown-content is-flex")
+                      }>
+                        <div class="cell field mx-1">
+                          <label class="label">Estatus</label>
+                          <div class="select is-normal">
+                            <select id="status-filter" onChange={setStatusFilter}>
+                              <option selected value="">TODOS</option>
+                              <option>REALIZADO</option>
+                              <option>CANCELADO</option>
+                              <option>PENDIENTE</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="cell field mx-1">
+                          <label class="label">Hora</label>
+                          <input id="time-filter" class="input is-block" type="time" onChange={setTimeFilter} />
+                        </div>
+
+                        <div class="cell field mx-1">
+                          <label class="label">Organización</label>
+                          <div class="select is-normal">
+                            <select id="org-filter" onChange={setOrgFilter}>
+                              <option value="">TODAS</option>
+                              <Index each={Array.from(organizaciones())}>
+                                {(org) => <option>{org()}</option>}
+                              </Index>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="cell field mx-1">
+                          <label class="label">Borrar</label>
+                          <button class="button is-outlined is-danger is-flex-grow-1"
+                            onClick={resetLocalFilter}
+                            type="button"
+                          >
+                            <span class="icon">
+                              <FaSolidTrashCan />
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </Show>
               </div>
             </div>
           </Show>
@@ -428,7 +541,7 @@ export function Home() {
             </div>
           </Show>
 
-          <div class="panel-block reset-filter gap-3 p-0" style={{ height: "5dvh"}}>
+          <div class="panel-block reset-filter gap-3 p-0" style={{ height: "5dvh" }}>
             <button type="button"
               onClick={clearFilters}
               class="button is-danger is-outlined is-fullwidth"
