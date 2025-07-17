@@ -26,6 +26,10 @@ export async function fetchServices(date?: Dayjs, folio?: number) {
     if (!tipo_rol) return null;
 
     const useFolio = folio != null && !isNaN(folio);
+    const folioTemporal = Math.abs(folio || 0) * -1;
+    const folioRegular = Math.abs(folio || 0);
+    const folioQuery = `folio.eq.${folioRegular}, folio.eq.${folioTemporal}`;
+
     const serviceQuery = IO_Database
         .from("Servicios")
         .select(`*, Clientes(*), Direcciones(ubicacion)`)
@@ -33,7 +37,7 @@ export async function fetchServices(date?: Dayjs, folio?: number) {
 
     const filteredQuery = match(tipo_rol)
         .with("superadmin", () => {
-            const superQuery = useFolio ? serviceQuery.eq("folio", folio) : serviceQuery;
+            const superQuery = useFolio ? serviceQuery.or(folioQuery) : serviceQuery;
             const serviceDate = date?.format("YYYY-MM-DD");
             return serviceDate && !useFolio
                 ? superQuery.eq("fecha_servicio", serviceDate)
@@ -42,11 +46,11 @@ export async function fetchServices(date?: Dayjs, folio?: number) {
         .with("administrador", () => {
             const serviceDate = date?.format("YYYY-MM-DD");
             const adminQuery = serviceQuery.eq("organizacion", organizacion ?? "")
-            const folioQuery = useFolio ? adminQuery.eq("folio", folio) : adminQuery;
+            const folioSearch = useFolio ? adminQuery.or(folioQuery) : adminQuery;
 
             return serviceDate && !useFolio
-                ? folioQuery.eq("fecha_servicio", serviceDate)
-                : folioQuery;
+                ? folioSearch.eq("fecha_servicio", serviceDate)
+                : folioSearch;
         })
         .with("tecnico", () => {
             const serviceDate = date?.format("YYYY-MM-DD");
