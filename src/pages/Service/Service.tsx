@@ -31,6 +31,7 @@ import {
     FaSolidClockRotateLeft,
     FaSolidFilePen,
     FaSolidHashtag,
+    FaSolidMoneyBill,
     FaSolidUser,
     FaSolidWarehouse,
     FaSolidXmark
@@ -104,6 +105,7 @@ export function Service() {
     const empleado = () => service()?.Empleados;
     const direccion = () => service()?.Direcciones;
     const responsable = () => service()?.Responsables;
+    const costoServicio = () => `${(service()?.precio || 0.00).toFixed(2)} MXN`;
 
     const fechaServicio = () => service()
         ? new Date(`${service()?.fecha_servicio}T${service()?.horario_servicio}`)
@@ -317,6 +319,16 @@ export function Service() {
                                         </p>
                                     </div>
                                 </Show>
+
+                                <div class={classNames("field is-grouped is-flex-direction-column mb-5", css.io_field)}>
+                                    <label class="label">Costo Cotizado</label>
+                                    <p class="control has-icons-left">
+                                        <input title="Costo del servicio" disabled class="input" value={costoServicio()} />
+                                        <span class="icon is-small is-left">
+                                            <FaSolidMoneyBill />
+                                        </span>
+                                    </p>
+                                </div>
 
                                 <label class="label">Datos del Cliente</label>
                                 <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
