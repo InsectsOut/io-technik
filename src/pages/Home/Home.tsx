@@ -15,7 +15,7 @@ import { InputEvent } from "@/types";
 import { match } from "ts-pattern";
 import dayjs from "dayjs";
 
-import { FaSolidBan, FaSolidCheck, FaSolidChevronDown, FaSolidChevronLeft, FaSolidChevronRight, FaSolidChevronUp, FaSolidCircleInfo, FaSolidFilter, FaSolidMagnifyingGlass, FaSolidMapPin, FaSolidPhoneFlip, FaSolidTrashCan, FaSolidXmark } from "solid-icons/fa";
+import { FaSolidBan, FaSolidCalendarDays, FaSolidCheck, FaSolidChevronDown, FaSolidChevronLeft, FaSolidChevronRight, FaSolidChevronUp, FaSolidCircleInfo, FaSolidFilter, FaSolidMagnifyingGlass, FaSolidMapPin, FaSolidPhoneFlip, FaSolidTrashCan, FaSolidXmark } from "solid-icons/fa";
 import { getServiceStatus } from "../Service/Service.utils";
 import { TbProgressAlert } from "solid-icons/tb";
 import { FiSend } from "solid-icons/fi";
@@ -115,6 +115,13 @@ export function Home() {
   const [infoShown, setInfoShown] = createSignal(NaN);
   const folioFilter = () => parseInt(search(), 10);
   const shortDate = () => getShortDate(date());
+
+  /** Reference to the filter dropdown input element */
+  let dropdownRef: Maybe<HTMLDivElement>;
+  /** Reference to the date picker input element */
+  let pickerRef: Maybe<HTMLInputElement>;
+  /** Reference to the dropdown trigger element */
+  let dropTriggerRef: Maybe<HTMLDivElement>;
 
   createEffect(() => console.log("Local filter:", localFilter()));
 
@@ -308,6 +315,26 @@ export function Home() {
     if (employeeProfile()) {
       services.refetch();
     }
+
+    function closeDropdown(e: MouseEvent) {
+      // If clicking on the dropdown trigger ignore the event
+      if (dropTriggerRef?.contains(e.target as Node)) {
+        return true;
+      }
+
+      // Closes the filter dropdown when clicking outside of it
+      if (dropdownRef && !dropdownRef.contains(e.target as Node)) {
+        return setShowFilters(false);
+      }
+    }
+
+    // Add event listener to close the dropdown when clicking outside
+    document.addEventListener("click", closeDropdown);
+
+    return () => {
+      // Cleanup the event listener when the component is unmounted
+      document.removeEventListener("click", closeDropdown);
+    }
   });
 
   return (
@@ -350,9 +377,7 @@ export function Home() {
                   <FaSolidChevronLeft aria-hidden="true" />
                 </button>
 
-                <a class="is-active" onClick={() => setDay()}>
-                  Ir a hoy
-                </a>
+                <a class="is-active" onClick={() => setDay()}>Hoy</a>
 
                 <button
                   class="button icon is-left"
@@ -366,20 +391,44 @@ export function Home() {
 
               <div class="panel-tabs is-align-items-center is-gap-1">
                 <p class="is-borderless" title={fullDate()}>
-                  <input class="input" type="date" name="day" value={shortDate()} onChange={pickDate} />
+                  <button
+                    class="button is-flex gap-2 is-relative"
+                    onClick={() => pickerRef?.showPicker()}
+                  >
+                    <Show when={deviceType() >= DeviceType.Tablet}>
+                      <span class="text-top">{shortDate()}</span>
+                    </Show>
+
+                    <input class="input is-tiny"
+                      ref={el => pickerRef = el}
+                      onChange={pickDate}
+                      value={shortDate()}
+                      type="date"
+                      name="day"
+                    />
+
+                    <span class="icon m-0">
+                      <FaSolidCalendarDays />
+                    </span>
+                  </button>
                 </p>
 
                 <Show when={true}>
                   <div class={classNames("dropdown is-right", ["is-active", showFilters()])}>
-                    <div class="dropdown-trigger" onClick={() => setShowFilters(x => !x)}>
-                      <button class="button" style={{ width: "100px" }} type="button">
-                        <span class="text-top">Filtrar</span>
-                        <span class="icon">
+                    <div class="dropdown-trigger"
+                      onClick={() => setShowFilters(x => !x)}
+                      ref={el => dropTriggerRef = el}
+                    >
+                      <button class="button" type="button">
+                        <Show when={deviceType() >= DeviceType.Tablet}>
+                          <span class="text-top">Filtrar</span>
+                        </Show>
+                        <span class="icon" title="Filtrar">
                           <FaSolidFilter />
                         </span>
                       </button>
                     </div>
-                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                    <div class="dropdown-menu" ref={el => dropdownRef = el} role="menu">
                       <div class={classNames(
                         ["is-flex-direction-column", deviceType() <= DeviceType.Mobile],
                         "dropdown-content is-flex")
