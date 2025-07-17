@@ -45,6 +45,10 @@ function getSimpleTime(s: Service) {
   return getSimpleDate(s).format("hh:mm a");
 }
 
+function getSimpleDateTime(s: Service) {
+  return getSimpleDate(s).format("DD/MM/YYYY hh:mm a");
+}
+
 /** Returns the provided service's client name */
 function getClientName({ Clientes: c }: Service): string {
   return `${c?.nombre ?? ""} ${c?.apellidos ?? ""}`;
@@ -214,7 +218,7 @@ export function Home() {
     }
 
     if (!isNaN(folioFilter())) {
-      return filterLocal(s) && s.folio.toString().startsWith(search());
+      return filterLocal(s) && Math.abs(s.folio).toString().startsWith(search());
     }
 
     return filterLocal(s) && getClientName(s).toLowerCase()
@@ -278,7 +282,7 @@ export function Home() {
 
   const filteredServices = () => {
     if (searchByFolio()) {
-      return services.data?.filter(s => s.folio === folioFilter());
+      return services.data?.filter(s => Math.abs(s.folio) === Math.abs(folioFilter()));
     }
 
     return services.data
@@ -394,6 +398,7 @@ export function Home() {
                   <button
                     class="button is-flex gap-2 is-relative"
                     onClick={() => pickerRef?.showPicker()}
+                    type="button"
                   >
                     <Show when={deviceType() >= DeviceType.Tablet}>
                       <span class="text-top">{shortDate()}</span>
@@ -421,9 +426,9 @@ export function Home() {
                     >
                       <button class="button" type="button">
                         <Show when={deviceType() >= DeviceType.Tablet}>
-                          <span class="text-top">Filtrar</span>
+                          <span class="text-top">Filtros</span>
                         </Show>
-                        <span class="icon" title="Filtrar">
+                        <span class="icon m-0" title="Filtros">
                           <FaSolidFilter />
                         </span>
                       </button>
@@ -560,7 +565,7 @@ export function Home() {
                                 </div>
                               </div>
                             </td>
-                            <td><strong>{getSimpleTime(s)}</strong></td>
+                            <td><strong title={getSimpleDateTime(s)}>{getSimpleTime(s)}</strong></td>
                             <td>
                               <Show when={deviceType() > DeviceType.Mobile} fallback={
                                 <span>{s.Clientes?.nombre} {s.Clientes?.apellidos}</span>
