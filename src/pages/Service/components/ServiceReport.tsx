@@ -6,7 +6,7 @@ import { SuggestionPicker } from "./SuggestionPicker";
 import SignaturePad from "signature_pad";
 
 import { Buckets, classNames, ImgFile, isOk } from "@/utils";
-import { IO_Database, supabase, Tables } from "@/supabase";
+import { IO_Database, Logger, supabase, Tables } from "@/supabase";
 import { Modal, useToast } from "@/components";
 import { LocaleMX } from "@/constants";
 import { InputEvent } from "@/types";
@@ -89,8 +89,12 @@ export function ServiceReport(props: ReportProps) {
                 signPad?.off();
 
             }).catch(error => {
-                console.error(error);
                 setSignSaved(false);
+                Logger.write({
+                    message: `Error loading signature: ${error.message}`,
+                    severity: "Low",
+                    type: "Error"
+                });
 
                 signPad?.clear();
                 signPad?.on();

@@ -1,5 +1,5 @@
 import insectsImg from "@/assets/insects-out-med.png";
-import { Auth, currentSession } from "@/supabase";
+import { Auth, currentSession, Logger } from "@/supabase";
 import { useLocation, useNavigate } from "@solidjs/router";
 import { createEffect, createSignal, Show } from "solid-js";
 
@@ -26,7 +26,7 @@ export function Login() {
                 navigate("/home", { replace: true });
             }
         })
-        .catch(console.error)
+        .catch(err => Logger.write({ message: err.message, severity: "Low", type: "Auth" }))
         .then(() => "Sesión iniciada");
 
     createEffect(() => {

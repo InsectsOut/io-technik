@@ -1,4 +1,4 @@
-import { IO_Database, supabase, Tables } from "@/supabase";
+import { IO_Database, Logger, supabase, Tables } from "@/supabase";
 import { createSignal } from "solid-js";
 
 /**
@@ -25,7 +25,11 @@ supabase.auth.onAuthStateChange((_, session) => {
     if (userId) {
         fetchUserProfile(userId)
             .then(setProfile)
-            .catch(console.error)
+            .catch(err => Logger.write({
+                message: `Error fetching user profile: ${err.message}`,
+                severity: "Mid",
+                type: "Error"
+            }));
     } else {
         setProfile(null);
     }

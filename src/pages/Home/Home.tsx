@@ -1,4 +1,4 @@
-import { For, Index, JSX, Match, Show, Suspense, Switch, createEffect, createMemo, createSignal, onMount } from "solid-js";
+import { For, Index, JSX, Match, Show, Suspense, Switch, createMemo, createSignal, onMount } from "solid-js";
 import { debounce } from "@solid-primitives/scheduled";
 import { createQuery } from "@tanstack/solid-query";
 import { Motion } from "solid-motionone";
@@ -126,8 +126,6 @@ export function Home() {
   let pickerRef: Maybe<HTMLInputElement>;
   /** Reference to the dropdown trigger element */
   let dropTriggerRef: Maybe<HTMLDivElement>;
-
-  createEffect(() => console.log("Local filter:", localFilter()));
 
   const fullDate = () => date().toDate()
     .toLocaleDateString(LocaleMX, { dateStyle: "full" });

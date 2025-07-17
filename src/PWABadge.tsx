@@ -3,6 +3,7 @@ import { useRegisterSW } from 'virtual:pwa-register/solid'
 import { Modal } from './components'
 
 import css from './PWABadge.module.css'
+import { Logger } from './supabase';
 
 /** Custom event for the PWA installation event */
 interface BeforeInstallPromptEvent extends Event {
@@ -37,9 +38,9 @@ const PWABadge: Component = () => {
     promptEvent.prompt(); // Show the install prompt
     promptEvent.userChoice.then((choice) => {
       if (choice.outcome === 'accepted') {
-        console.log('User accepted the install prompt');
+        Logger.write({ message: 'User accepted the install prompt', severity: "None", type: "Info" });
       } else {
-        console.log('User dismissed the install prompt');
+        Logger.write({ message: 'User dismissed the install prompt', severity: "None", type: "Info" });
       }
       setInstallEvent(null); // Clear the saved event
       close();

@@ -1,6 +1,6 @@
 import { Session, createClient } from "@supabase/supabase-js";
 import { createSignal } from "solid-js";
-import { Database } from "./Database";
+import { Database, TablesInsert } from "./Database";
 
 const { IO_SUPABASE_KEY, IO_SUPABASE_URL } = import.meta.env;
 
@@ -23,6 +23,13 @@ export const [currentSession, setSession] = createSignal<Session | null>(null);
  * Exports the **Insects Out** database for CRUD operations
  */
 export const IO_Database = supabase.schema("public");
+
+/** Entrypoint to write to the logs table */
+export const Logger = {
+    write: (params: TablesInsert<"Logs">) => {
+        return IO_Database.from("Logs").insert(params);
+    }
+}
 
 /**
  * Singleton that exports most common auth operations.

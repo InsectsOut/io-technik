@@ -1,5 +1,5 @@
 import { destructure } from "@solid-primitives/destructure";
-import { createEffect, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 import { createMutable } from "solid-js/store";
 
 import { FaSolidUpload } from "solid-icons/fa";
@@ -87,11 +87,6 @@ export function Feedback() {
             file
         };
     }
-
-    createEffect(() => {
-        console.clear();
-        console.table({ ...feedbackForm })
-    });
 
     return (
         <section>

@@ -154,14 +154,14 @@ export function SuggestionPicker(props: PickerProps) {
             .from("Recomendaciones")
             .delete().eq("id", sugerencia.id);
 
-        const imageDeleted = await supabase.storage
+        await supabase.storage
             .from(Buckets.ImagenesServicios)
             .remove([sugerencia.imagen?.id ?? ""]);
 
         if (deleted?.error === null) {
             query.refetch();
             setSugerencias(sugerencias.filter((s) => s.id !== sugerencia.id));
-            console.log(deleted, imageDeleted);
+            addToast("Sugerencia eliminada correctamente", "is-info");
         }
     }
 
