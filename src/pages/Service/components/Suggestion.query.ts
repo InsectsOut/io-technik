@@ -14,7 +14,7 @@ export async function getRecomendaciones(servicioId: string) {
     const { data } = await IO_Database
         .from("Recomendaciones")
         .select(`*`)
-        .eq("servicio_id", servicioId);
+        .eq("servicio_id", +servicioId);
 
     return data;
 }

@@ -152,7 +152,7 @@ export function SuggestionPicker(props: PickerProps) {
 
         const deleted = await IO_Database
             .from("Recomendaciones")
-            .delete().eq("id", sugerencia.id);
+            .delete().eq("id", +sugerencia.id);
 
         await supabase.storage
             .from(Buckets.ImagenesServicios)

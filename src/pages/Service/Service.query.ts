@@ -29,7 +29,7 @@ export async function getServiceByFolio(folio: string, org: string) {
             RegistroAplicacion(*, Productos(*))`
         )
         .eq("organizacion", org)
-        .eq("folio", folio)
+        .eq("folio", +folio)
         .limit(1)
         .maybeSingle();
 
