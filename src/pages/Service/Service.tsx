@@ -2,7 +2,7 @@ import { createMemo, createSignal, Match, onCleanup, onMount, Show, Suspense, Sw
 import { BeforeLeaveEventArgs, useBeforeLeave, useNavigate, useParams } from "@solidjs/router";
 import { Motion } from "solid-motionone";
 
-import { createQuery } from "@tanstack/solid-query";
+import { useQuery } from "@tanstack/solid-query";
 import { Tables } from "@/supabase";
 
 import { ContactDetails, SuppliesDetails, ServiceReport } from "./components/";
@@ -10,7 +10,7 @@ import { getServiceByFolio, ServiceDetails } from "./Service.query";
 import { getServiceStatus, tabOrder } from "./Service.utils";
 import { Tabs } from "./Service.types";
 
-import { classNames, FadeInAnimation, scrollIntoView, useSwipe } from "@/utils";
+import { classNames, FadeInAnimation, generatePdf, scrollIntoView, useSwipe } from "@/utils";
 import { Loading } from "@/components/Loading";
 import { getLocalTime } from "@/utils/Date";
 import { employeeProfile } from "@/state";
@@ -29,6 +29,7 @@ import {
     FaSolidClipboardUser,
     FaSolidClock,
     FaSolidClockRotateLeft,
+    FaSolidFilePdf,
     FaSolidFilePen,
     FaSolidHashtag,
     FaSolidMoneyBill,
@@ -78,6 +79,20 @@ export function Service() {
     const isReport = () => view() === "reporte";
     const isInfo = () => view() === "detalles";
 
+    function getPdf() {
+        const element = document.getElementById("service_detail");
+        if (!element) return;
+
+        generatePdf(element, `servicio_${folio}_${org}.pdf`).then((pdfBlob) => {
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+            window.open(pdfUrl, "_blank");
+            // Clean up the object URL after a delay to allow the window to open
+            setTimeout(() => URL.revokeObjectURL(pdfUrl), 10000);
+        }).catch((error) => {
+            console.error('Failed to generate PDF:', error);
+        });
+    }
+
     /** Updates the service cache if requested by a child */
     document.addEventListener("UpdateService",
         () => query.refetch().then(() => {
@@ -92,7 +107,7 @@ export function Service() {
         }), 1000);
 
     /** Creates a query to fetch the requested service, caches data for 1m */
-    const query = createQuery(() => ({
+    const query = useQuery(() => ({
         queryKey: [`service/${folio}/${org}`],
         queryFn: () => getServiceByFolio(folio, org),
         staleTime: 1000 * 60 * 3,
@@ -170,7 +185,7 @@ export function Service() {
     }
 
     /** Element reference for the tab container  */
-    let tabContainer: Maybe<HTMLTemplateElement>;
+    let tabContainer: Maybe<HTMLDivElement>;
 
     /** Handles swiping between the different tab views  */
     const onTabSwipe = (direction: 'left' | 'right', distance: number) => {
@@ -246,7 +261,7 @@ export function Service() {
 
     return (
         <Suspense fallback={<Loading />}>
-            <nav class="panel is-shadowless">
+            <nav id="service_detail" class="panel is-shadowless">
                 <h1 class="title has-text-centered">
                     Servicio #{folio.toString().replace("-", "FT-")}
                 </h1>
@@ -289,7 +304,7 @@ export function Service() {
                     </a>
                 </p>
 
-                <Motion.template {...FadeInAnimation}
+                <Motion.div {...FadeInAnimation}
                     ref={tabContainer!}
                     class="is-block"
                     id={view()}
@@ -333,11 +348,11 @@ export function Service() {
                                 <label class="label">Datos del Cliente</label>
                                 <div class={classNames("field is-grouped is-flex-direction-column", css.io_field)}>
                                     <p class="control has-icons-left">
-                                        <input title="Folio" disabled class="input has-text-link" type="text"
+                                        <input title="Folio" disabled class="input" type="text"
                                             value={`Folio: ${service()?.folio.toString().replace("-", "FT-")}`}
                                         />
                                         <span class="icon is-medium is-left">
-                                            <FaSolidHashtag class="has-text-link" />
+                                            <FaSolidHashtag />
                                         </span>
                                     </p>
                                     <p class="control has-icons-left">
@@ -421,7 +436,7 @@ export function Service() {
                             <ServiceReport service={service() ?? undefined} onServiceUpdate={onServiceUpdate} />
                         </Match>
                     </Switch>
-                </Motion.template>
+                </Motion.div>
 
                 <Show when={showConfirm()}>
                     <Modal show={true}>
@@ -439,7 +454,7 @@ export function Service() {
                 </Show>
 
                 <Show when={!isReport()}>
-                    <div class="field is-flex is-justify-content-center gap-3 mt-4">
+                    <div class="field is-flex is-justify-content-center gap-3 mt-4 px-4">
                         <button
                             class="column button is-link is-outlined"
                             onClick={goHome}
@@ -447,6 +462,19 @@ export function Service() {
                         >
                             <span class="text-top">Regresar a servicios</span>
                         </button>
+
+                        <Show when={employeeProfile()?.tipo_rol === "superadmin"}>
+                            <button
+                                class="column button is-danger is-outlined"
+                                onClick={getPdf}
+                                type="button"
+                            >
+                                <span class="text-top">Descargar</span>
+                                <span class="icon text-sub">
+                                    <FaSolidFilePdf class="is-size-5" aria-hidden="true" />
+                                </span>
+                            </button>
+                        </Show>
 
                         <Show when={navigator.share}>
                             <button
