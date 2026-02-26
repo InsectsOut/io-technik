@@ -1,7 +1,7 @@
 import { createEffect, createSignal, For, Index, onCleanup, onMount, Show } from "solid-js";
 import { createMutable, createStore } from "solid-js/store";
 import { destructure } from "@solid-primitives/destructure";
-import { createQuery } from "@tanstack/solid-query";
+import { useQuery } from "@tanstack/solid-query";
 
 import { Buckets, classNames, getFileExtension, windowSize } from "@/utils";
 import { IO_Database, supabase, Tables } from "@/supabase";
@@ -16,6 +16,7 @@ import { getRecomendaciones } from "./Suggestion.query";
 
 import { FaRegularEyeSlash, FaRegularImage, FaSolidBug, FaSolidCamera, FaSolidCircleInfo, FaSolidCirclePlus, FaSolidListCheck, FaSolidTrashCan, FaSolidUpload, FaSolidXmark } from "solid-icons/fa";
 import { BsPencilSquare } from "solid-icons/bs";
+import { compressImage } from "@/utils/Compression";
 
 /** Props for the suggestion picker component */
 type PickerProps = {
@@ -30,7 +31,7 @@ export function SuggestionPicker(props: PickerProps) {
     const { id: servicioId, folio } = destructure(props.servicio);
     const { addToast } = useToast();
 
-    const query = createQuery(() => ({
+    const query = useQuery(() => ({
         queryKey: [`recomendaciones/${servicioId()}`],
         queryFn: () => getRecomendaciones(servicioId().toString()),
         throwOnError: false
@@ -99,15 +100,17 @@ export function SuggestionPicker(props: PickerProps) {
      * Handles adding an image file to the reports list
      * @param e An event that has the image payload
      */
-    function handleFileUpload(e: InputEvent<HTMLInputElement>) {
+    async function handleFileUpload(e: InputEvent<HTMLInputElement>) {
         const { files } = e.target || {};
         const [file] = files || [];
         if (!file) return;
 
+        const { file: compressedFile } = await compressImage(file);
+
         report.imagen = {
-            extension: file.type.split("/")[1],
+            extension: compressedFile.type.split("/")[1],
             id: getImageId(),
-            file
+            file: compressedFile
         };
     }
 
@@ -475,7 +478,7 @@ export function SuggestionPicker(props: PickerProps) {
                             </Show>
                         </div>
                     </div>
-                    
+
                     { /* Show the additional actions list when not empty */}
                     <div class="cell field is-flex-direction-column mb-1">
                         <label class="label my-1">Otras recomendaciones</label>

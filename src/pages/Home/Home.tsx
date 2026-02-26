@@ -1,6 +1,6 @@
 import { For, Index, JSX, Match, Show, Suspense, Switch, createMemo, createSignal, onMount } from "solid-js";
 import { debounce } from "@solid-primitives/scheduled";
-import { createQuery } from "@tanstack/solid-query";
+import { useQuery } from "@tanstack/solid-query";
 import { Motion } from "solid-motionone";
 
 import { Service, fetchServices } from "./Home.query";
@@ -17,7 +17,7 @@ import dayjs from "dayjs";
 
 import { FaSolidBan, FaSolidCalendarDays, FaSolidCheck, FaSolidChevronDown, FaSolidChevronLeft, FaSolidChevronRight, FaSolidChevronUp, FaSolidCircleInfo, FaSolidFilter, FaSolidMagnifyingGlass, FaSolidMapPin, FaSolidPhoneFlip, FaSolidTrashCan, FaSolidXmark } from "solid-icons/fa";
 import { getServiceStatus } from "../Service/Service.utils";
-import { TbProgressAlert } from "solid-icons/tb";
+import { TbOutlineProgressAlert } from "solid-icons/tb";
 import { FiSend } from "solid-icons/fi";
 
 import { useSearchParams } from "@solidjs/router";
@@ -28,7 +28,7 @@ function getStatusIcon(service: Service) {
   const StatusIcon = createMemo(() => match(service)
     .with({ realizado: true }, () => <FaSolidCheck class="has-text-primary is-size-4" />)
     .with({ cancelado: true }, () => <FaSolidXmark class="has-text-danger is-size-4" />)
-    .otherwise(() => <TbProgressAlert class="has-text-warning is-size-4" />));
+    .otherwise(() => <TbOutlineProgressAlert class="has-text-warning is-size-4" />));
 
   return (
     <span class="icon is-left">
@@ -305,7 +305,7 @@ export function Home() {
 
   const serviceQueryKey = () => `/service-${searchByFolio() ? folioFilter() : date()}`
 
-  const services = createQuery(() => ({
+  const services = useQuery(() => ({
     queryKey: [serviceQueryKey()],
     queryFn: serviceQuery,
     staleTime: 1000 * 60 * 5,

@@ -2,7 +2,6 @@ export * from "./Animations"
 export * from "./Constants";
 export * from "./CssHelpers";
 export * from "./DeviceType";
-export * from "./PdfGenerator";
 export * from "./Touch";
 
 /** Image file extension */

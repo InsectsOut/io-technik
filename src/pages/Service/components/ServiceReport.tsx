@@ -16,7 +16,7 @@ import { setCanSwipe, setChangesUnsaved } from "../Service";
 import { getServiceImgPath } from "../Service.utils";
 
 import { FaRegularSquareCheck, FaSolidCheck, FaSolidClockRotateLeft, FaSolidCloudArrowUp, FaSolidDoorClosed, FaSolidDoorOpen, FaSolidXmark } from "solid-icons/fa";
-import { TbProgressAlert } from "solid-icons/tb";
+import { TbOutlineProgressAlert } from "solid-icons/tb";
 import { FiSave } from "solid-icons/fi";
 
 import css from "../Service.module.css";
@@ -60,7 +60,7 @@ export function ServiceReport(props: ReportProps) {
     const StateIcon = createMemo(() => match(reporte.estadoServicio)
         .with("Realizado", () => <FaSolidCheck class="has-text-primary is-size-5" />)
         .with("Cancelado", () => <FaSolidXmark class="has-text-danger is-size-5" />)
-        .otherwise(() => <TbProgressAlert class="has-text-warning is-size-5" />));
+        .otherwise(() => <TbOutlineProgressAlert class="has-text-warning is-size-5" />));
 
     /** If the report is being saved currently */
     const [isSaving, setIsSaving] = createSignal(false);

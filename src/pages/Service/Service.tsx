@@ -10,14 +10,14 @@ import { getServiceByFolio, ServiceDetails } from "./Service.query";
 import { getServiceStatus, tabOrder } from "./Service.utils";
 import { Tabs } from "./Service.types";
 
-import { classNames, FadeInAnimation, generatePdf, scrollIntoView, useSwipe } from "@/utils";
+import { classNames, FadeInAnimation, scrollIntoView, useSwipe } from "@/utils";
 import { Loading } from "@/components/Loading";
 import { getLocalTime } from "@/utils/Date";
 import { employeeProfile } from "@/state";
 import { Error, Pages } from "@/pages";
 import { Modal } from "@/components";
 
-import { TbProgressAlert } from "solid-icons/tb";
+import { TbOutlineProgressAlert } from "solid-icons/tb";
 import { FiShare } from "solid-icons/fi";
 import { match } from "ts-pattern";
 
@@ -29,7 +29,6 @@ import {
     FaSolidClipboardUser,
     FaSolidClock,
     FaSolidClockRotateLeft,
-    FaSolidFilePdf,
     FaSolidFilePen,
     FaSolidHashtag,
     FaSolidMoneyBill,
@@ -78,20 +77,6 @@ export function Service() {
     const isContact = () => view() === "contacto";
     const isReport = () => view() === "reporte";
     const isInfo = () => view() === "detalles";
-
-    function getPdf() {
-        const element = document.getElementById("service_detail");
-        if (!element) return;
-
-        generatePdf(element, `servicio_${folio}_${org}.pdf`).then((pdfBlob) => {
-            const pdfUrl = URL.createObjectURL(pdfBlob);
-            window.open(pdfUrl, "_blank");
-            // Clean up the object URL after a delay to allow the window to open
-            setTimeout(() => URL.revokeObjectURL(pdfUrl), 10000);
-        }).catch((error) => {
-            console.error('Failed to generate PDF:', error);
-        });
-    }
 
     /** Updates the service cache if requested by a child */
     document.addEventListener("UpdateService",
@@ -235,7 +220,7 @@ export function Service() {
     const StateIcon = createMemo(() => service() && match(getServiceStatus(service()!))
         .with("Realizado", () => <FaSolidCheck class="is-size-5" />)
         .with("Cancelado", () => <FaSolidXmark class="is-size-5" />)
-        .otherwise(() => <TbProgressAlert class="is-size-5" />));
+        .otherwise(() => <TbOutlineProgressAlert class="is-size-5" />));
 
     onMount(() => {
         if (tabContainer) {
@@ -462,19 +447,6 @@ export function Service() {
                         >
                             <span class="text-top">Regresar a servicios</span>
                         </button>
-
-                        <Show when={employeeProfile()?.tipo_rol === "superadmin"}>
-                            <button
-                                class="column button is-danger is-outlined"
-                                onClick={getPdf}
-                                type="button"
-                            >
-                                <span class="text-top">Descargar</span>
-                                <span class="icon text-sub">
-                                    <FaSolidFilePdf class="is-size-5" aria-hidden="true" />
-                                </span>
-                            </button>
-                        </Show>
 
                         <Show when={navigator.share}>
                             <button
