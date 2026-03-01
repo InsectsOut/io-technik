@@ -8,13 +8,6 @@ const { IO_SUPABASE_KEY, IO_SUPABASE_URL } = import.meta.env;
 export const supabase = createClient<Database>(IO_SUPABASE_URL, IO_SUPABASE_KEY);
 
 /**
- * Updates the session when the auth state changes
-*/
-supabase.auth.onAuthStateChange((_, session) => {
-    setSession(session);
-});
-
-/**
  * Getter/Setter for the current user session, if any
 */
 export const [currentSession, setSession] = createSignal<Session | null>(null);
@@ -30,6 +23,14 @@ export const Logger = {
         return IO_Database.from("Logs").insert(params);
     }
 }
+
+/**
+ * Updates the session when the auth state changes
+*/
+supabase.auth.onAuthStateChange((event, session) => {
+    setSession(session);
+    Logger.write({ message: `Auth state changed: ${event}`, severity: "None", type: "Auth" });
+});
 
 /**
  * Singleton that exports most common auth operations.
@@ -55,7 +56,23 @@ export const Auth = Object.freeze({
             return Promise.reject("No password argument");
         }
 
-        return supabase.auth.signInWithPassword({ email, password });
+        return supabase.auth.signInWithPassword({ email, password }).then((result) => {
+            if (result.error) {
+                Logger.write({
+                    message: `Sign in failed: ${result.error.message}`,
+                    severity: "Mid",
+                    type: "Auth",
+                    debug: { code: result.error.code ?? null },
+                });
+            } else {
+                Logger.write({
+                    message: "User signed in successfully",
+                    severity: "None",
+                    type: "Auth",
+                });
+            }
+            return result;
+        });
     },
 
     /**
@@ -64,7 +81,19 @@ export const Auth = Object.freeze({
      * @returns A `promise` with the operation's `AuthError` if any.
      */
     signOut() {
-        return supabase.auth.signOut();
+        return supabase.auth.signOut().then((result) => {
+            if (result.error) {
+                Logger.write({
+                    message: `Sign out failed: ${result.error.message}`,
+                    severity: "Mid",
+                    type: "Auth",
+                    debug: { code: result.error.code ?? null },
+                });
+            } else {
+                Logger.write({ message: "User signed out successfully", severity: "None", type: "Auth" });
+            }
+            return result;
+        });
     },
 
     /**
@@ -89,6 +118,9 @@ export const Auth = Object.freeze({
         }
 
         const { data } = await supabase.auth.getSession();
+        if (!data.session) {
+            Logger.write({ message: "No active session found", severity: "None", type: "Auth" });
+        }
         return data
             ? setSession(data.session)
             : null;

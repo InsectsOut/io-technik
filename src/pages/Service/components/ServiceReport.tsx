@@ -168,16 +168,34 @@ export function ServiceReport(props: ReportProps) {
                 .eq("id", id());
 
             if (update.error) {
+                Logger.write({
+                    message: `Error saving signature to service: ${update.error.message}`,
+                    severity: "Mid",
+                    type: "Error",
+                    debug: { folio: folio(), details: update.error.details },
+                });
                 addToast("Error actualizando la firma", "is-danger");
             }
         }
 
         if (imgUpload.data) {
+            Logger.write({
+                message: "Client signature saved successfully",
+                severity: "None",
+                type: "Info",
+                debug: { folio: folio() },
+            });
             addToast("Firma guardada correctamente", "is-info");
             setSignSaved(true);
             props.onServiceUpdate?.();
             signPad?.off();
         } else {
+            Logger.write({
+                message: `Error uploading signature: ${imgUpload.error.message}`,
+                severity: "Mid",
+                type: "Error",
+                debug: { folio: folio() },
+            });
             addToast(imgUpload.error.message, "is-danger");
             setSignSaved(false);
         }
@@ -246,11 +264,23 @@ export function ServiceReport(props: ReportProps) {
         }
 
         if (serviceUpdate.error) {
+            Logger.write({
+                message: `Error saving service report: ${serviceUpdate.error.message}`,
+                severity: "Mid",
+                type: "Error",
+                debug: { folio: props.service!.folio, details: serviceUpdate.error.details },
+            });
             setIsSaving(false);
             setChangesUnsaved(true);
             return addToast("Error guardando el servicio", "is-warning");
         }
 
+        Logger.write({
+            message: "Service report saved successfully",
+            severity: "None",
+            type: "Info",
+            debug: { folio: props.service!.folio, estado: reporte.estadoServicio },
+        });
         setIsSaving(false);
         setChangesUnsaved(false);
         addToast("Servicio guardado correctamente", "is-info");

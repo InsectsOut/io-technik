@@ -4,7 +4,7 @@ import { createSignal, For, Show } from "solid-js";
 import { classNames, DeviceType, deviceType } from "@/utils";
 import { getSimpleUnit } from "../Service.utils";
 import { Modal, useToast } from "@/components";
-import { supabase, Tables } from "@/supabase";
+import { supabase, Logger, Tables } from "@/supabase";
 
 import css from "../Service.module.css"
 import { BsPencilSquare } from "solid-icons/bs";
@@ -39,6 +39,12 @@ async function updateUsedProduct(item: Supply, cantidad: number) {
             "is-info"
         );
     } else {
+        Logger.write({
+            message: `Error updating used product: ${error?.message}`,
+            severity: "Low",
+            type: "Error",
+            debug: { productId: item.id, nombre: item.nombre, cantidad, details: error?.details ?? null },
+        });
         addToast(`Error actualizando la cantidad usada\n${error?.details}`, "is-danger");
     }
 }
