@@ -128,7 +128,7 @@ export function Home() {
   let dropTriggerRef: Maybe<HTMLDivElement>;
 
   const fullDate = () => date().toDate()
-    .toLocaleDateString(LocaleMX, { dateStyle: "full" });
+    .toLocaleDateString(LocaleMX, { dateStyle: "long" });
 
   const updateSearch = debounce((search: string) => {
     setSearch(search);
@@ -347,8 +347,10 @@ export function Home() {
         </Match>
 
         <Match when={services.data}>
-          <h1 class="title p-0 has-text-centered">Servicios</h1>
-          <h2 class="subtitle p-0 has-text-centered">{fullDate()}</h2>
+          <h1 class="title p-0 pb-1 has-text-centered is-flex is-justify-content-center is-align-items-center gap-2">
+            <span>Servicios</span>
+            <span class="has-text-grey is-size-6 has-text-weight-medium">· {fullDate()}</span>
+          </h1>
           <div class="panel-block p-0 pb-2 is-flex is-gap-1 is-borderless">
             <p class="control">
               <input onInput={(e) => updateSearch(e.target.value)}
