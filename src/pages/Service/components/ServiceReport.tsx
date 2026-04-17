@@ -1,11 +1,12 @@
 import { destructure } from "@solid-primitives/destructure";
 import { createMutable } from "solid-js/store";
-import { createEffect, createMemo, createSignal, createUniqueId, Index } from "solid-js";
+import { createEffect, createMemo, createSignal, createUniqueId, Index, Show } from "solid-js";
 
 import { SuggestionPicker } from "./SuggestionPicker";
 import SignaturePad from "signature_pad";
 
 import { Buckets, classNames, ImgFile, isOk } from "@/utils";
+import { compressImage } from "@/utils/Compression";
 import { IO_Database, Logger, supabase, Tables } from "@/supabase";
 import { Modal, useToast } from "@/components";
 import { LocaleMX } from "@/constants";
@@ -15,7 +16,7 @@ import { EstadosServicio, FrecuenciaServicio, isFrecuencia, isServicioStatus, Se
 import { setCanSwipe, setChangesUnsaved } from "../Service";
 import { getServiceImgPath } from "../Service.utils";
 
-import { FaRegularSquareCheck, FaSolidCheck, FaSolidClockRotateLeft, FaSolidCloudArrowUp, FaSolidDoorClosed, FaSolidDoorOpen, FaSolidXmark } from "solid-icons/fa";
+import { FaRegularSquareCheck, FaSolidCamera, FaSolidCheck, FaSolidClockRotateLeft, FaSolidCloudArrowUp, FaSolidDoorClosed, FaSolidDoorOpen, FaSolidUpload, FaSolidXmark } from "solid-icons/fa";
 import { TbOutlineProgressAlert } from "solid-icons/tb";
 import { FiSave } from "solid-icons/fi";
 
@@ -67,6 +68,10 @@ export function ServiceReport(props: ReportProps) {
     const [signSaved, setSignSaved] = createSignal(false);
     const { addToast } = useToast();
 
+    /** Signature mode management */
+    const [signatureMode, setSignatureMode] = createSignal<'digital' | 'foto'>('digital');
+    const [photoFile, setPhotoFile] = createSignal<ImgFile | undefined>();
+
     /** Reference for the HTML canvas element */
     let canvasRef: Maybe<HTMLCanvasElement>;
     /** Reference for the SignaturePad WebComponent */
@@ -76,29 +81,50 @@ export function ServiceReport(props: ReportProps) {
         // Loads the signature pad component and the saved signature if any
         signPad = canvasRef ? new SignaturePad(canvasRef) : undefined;
 
-        supabase.storage
-            .from(Buckets.ImagenesServicios)
-            .download(firma_cliente() ?? "")
-            .then(({ data }) => {
-                if (!data) return;
+        if (firma_cliente()) {
+            supabase.storage
+                .from(Buckets.ImagenesServicios)
+                .download(firma_cliente() ?? "")
+                .then(({ data }) => {
+                    if (!data) return;
 
-                const base64Url = URL.createObjectURL(data);
-                signPad?.fromDataURL(base64Url);
+                    // Detect signature type by checking file extension
+                    const isPhoto = firma_cliente()?.toLowerCase().includes('.jpg') || 
+                                  firma_cliente()?.toLowerCase().includes('.jpeg') || 
+                                  firma_cliente()?.toLowerCase().includes('.webp');
+                    
+                                        setSignatureMode(isPhoto ? 'foto' : 'digital');
 
-                setSignSaved(true);
-                signPad?.off();
+                    if (isPhoto) {
+                        // Photo signature - store for display
+                        const imgName = firma_cliente()?.split('/').pop() || '';
+                        setPhotoFile({
+                            extension: imgName.split('.').pop() || 'jpg',
+                            id: imgName,
+                            file: new File([data], imgName, { type: data.type })
+                        });
+                    } else {
+                        // Digital signature - load into canvas
+                        const base64Url = URL.createObjectURL(data);
+                        signPad?.fromDataURL(base64Url);
+                        signPad?.off();
+                    }
 
-            }).catch(error => {
-                setSignSaved(false);
-                Logger.write({
-                    message: `Error loading signature: ${error.message}`,
-                    severity: "Low",
-                    type: "Error"
+                    setSignSaved(true);
+
+                }).catch(error => {
+                    setSignSaved(false);
+                    setSignatureMode('digital');
+                    Logger.write({
+                        message: `Error loading signature: ${error.message}`,
+                        severity: "Low",
+                        type: "Error"
+                    });
+
+                    signPad?.clear();
+                    signPad?.on();
                 });
-
-                signPad?.clear();
-                signPad?.on();
-            });
+        }
 
         resizeCanvas();
         return () => window.removeEventListener("resize", resizeCanvas);
@@ -107,8 +133,35 @@ export function ServiceReport(props: ReportProps) {
     function clearSignature() {
         setChangesUnsaved(true);
         setSignSaved(false);
+        setPhotoFile(undefined);
         signPad?.clear();
         signPad?.on();
+    }
+
+    async function handlePhotoUpload(e: InputEvent<HTMLInputElement>) {
+        const { files } = e.target || {};
+        const [file] = files || [];
+        if (!file) return;
+
+        try {
+            const { file: compressedFile } = await compressImage(file);
+            const imgName = `firma_cliente_${createUniqueId()}`;
+            
+            setPhotoFile({
+                extension: compressedFile.type.split("/")[1],
+                id: imgName,
+                file: compressedFile
+            });
+            setChangesUnsaved(true);
+            setSignSaved(false);
+        } catch (error) {
+            addToast("Error al procesar la imagen", "is-danger");
+            Logger.write({
+                message: `Error processing photo signature: ${error}`,
+                severity: "Mid",
+                type: "Error"
+            });
+        }
     }
 
     function resizeCanvas() {
@@ -125,31 +178,46 @@ export function ServiceReport(props: ReportProps) {
     }
 
     async function saveSignature() {
+        let signFile: ImgFile;
+        
         if (signSaved()) {
-            signPad?.on();
-            signPad?.clear();
+            // Clear existing signature
             setChangesUnsaved(true);
-            return setSignSaved(false);
+            setSignSaved(false);
+            setPhotoFile(undefined);
+            signPad?.clear();
+            signPad?.on();
+            return;
         }
 
-        if (signPad?.isEmpty()) {
-            return addToast("Por favor agregue una firma", "is-warning");
-        }
+        if (signatureMode() === 'digital') {
+            // Handle digital signature
+            if (signPad?.isEmpty()) {
+                return addToast("Por favor agregue una firma", "is-warning");
+            }
 
-        const dataURL = signPad!.toDataURL("image/png");
-        const binary = atob(dataURL.split(",")[1]); // Decode the Base64 string
-        const array = new Uint8Array(binary.length);
+            const dataURL = signPad!.toDataURL("image/png");
+            const binary = atob(dataURL.split(",")[1]); // Decode the Base64 string
+            const array = new Uint8Array(binary.length);
 
-        for (let i = 0; i < binary.length; i++) {
-            array[i] = binary.charCodeAt(i);
-        }
+            for (let i = 0; i < binary.length; i++) {
+                array[i] = binary.charCodeAt(i);
+            }
 
-        const blob = new Blob([array], { type: "image/png" });
-        const imgName = `firma_cliente_${createUniqueId()}`;
-        const signFile: ImgFile = {
-            extension: "png",
-            file: new File([blob], imgName, { type: "image/png" }),
-            id: imgName,
+            const blob = new Blob([array], { type: "image/png" });
+            const imgName = `firma_cliente_${createUniqueId()}`;
+            signFile = {
+                extension: "png",
+                file: new File([blob], imgName, { type: "image/png" }),
+                id: imgName,
+            };
+        } else {
+            // Handle photo signature
+            const currentPhoto = photoFile();
+            if (!currentPhoto) {
+                return addToast("Por favor seleccione una foto de firma", "is-warning");
+            }
+            signFile = currentPhoto;
         }
 
         const signPath = getServiceImgPath(signFile, folio());
@@ -187,8 +255,10 @@ export function ServiceReport(props: ReportProps) {
             });
             addToast("Firma guardada correctamente", "is-info");
             setSignSaved(true);
-            props.onServiceUpdate?.();
-            signPad?.off();
+                        props.onServiceUpdate?.();
+            if (signatureMode() === 'digital') {
+                signPad?.off();
+            }
         } else {
             Logger.write({
                 message: `Error uploading signature: ${imgUpload.error.message}`,
@@ -375,24 +445,96 @@ export function ServiceReport(props: ReportProps) {
                 {/* Sugerencias y recomendaciones */}
                 <SuggestionPicker servicio={props.service} />
 
-                {/* Firma del cliente en formato .png  */}
+                {/* Firma del cliente - Digital o Foto */}
                 <div class="field io-signature">
                     <label class="label">Firma del cliente</label>
-                    <canvas id="sign_canvas" width={400} height={450} ref={canvasRef!}
-                        onTouchStart={() => setCanSwipe(false)}
-                        onTouchEnd={() => setCanSwipe(true)}
-                        style={{
-                            "border-color": signSaved() ? "orange" : "green",
-                            "background-color": "#EAEAEA",
-                            "border-style": "solid",
-                            "border-width": "medium"
-                        }}
-                    />
+                    
+                    {/* Mode Toggle Buttons */}
+                    <div class="field is-grouped is-justify-content-center mb-3">
+                        <div class="control">
+                            <button 
+                                type="button"
+                                class={classNames("button", ["is-primary", signatureMode() === 'digital'], ["is-light", signatureMode() !== 'digital'])}
+                                onClick={() => {
+                                    setSignatureMode('digital');
+                                    setChangesUnsaved(true);
+                                }}
+                            >
+                                Dibujar Firma
+                            </button>
+                        </div>
+                        <div class="control">
+                            <button 
+                                type="button"
+                                class={classNames("button", ["is-primary", signatureMode() === 'foto'], ["is-light", signatureMode() !== 'foto'])}
+                                onClick={() => {
+                                    setSignatureMode('foto');
+                                    setChangesUnsaved(true);
+                                }}
+                            >
+                                Subir Foto
+                            </button>
+                        </div>
+                    </div>
 
+                    {/* Digital Signature Canvas */}
+                    <Show when={signatureMode() === 'digital'}>
+                        <canvas id="sign_canvas" width={400} height={450} ref={canvasRef!}
+                            onTouchStart={() => setCanSwipe(false)}
+                            onTouchEnd={() => setCanSwipe(true)}
+                            style={{
+                                "border-color": signSaved() ? "orange" : "green",
+                                "background-color": "#EAEAEA",
+                                "border-style": "solid",
+                                "border-width": "medium"
+                            }}
+                        />
+                    </Show>
+
+                    {/* Photo Upload Interface */}
+                    <Show when={signatureMode() === 'foto'}>
+                        <div class="file has-name is-boxed is-flex-direction-column mb-1">
+                            <label class="file-label">
+                                <input onInput={handlePhotoUpload} multiple={false} class="file-input" type="file" accept="image/*" />
+                                <span class="file-cta" style={{ "border-radius": photoFile() ? undefined : "6px" }}>
+                                    <span class="file-icon">
+                                        <FaSolidUpload class="is-size-5" />
+                                    </span>
+                                    <span class="file-label">
+                                        {photoFile() ? "Cambiar fotografía" : "Elegir una fotografía"}
+                                    </span>
+                                </span>
+
+                                <Show when={photoFile()}>
+                                    <span class="file-name fullwidth">
+                                        <div class="is-flex is-align-items-baseline">
+                                            <span class="icon is-left">
+                                                <FaSolidCamera class="has-text-info is-size-5" aria-hidden="true" />
+                                            </span>
+                                            <span class="m-auto">{photoFile()?.id}.{photoFile()?.extension}</span>
+                                        </div>
+                                    </span>
+                                </Show>
+                            </label>
+                        </div>
+
+                        {/* Photo Preview */}
+                        <Show when={photoFile()}>
+                            <div class="has-text-centered">
+                                <img 
+                                    src={URL.createObjectURL(photoFile()!.file)} 
+                                    alt="Vista previa de la firma"
+                                    style={{ "max-width": "100%", "max-height": "200px", "border": "1px solid #ddd" }}
+                                />
+                            </div>
+                        </Show>
+                    </Show>
+
+                    {/* Action Buttons */}
                     <div class="field is-grouped is-justify-content-center gap-0">
                         <div class="control">
                             <button type="button" class="button sign-btn is-danger is-dark" onClick={clearSignature}>
-                                Limpiar
+                                {signatureMode() === 'foto' ? 'Eliminar' : 'Limpiar'}
                             </button>
                         </div>
                         <div class="control">
