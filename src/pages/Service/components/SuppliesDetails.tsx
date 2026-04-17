@@ -1,5 +1,5 @@
 import { destructure } from "@solid-primitives/destructure";
-import { createSignal, For, Show } from "solid-js";
+import { Accessor, createSignal, For, Setter, Show } from "solid-js";
 
 import { classNames, DeviceType, deviceType } from "@/utils";
 import { getSimpleUnit } from "../Service.utils";
@@ -8,7 +8,7 @@ import { supabase, Logger, Tables } from "@/supabase";
 
 import css from "../Service.module.css"
 import { BsPencilSquare } from "solid-icons/bs";
-import { FaSolidArrowDown, FaSolidArrowUp, FaSolidBoxesPacking, FaSolidCirclePlus, FaSolidFill, FaSolidFillDrip, FaSolidFlaskVial, FaSolidMinus, FaSolidPlus, FaSolidVestPatches, FaSolidXmark } from "solid-icons/fa";
+import { FaSolidArrowDown, FaSolidArrowUp, FaSolidBoxesPacking, FaSolidCirclePlus, FaSolidFill, FaSolidFillDrip, FaSolidFlaskVial, FaSolidLocationDot, FaSolidMinus, FaSolidPlus, FaSolidVestPatches, FaSolidXmark } from "solid-icons/fa";
 import { match } from "ts-pattern";
 
 type SuppliesDetails = {
@@ -71,6 +71,163 @@ function getSuppliesList(supplies: SuppliesDetails["registros"]) {
     }));
 }
 
+type SupplyModalProps = {
+    item: Supply;
+    cantidad: Accessor<number>;
+    setCantidad: Setter<number>;
+    simpleUnit: () => string;
+    show: boolean;
+    onClose: () => void;
+    onKeyDown: (e: KeyboardEvent) => void;
+}
+
+/** Modal that shows and edits the details of a single supply */
+function SupplyModal(props: SupplyModalProps) {
+    return (
+        <Modal show={props.show} onClose={props.onClose}>
+            <h1 class="title mb-2">{props.item.nombre}</h1>
+            <h2>{props.item.registro}</h2>
+
+            <form class="scrollable hide-scroll mb-4 paddingless" style={{ height: "50dvh" }} onKeyDown={props.onKeyDown}>
+                <div class={classNames("field is-grouped is-flex-direction-column hide-scroll scrollable", css.io_field)}>
+                    <label class="label">Presentación</label>
+                    <p class="control has-icons-left">
+                        <input id="p_presentacion" disabled
+                            value={props.item.presentacion}
+                            class="input"
+                            type="text"
+                        />
+                        <span class="icon is-medium is-left">
+                            <FaSolidBoxesPacking class="is-size-5" />
+                        </span>
+                    </p>
+
+                    <label class="label">Ingrediente Activo</label>
+                    <p class="control has-icons-left">
+                        <input id="p_ingrediente" disabled
+                            value={props.item.ingrediente}
+                            class="input"
+                            type="text"
+                        />
+                        <span class="icon is-medium is-left">
+                            <FaSolidFlaskVial class="has-text-warning is-size-5" />
+                        </span>
+                    </p>
+                </div>
+
+                <div class="field is-flex-direction-column two_col_grid">
+                    <label class="label">Dosis Mínima</label>
+                    <p class="control has-icons-left">
+                        <input id="p_dosis_min" disabled
+                            value={props.item.dosis_min}
+                            class="input"
+                            type="text"
+                        />
+                        <span class="icon is-medium is-left">
+                            <FaSolidMinus class="has-text-danger is-size-5" />
+                        </span>
+                        <Show when={props.item.dosis_recomendada === "min"}>
+                            <span class={classNames("tag is-success ml-2 z-10", css.dosis_tag)}>
+                                Recomendado
+                            </span>
+                        </Show>
+                    </p>
+
+                    <label class="label">Dosis Máxima</label>
+                    <p class="control has-icons-left">
+                        <input id="p_dosis_max" disabled
+                            value={props.item.dosis_max}
+                            class="input"
+                            type="text"
+                        />
+                        <span class="icon is-medium is-left">
+                            <FaSolidPlus class="has-text-success is-size-5" />
+                        </span>
+                        <Show when={props.item.dosis_recomendada === "max"}>
+                            <span class={classNames("tag is-success ml-2 z-10", css.dosis_tag)}>
+                                Recomendado
+                            </span>
+                        </Show>
+                    </p>
+                </div>
+
+                <div class={classNames(
+                    "field is-grouped is-flex-direction-column hide-scroll scrollable",
+                    css.io_field, [css.three_cols, deviceType() > DeviceType.Mobile])}
+                >
+                    <label class="label">Tipo Aplicación</label>
+                    <p class="control has-icons-left">
+                        <input title="Tipo de aplicación" id="p_tipo" disabled
+                            value={props.item.tipo}
+                            class="input"
+                            type="text"
+                        />
+                        <span class="icon is-medium is-left">
+                            <FaSolidVestPatches class="has-text-warning is-size-5" />
+                        </span>
+                    </p>
+
+                    <label class="label">Cantidad Sugerida</label>
+                    <p class="control has-icons-left">
+                        <input title="Cantidad sugerida" id="p_cantidad" disabled
+                            value={props.item.cantidad}
+                            class="input"
+                            type="number"
+                        />
+                        <span class="icon is-medium is-left">
+                            <FaSolidFill class="has-text-info is-size-5" />
+                        </span>
+                        <span class={css.units}>
+                            {props.simpleUnit()}
+                        </span>
+                    </p>
+
+                    <label class="label">Cantidad Utilizada</label>
+                    <p class="control has-icons-left">
+                        <input title="Cantidad usada" id="p_cantidad_usada" required
+                            onInput={(e) => props.setCantidad(e.target.valueAsNumber)}
+                            value={props.cantidad()}
+                            class="input"
+                            type="number"
+                            min={0}
+                        />
+                        <span class="icon is-medium is-left">
+                            <FaSolidFillDrip class="has-text-danger is-size-5" />
+                        </span>
+                        <span class={css.units}>
+                            {props.simpleUnit()}
+                        </span>
+                    </p>
+                </div>
+            </form>
+
+            <div class="field is-flex is-justify-content-center gap-3 mt-4">
+                <button
+                    class="column button is-danger is-outlined"
+                    onClick={props.onClose}
+                    type="button"
+                >
+                    <span class="text-top">Cancelar</span>
+                    <span class="icon">
+                        <FaSolidXmark />
+                    </span>
+                </button>
+
+                <button
+                    onClick={() => updateUsedProduct(props.item, props.cantidad()).then(props.onClose)}
+                    class="column button is-success is-outlined"
+                    type="button"
+                >
+                    <span class="text-top">Guardar</span>
+                    <span class="icon">
+                        <FaSolidCirclePlus />
+                    </span>
+                </button>
+            </div>
+        </Modal>
+    );
+}
+
 /**
  * Component that shows the supplies details tab
  * @param props The supplies props to be rendered
@@ -91,20 +248,26 @@ export function SuppliesDetails(props: SuppliesDetails) {
     }
 
     return (
-        <table class="table is-striped fullwidth mb-4" style={viewWidth}>
-            <thead>
-                <tr class={css.slim_pad}>
-                    <th class="pl-0">Nombre</th>
-                    <th>Cantidad</th>
-                    <th class="has-text-centered">Delta</th>
-                    <th class="has-text-centered pr-0">Editar</th>
-                </tr>
-            </thead>
+        <>
+            <table class="table is-striped fullwidth mb-4 is-hidden-mobile" style={viewWidth}>
+                <thead>
+                    <tr class={css.slim_pad}>
+                        <th class="pl-0">Nombre</th>
+                        <th>Cantidad</th>
+                        <th class="has-text-centered">Delta</th>
+                        <th class="has-text-centered pr-0">Editar</th>
+                    </tr>
+                </thead>
 
-            <tbody>
-                <For each={getSuppliesList(registros())}>{SupplyDetail}</For>
-            </tbody>
-        </table>
+                <tbody>
+                    <For each={getSuppliesList(registros())}>{SupplyDetail}</For>
+                </tbody>
+            </table>
+
+            <div class="is-hidden-tablet scrollable hide-scroll" style={viewWidth}>
+                <For each={getSuppliesList(registros())}>{SupplyCard}</For>
+            </div>
+        </>
     );
 }
 
@@ -170,149 +333,115 @@ function SupplyDetail(item: Supply) {
                 </div>
             </td>
 
-            <Modal show={showInfo()} onClose={closeInfo}>
-                <h1 class="title mb-2">{item.nombre}</h1>
-                <h2>{item.registro}</h2>
+            <SupplyModal
+                item={item}
+                cantidad={cantidad}
+                setCantidad={setCantidad}
+                simpleUnit={simpleUnit}
+                show={showInfo()}
+                onClose={closeInfo}
+                onKeyDown={handleEnterKey}
+            />
+        </tr>
+    );
+}
 
-                <form class="scrollable hide-scroll mb-4 paddingless" style={{ height: "50dvh" }} onKeyDown={handleEnterKey}>
-                    <div class={classNames("field is-grouped is-flex-direction-column hide-scroll scrollable", css.io_field)}>
-                        <label class="label">Presentación</label>
-                        <p class="control has-icons-left">
-                            <input id="p_presentacion" disabled
-                                value={item.presentacion}
-                                class="input"
-                                type="text"
-                            />
-                            <span class="icon is-medium is-left">
-                                <FaSolidBoxesPacking class="is-size-5" />
-                            </span>
-                        </p>
+/**
+ * Render function for a supply card (mobile, single-column layout)
+ * @param item The supply info to be rendered
+ * @returns A JSX rendered supply card
+ */
+function SupplyCard(item: Supply) {
+    const [cantidad, setCantidad] = createSignal(item.cantidad_usada || item.cantidad);
+    const delta = () => item.cantidad_usada - item.cantidad;
+    const [showInfo, setShowInfo] = createSignal(false);
+    const simpleUnit = () => getSimpleUnit(item.unidad);
+    const closeInfo = () => setShowInfo(false);
 
-                        <label class="label">Ingrediente Activo</label>
-                        <p class="control has-icons-left">
-                            <input id="p_ingrediente" disabled
-                                value={item.ingrediente}
-                                class="input"
-                                type="text"
-                            />
-                            <span class="icon is-medium is-left">
-                                <FaSolidFlaskVial class="has-text-warning is-size-5" />
+    function handleEnterKey(e: KeyboardEvent) {
+        if (e.key === "Enter") {
+            updateUsedProduct(item, cantidad()).then(closeInfo);
+        }
+    }
+
+    return (
+        <div class={classNames("card mb-2 p-3", css.supply_card)}>
+            <header class="card-header is-clickable is-shadowless" onClick={() => setShowInfo(true)}>
+                <div class="card-header-title is-flex is-align-items-center gap-2" style={{ width: "100%" }}>
+                    <Show when={item.tipo_producto}>
+                        <span class="tag is-info is-flex-shrink-0">{item.tipo_producto}</span>
+                    </Show>
+                    <span class="has-text-link has-text-weight-medium">{item.nombre}</span>
+                </div>
+            </header>
+
+            <div class="card-content">
+                <Show when={item.area_aplicacion}>
+                    <p class="is-flex is-align-items-center gap-1 is-size-7 has-text-grey mb-2">
+                        <FaSolidLocationDot />
+                        <span>{item.area_aplicacion}</span>
+                    </p>
+                </Show>
+                <div class="is-flex is-justify-content-space-between is-align-items-center">
+                    <div class="is-flex gap-3">
+                        <div>
+                            <p class="heading">Sugerido</p>
+                            <p class="is-flex is-align-items-center gap-1 has-text-info has-text-weight-semibold">
+                                <FaSolidFill class="is-size-7" />
+                                {item.cantidad} {simpleUnit()}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="heading">Usado</p>
+                            <p class="is-flex is-align-items-center gap-1 has-text-weight-semibold">
+                                <FaSolidFillDrip class="has-text-danger is-size-7" />
+                                {item.cantidad_usada} {simpleUnit()}
+                            </p>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="heading has-text-right">Delta</p>
+                        <p class="is-flex is-align-items-center gap-1">
+                            <span class={match(delta())
+                                .when(d => d < 0, () => "has-text-success has-text-weight-semibold")
+                                .when(d => d > 0, () => "has-text-danger has-text-weight-semibold")
+                                .otherwise(() => "")
+                            }>
+                                {delta()} {simpleUnit()}
                             </span>
+                            {match(delta())
+                                .when(d => d < 0, () => <FaSolidArrowDown class="has-text-success" />)
+                                .when(d => d > 0, () => <FaSolidArrowUp class="has-text-danger" />)
+                                .otherwise(() => null)}
                         </p>
                     </div>
+                </div>
+            </div>
 
-                    <div class="field is-flex-direction-column two_col_grid">
-                        <label class="label">Dosis Mínima</label>
-                        <p class="control has-icons-left">
-                            <input id="p_presentacion" disabled
-                                value={item.dosis_min}
-                                class="input"
-                                type="text"
-                            />
-                            <span class="icon is-medium is-left">
-                                <FaSolidMinus class="has-text-danger is-size-5" />
-                            </span>
-                            <Show when={item.dosis_recomendada === "min"}>
-                                <span class={classNames("tag is-success ml-2 z-10", css.dosis_tag)}>
-                                    Recomendado
-                                </span>
-                            </Show>
-                        </p>
-
-                        <label class="label">Dosis Máxima</label>
-                        <p class="control has-icons-left">
-                            <input id="p_ingrediente" disabled
-                                value={item.dosis_max}
-                                class="input"
-                                type="text"
-                            />
-                            <span class="icon is-medium is-left">
-                                <FaSolidPlus class="has-text-success is-size-5" />
-                            </span>
-                            <Show when={item.dosis_recomendada === "max"}>
-                                <span class={classNames("tag is-success ml-2 z-10", css.dosis_tag)}>
-                                    Recomendado
-                                </span>
-                            </Show>
-                        </p>
-
-                    </div>
-
-                    <div class={classNames(
-                        "field is-grouped is-flex-direction-column hide-scroll scrollable",
-                        css.io_field, [css.three_cols, deviceType() > DeviceType.Mobile])}
-                    >
-                        <label class="label">Tipo Aplicación</label>
-                        <p class="control has-icons-left">
-                            <input title="Tipo de aplicación" id="p_tipo" disabled
-                                value={item.tipo}
-                                class="input"
-                                type="text"
-                            />
-                            <span class="icon is-medium is-left">
-                                <FaSolidVestPatches class="has-text-warning is-size-5" />
-                            </span>
-                        </p>
-
-                        <label class="label">Cantidad Sugerida</label>
-                        <p class="control has-icons-left">
-                            <input title="Cantidad sugerida" id="p_cantidad" disabled
-                                value={item.cantidad}
-                                class="input"
-                                type="number"
-                            />
-                            <span class="icon is-medium is-left">
-                                <FaSolidFill class="has-text-info is-size-5" />
-                            </span>
-                            <span class={css.units}>
-                                {simpleUnit()}
-                            </span>
-                        </p>
-
-                        <label class="label">Cantidad Utilizada</label>
-                        <p class="control has-icons-left">
-                            <input title="Cantidad usada" id="p_cantidad_usada" required
-                                onInput={(e) => setCantidad(e.target.valueAsNumber)}
-                                value={cantidad()}
-                                class="input"
-                                type="number"
-                                min={0}
-                            />
-                            <span class="icon is-medium is-left">
-                                <FaSolidFillDrip class="has-text-danger is-size-5" />
-                            </span>
-                            <span class={css.units}>
-                                {simpleUnit()}
-                            </span>
-                        </p>
-
-                    </div>
-                </form>
-
-                <div class="field is-flex is-justify-content-center gap-3 mt-4">
+            <footer class="card-footer">
+                <div class="card-footer-item">
                     <button
-                        class="column button is-danger is-outlined"
-                        onClick={closeInfo}
+                        class="button is-warning is-outlined is-rounded is-fullwidth"
+                        onClick={() => setShowInfo(true)}
                         type="button"
                     >
-                        <span class="text-top">Cancelar</span>
                         <span class="icon">
-                            <FaSolidXmark />
+                            <BsPencilSquare class="is-size-6" aria-hidden="true" />
                         </span>
-                    </button>
-
-                    <button
-                        onClick={() => updateUsedProduct(item, cantidad()).then(closeInfo)}
-                        class="column button is-success is-outlined"
-                        type="button"
-                    >
-                        <span class="text-top">Guardar</span>
-                        <span class="icon">
-                            <FaSolidCirclePlus />
-                        </span>
+                        <span>Editar</span>
                     </button>
                 </div>
-            </Modal>
-        </tr>
+            </footer>
+
+            <SupplyModal
+                item={item}
+                cantidad={cantidad}
+                setCantidad={setCantidad}
+                simpleUnit={simpleUnit}
+                show={showInfo()}
+                onClose={closeInfo}
+                onKeyDown={handleEnterKey}
+            />
+        </div>
     );
 }
