@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "tsc": "tsc",
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "update-types": "pwsh -File ./update-types.ps1"

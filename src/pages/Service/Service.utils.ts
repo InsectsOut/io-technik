@@ -38,7 +38,7 @@ export function getServiceImgPath(image: ImgFile, folio: number) {
 
 /** Order in which to cycle the service tabs */
 export const tabOrder: Tabs[] = [
-    "detalles", "contacto", "suministros", "reporte"
+    "detalles", "contacto", "suministros", "reporte", "encuesta"
 ];
 
 /** Generates a unique `id/timestamp` for an img upload */
