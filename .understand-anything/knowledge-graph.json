@@ -19,8 +19,8 @@
       "PWA"
     ],
     "description": "A SolidJS and Vite front-end for service workflows, profiles, and Supabase-backed data access.",
-    "analyzedAt": "2026-06-20T21:26:54.198Z",
-    "gitCommitHash": "e595796bf0b3cc1660bb3552ddd41b5dda927ecf"
+    "analyzedAt": "2026-06-20T21:39:52.397Z",
+    "gitCommitHash": "be8fffd038a64915444605e7237c86fdb1d02fea"
   },
   "nodes": [
     {
@@ -769,7 +769,7 @@
       "type": "file",
       "name": "index.ts",
       "filePath": "src/pages/Service/components/index.ts",
-      "summary": "Service detail, suggestion, and editing flow.",
+      "summary": "Service detail, suggestion, survey, and editing flow.",
       "tags": [
         "code",
         "typescript",
@@ -895,7 +895,7 @@
       "type": "file",
       "name": "Service.tsx",
       "filePath": "src/pages/Service/Service.tsx",
-      "summary": "Service detail, suggestion, and editing flow.",
+      "summary": "Service detail, suggestion, survey, and editing flow.",
       "tags": [
         "code",
         "typescript",
@@ -1174,6 +1174,49 @@
         "code",
         "typescript",
         "root"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/assets/survey.json",
+      "type": "file",
+      "name": "survey.json",
+      "filePath": "src/assets/survey.json",
+      "summary": "Survey question configuration used by the service feedback flow.",
+      "tags": [
+        "data",
+        "json",
+        "src",
+        "asset"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Service/Survey.types.ts",
+      "type": "file",
+      "name": "Survey.types.ts",
+      "filePath": "src/pages/Service/Survey.types.ts",
+      "summary": "Survey configuration types and runtime validation.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Service/components/ServiceSurvey.tsx",
+      "type": "file",
+      "name": "ServiceSurvey.tsx",
+      "filePath": "src/pages/Service/components/ServiceSurvey.tsx",
+      "summary": "Service survey form and submission flow.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page",
+        "component"
       ],
       "complexity": "moderate"
     }
@@ -1486,6 +1529,48 @@
       "type": "imports",
       "weight": 0.7,
       "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/index.ts",
+      "target": "file:src/pages/Service/components/ServiceSurvey.tsx",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/Service.tsx",
+      "target": "file:src/pages/Service/components/ServiceSurvey.tsx",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/ServiceSurvey.tsx",
+      "target": "file:src/pages/Service/Survey.types.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/ServiceSurvey.tsx",
+      "target": "file:src/assets/survey.json",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/ServiceSurvey.tsx",
+      "target": "file:src/utils/index.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/ServiceSurvey.tsx",
+      "target": "file:src/supabase/index.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
     }
   ],
   "layers": [
@@ -1575,7 +1660,8 @@
         "file:src/pages/Service/components/SuppliesDetails.tsx",
         "file:src/pages/Service/components/index.ts",
         "file:src/pages/Service/index.ts",
-        "file:src/pages/index.ts"
+        "file:src/pages/index.ts",
+        "file:src/pages/Service/components/ServiceSurvey.tsx"
       ]
     },
     {
@@ -1598,14 +1684,17 @@
         "file:src/utils/Date.ts",
         "file:src/utils/DeviceType.ts",
         "file:src/utils/Touch.ts",
-        "file:src/utils/index.ts"
+        "file:src/utils/index.ts",
+        "file:src/pages/Service/Survey.types.ts"
       ]
     },
     {
       "id": "layer:static-assets",
       "name": "Static Assets",
       "description": "Public assets, generated artifacts, and visual resources.",
-      "nodeIds": []
+      "nodeIds": [
+        "file:src/assets/survey.json"
+      ]
     }
   ],
   "tour": [
@@ -1650,7 +1739,8 @@
         "file:src/pages/Service/Service.tsx",
         "file:src/pages/Service/components/SuggestionPicker.tsx",
         "file:src/pages/Login/Login.tsx",
-        "file:src/pages/Profile/Profile.tsx"
+        "file:src/pages/Profile/Profile.tsx",
+        "file:src/pages/Service/components/ServiceSurvey.tsx"
       ]
     },
     {
@@ -1662,7 +1752,9 @@
         "file:src/supabase/Database.ts",
         "file:src/state/Profile.ts",
         "file:src/utils/index.ts",
-        "file:src/types/Events.ts"
+        "file:src/types/Events.ts",
+        "file:src/pages/Service/Survey.types.ts",
+        "file:src/assets/survey.json"
       ]
     }
   ]
