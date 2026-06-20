@@ -1,0 +1,12 @@
+# Starter ignore for understand-anything analysis
+# Adjust these patterns before continuing if you want to include generated artifacts.
+
+node_modules/
+dist/
+dev-dist/
+coverage/
+*.log
+*.map
+.vite/
+.solid/
+*.local

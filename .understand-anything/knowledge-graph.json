@@ -1,0 +1,1669 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "io-technik",
+    "languages": [
+      "css",
+      "html",
+      "json",
+      "markdown",
+      "powershell",
+      "toml",
+      "typescript"
+    ],
+    "frameworks": [
+      "SolidJS",
+      "Vite",
+      "Supabase",
+      "Bulma",
+      "PWA"
+    ],
+    "description": "A SolidJS and Vite front-end for service workflows, profiles, and Supabase-backed data access.",
+    "analyzedAt": "2026-06-20T21:26:54.198Z",
+    "gitCommitHash": "e595796bf0b3cc1660bb3552ddd41b5dda927ecf"
+  },
+  "nodes": [
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Project overview, setup, and deployment notes.",
+      "tags": [
+        "docs",
+        "markdown",
+        "root"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:index.html",
+      "type": "file",
+      "name": "index.html",
+      "filePath": "index.html",
+      "summary": "Vite HTML entry template.",
+      "tags": [
+        "markup",
+        "html",
+        "root"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:netlify.toml",
+      "type": "config",
+      "name": "netlify.toml",
+      "filePath": "netlify.toml",
+      "summary": "Netlify deployment configuration.",
+      "tags": [
+        "config",
+        "toml",
+        "root"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "package.json",
+      "summary": "Project manifest, dependencies, and scripts.",
+      "tags": [
+        "config",
+        "json",
+        "root"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "filePath": "tsconfig.json",
+      "summary": "TypeScript compiler configuration.",
+      "tags": [
+        "config",
+        "json",
+        "root"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:tsconfig.node.json",
+      "type": "config",
+      "name": "tsconfig.node.json",
+      "filePath": "tsconfig.node.json",
+      "summary": "TypeScript compiler configuration.",
+      "tags": [
+        "config",
+        "json",
+        "root"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:update-types.ps1",
+      "type": "file",
+      "name": "update-types.ps1",
+      "filePath": "update-types.ps1",
+      "summary": "PowerShell helper to refresh generated type definitions.",
+      "tags": [
+        "script",
+        "powershell",
+        "root"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/App.css",
+      "type": "file",
+      "name": "App.css",
+      "filePath": "src/App.css",
+      "summary": "Styles for App.",
+      "tags": [
+        "markup",
+        "css",
+        "src"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/PWABadge.module.css",
+      "type": "file",
+      "name": "PWABadge.module.css",
+      "filePath": "src/PWABadge.module.css",
+      "summary": "Styles for PWABadge.Module.",
+      "tags": [
+        "markup",
+        "css",
+        "src"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/index.css",
+      "type": "file",
+      "name": "index.css",
+      "filePath": "src/index.css",
+      "summary": "Styles for Index.",
+      "tags": [
+        "markup",
+        "css",
+        "src"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/components/AuthGuard.css",
+      "type": "file",
+      "name": "AuthGuard.css",
+      "filePath": "src/components/AuthGuard.css",
+      "summary": "Shared UI component.",
+      "tags": [
+        "markup",
+        "css",
+        "src",
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/components/Footer.module.css",
+      "type": "file",
+      "name": "Footer.module.css",
+      "filePath": "src/components/Footer.module.css",
+      "summary": "Shared UI component.",
+      "tags": [
+        "markup",
+        "css",
+        "src",
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/components/Loading.module.css",
+      "type": "file",
+      "name": "Loading.module.css",
+      "filePath": "src/components/Loading.module.css",
+      "summary": "Shared UI component.",
+      "tags": [
+        "markup",
+        "css",
+        "src",
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/components/Modal.css",
+      "type": "file",
+      "name": "Modal.css",
+      "filePath": "src/components/Modal.css",
+      "summary": "Shared UI component.",
+      "tags": [
+        "markup",
+        "css",
+        "src",
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/components/Navbar.module.css",
+      "type": "file",
+      "name": "Navbar.module.css",
+      "filePath": "src/components/Navbar.module.css",
+      "summary": "Shared UI component.",
+      "tags": [
+        "markup",
+        "css",
+        "src",
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/components/Toast.module.css",
+      "type": "file",
+      "name": "Toast.module.css",
+      "filePath": "src/components/Toast.module.css",
+      "summary": "Shared UI component.",
+      "tags": [
+        "markup",
+        "css",
+        "src",
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:.hintrc",
+      "type": "config",
+      "name": ".hintrc",
+      "filePath": ".hintrc",
+      "summary": "Hinting and linting configuration.",
+      "tags": [
+        "code",
+        "unknown",
+        "root"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:.understand-anything/.understandignore",
+      "type": "config",
+      "name": ".understandignore",
+      "filePath": ".understand-anything/.understandignore",
+      "summary": "File exclusion rules for understand analysis.",
+      "tags": [
+        "code",
+        "unknown",
+        ".understand-anything"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:.understand-anything/config.json",
+      "type": "config",
+      "name": "config.json",
+      "filePath": ".understand-anything/config.json",
+      "summary": "Understand analysis configuration.",
+      "tags": [
+        "config",
+        "json",
+        ".understand-anything"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/App.tsx",
+      "type": "file",
+      "name": "App.tsx",
+      "filePath": "src/App.tsx",
+      "summary": "Top-level application shell and route wiring.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "shell"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/components/AuthGuard.tsx",
+      "type": "file",
+      "name": "AuthGuard.tsx",
+      "filePath": "src/components/AuthGuard.tsx",
+      "summary": "Shared UI component.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/components/Footer.tsx",
+      "type": "file",
+      "name": "Footer.tsx",
+      "filePath": "src/components/Footer.tsx",
+      "summary": "Shared UI component.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/components/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/components/index.ts",
+      "summary": "Shared UI component.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/components/Loading.tsx",
+      "type": "file",
+      "name": "Loading.tsx",
+      "filePath": "src/components/Loading.tsx",
+      "summary": "Shared UI component.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/components/Modal.tsx",
+      "type": "file",
+      "name": "Modal.tsx",
+      "filePath": "src/components/Modal.tsx",
+      "summary": "Shared UI component.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/components/Navbar.tsx",
+      "type": "file",
+      "name": "Navbar.tsx",
+      "filePath": "src/components/Navbar.tsx",
+      "summary": "Shared UI component.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/components/Toast.tsx",
+      "type": "file",
+      "name": "Toast.tsx",
+      "filePath": "src/components/Toast.tsx",
+      "summary": "Shared UI component.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/constants/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/constants/index.ts",
+      "summary": "Shared application constants.",
+      "tags": [
+        "code",
+        "typescript",
+        "src"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/globals.d.ts",
+      "type": "file",
+      "name": "globals.d.ts",
+      "filePath": "src/globals.d.ts",
+      "summary": "Source file for Globals.D.",
+      "tags": [
+        "code",
+        "typescript",
+        "src"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/index.tsx",
+      "type": "file",
+      "name": "index.tsx",
+      "filePath": "src/index.tsx",
+      "summary": "Application bootstrap and render entry.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "entrypoint"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/About/About.module.css",
+      "type": "file",
+      "name": "About.module.css",
+      "filePath": "src/pages/About/About.module.css",
+      "summary": "About page content and styles.",
+      "tags": [
+        "markup",
+        "css",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/About/About.tsx",
+      "type": "file",
+      "name": "About.tsx",
+      "filePath": "src/pages/About/About.tsx",
+      "summary": "About page content and styles.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/About/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/pages/About/index.ts",
+      "summary": "About page content and styles.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Error/Error.module.css",
+      "type": "file",
+      "name": "Error.module.css",
+      "filePath": "src/pages/Error/Error.module.css",
+      "summary": "Error page content and styles.",
+      "tags": [
+        "markup",
+        "css",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Error/Error.tsx",
+      "type": "file",
+      "name": "Error.tsx",
+      "filePath": "src/pages/Error/Error.tsx",
+      "summary": "Error page content and styles.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Error/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/pages/Error/index.ts",
+      "summary": "Error page content and styles.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Feedback/Feedback.module.css",
+      "type": "file",
+      "name": "Feedback.module.css",
+      "filePath": "src/pages/Feedback/Feedback.module.css",
+      "summary": "Feedback page content and styles.",
+      "tags": [
+        "markup",
+        "css",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Feedback/Feedback.tsx",
+      "type": "file",
+      "name": "Feedback.tsx",
+      "filePath": "src/pages/Feedback/Feedback.tsx",
+      "summary": "Feedback page content and styles.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Feedback/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/pages/Feedback/index.ts",
+      "summary": "Feedback page content and styles.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Home/Home.css",
+      "type": "file",
+      "name": "Home.css",
+      "filePath": "src/pages/Home/Home.css",
+      "summary": "Home feature page and service discovery flow.",
+      "tags": [
+        "markup",
+        "css",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Home/Home.query.ts",
+      "type": "file",
+      "name": "Home.query.ts",
+      "filePath": "src/pages/Home/Home.query.ts",
+      "summary": "Home feature page and service discovery flow.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Home/Home.tsx",
+      "type": "file",
+      "name": "Home.tsx",
+      "filePath": "src/pages/Home/Home.tsx",
+      "summary": "Home feature page and service discovery flow.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Home/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/pages/Home/index.ts",
+      "summary": "Home feature page and service discovery flow.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/pages/index.ts",
+      "summary": "Source file for Index.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Login/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/pages/Login/index.ts",
+      "summary": "Login page wiring and styles.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Login/Login.module.css",
+      "type": "file",
+      "name": "Login.module.css",
+      "filePath": "src/pages/Login/Login.module.css",
+      "summary": "Login page wiring and styles.",
+      "tags": [
+        "markup",
+        "css",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Login/Login.tsx",
+      "type": "file",
+      "name": "Login.tsx",
+      "filePath": "src/pages/Login/Login.tsx",
+      "summary": "Login page wiring and styles.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/NotFound/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/pages/NotFound/index.ts",
+      "summary": "Not-found page content and styles.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/NotFound/NotFound.module.css",
+      "type": "file",
+      "name": "NotFound.module.css",
+      "filePath": "src/pages/NotFound/NotFound.module.css",
+      "summary": "Not-found page content and styles.",
+      "tags": [
+        "markup",
+        "css",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/NotFound/NotFound.tsx",
+      "type": "file",
+      "name": "NotFound.tsx",
+      "filePath": "src/pages/NotFound/NotFound.tsx",
+      "summary": "Not-found page content and styles.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Profile/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/pages/Profile/index.ts",
+      "summary": "Profile page wiring and styles.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Profile/Profile.module.css",
+      "type": "file",
+      "name": "Profile.module.css",
+      "filePath": "src/pages/Profile/Profile.module.css",
+      "summary": "Profile page wiring and styles.",
+      "tags": [
+        "markup",
+        "css",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Profile/Profile.tsx",
+      "type": "file",
+      "name": "Profile.tsx",
+      "filePath": "src/pages/Profile/Profile.tsx",
+      "summary": "Profile page wiring and styles.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Service/components/ContactDetails.tsx",
+      "type": "file",
+      "name": "ContactDetails.tsx",
+      "filePath": "src/pages/Service/components/ContactDetails.tsx",
+      "summary": "Service detail, suggestion, and editing flow.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Service/components/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/pages/Service/components/index.ts",
+      "summary": "Service detail, suggestion, and editing flow.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Service/components/ServiceReport.tsx",
+      "type": "file",
+      "name": "ServiceReport.tsx",
+      "filePath": "src/pages/Service/components/ServiceReport.tsx",
+      "summary": "Service detail, suggestion, and editing flow.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Service/components/Suggestion.constants.ts",
+      "type": "file",
+      "name": "Suggestion.constants.ts",
+      "filePath": "src/pages/Service/components/Suggestion.constants.ts",
+      "summary": "Service detail, suggestion, and editing flow.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Service/components/Suggestion.query.ts",
+      "type": "file",
+      "name": "Suggestion.query.ts",
+      "filePath": "src/pages/Service/components/Suggestion.query.ts",
+      "summary": "Service detail, suggestion, and editing flow.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Service/components/SuggestionPicker.tsx",
+      "type": "file",
+      "name": "SuggestionPicker.tsx",
+      "filePath": "src/pages/Service/components/SuggestionPicker.tsx",
+      "summary": "Service detail, suggestion, and editing flow.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Service/components/SuppliesDetails.tsx",
+      "type": "file",
+      "name": "SuppliesDetails.tsx",
+      "filePath": "src/pages/Service/components/SuppliesDetails.tsx",
+      "summary": "Service detail, suggestion, and editing flow.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Service/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/pages/Service/index.ts",
+      "summary": "Service detail, suggestion, and editing flow.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Service/Service.module.css",
+      "type": "file",
+      "name": "Service.module.css",
+      "filePath": "src/pages/Service/Service.module.css",
+      "summary": "Service detail, suggestion, and editing flow.",
+      "tags": [
+        "markup",
+        "css",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Service/Service.query.ts",
+      "type": "file",
+      "name": "Service.query.ts",
+      "filePath": "src/pages/Service/Service.query.ts",
+      "summary": "Service detail, suggestion, and editing flow.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Service/Service.tsx",
+      "type": "file",
+      "name": "Service.tsx",
+      "filePath": "src/pages/Service/Service.tsx",
+      "summary": "Service detail, suggestion, and editing flow.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Service/Service.types.ts",
+      "type": "file",
+      "name": "Service.types.ts",
+      "filePath": "src/pages/Service/Service.types.ts",
+      "summary": "Service detail, suggestion, and editing flow.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pages/Service/Service.utils.ts",
+      "type": "file",
+      "name": "Service.utils.ts",
+      "filePath": "src/pages/Service/Service.utils.ts",
+      "summary": "Service detail, suggestion, and editing flow.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "page"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/PWABadge.tsx",
+      "type": "file",
+      "name": "PWABadge.tsx",
+      "filePath": "src/PWABadge.tsx",
+      "summary": "Progressive web app badge and install prompt helper.",
+      "tags": [
+        "code",
+        "typescript",
+        "src"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/state/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/state/index.ts",
+      "summary": "Application state and profile store.",
+      "tags": [
+        "code",
+        "typescript",
+        "src"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/state/Profile.ts",
+      "type": "file",
+      "name": "Profile.ts",
+      "filePath": "src/state/Profile.ts",
+      "summary": "Application state and profile store.",
+      "tags": [
+        "code",
+        "typescript",
+        "src"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/supabase/Auth.ts",
+      "type": "file",
+      "name": "Auth.ts",
+      "filePath": "src/supabase/Auth.ts",
+      "summary": "Supabase integration helper.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/supabase/Database.ts",
+      "type": "file",
+      "name": "Database.ts",
+      "filePath": "src/supabase/Database.ts",
+      "summary": "Supabase integration helper.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/supabase/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/supabase/index.ts",
+      "summary": "Supabase integration helper.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/types/Events.ts",
+      "type": "file",
+      "name": "Events.ts",
+      "filePath": "src/types/Events.ts",
+      "summary": "Shared TypeScript type declarations.",
+      "tags": [
+        "code",
+        "typescript",
+        "src"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/types/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/types/index.ts",
+      "summary": "Shared TypeScript type declarations.",
+      "tags": [
+        "code",
+        "typescript",
+        "src"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/utils/Animations.ts",
+      "type": "file",
+      "name": "Animations.ts",
+      "filePath": "src/utils/Animations.ts",
+      "summary": "Shared utility helper.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/utils/Compression.ts",
+      "type": "file",
+      "name": "Compression.ts",
+      "filePath": "src/utils/Compression.ts",
+      "summary": "Shared utility helper.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/utils/Constants.ts",
+      "type": "file",
+      "name": "Constants.ts",
+      "filePath": "src/utils/Constants.ts",
+      "summary": "Shared utility helper.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/utils/CssHelpers.ts",
+      "type": "file",
+      "name": "CssHelpers.ts",
+      "filePath": "src/utils/CssHelpers.ts",
+      "summary": "Shared utility helper.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/utils/Date.ts",
+      "type": "file",
+      "name": "Date.ts",
+      "filePath": "src/utils/Date.ts",
+      "summary": "Shared utility helper.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/utils/DeviceType.ts",
+      "type": "file",
+      "name": "DeviceType.ts",
+      "filePath": "src/utils/DeviceType.ts",
+      "summary": "Shared utility helper.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/utils/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/utils/index.ts",
+      "summary": "Shared utility helper.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/utils/Touch.ts",
+      "type": "file",
+      "name": "Touch.ts",
+      "filePath": "src/utils/Touch.ts",
+      "summary": "Shared utility helper.",
+      "tags": [
+        "code",
+        "typescript",
+        "src",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/vite-env.d.ts",
+      "type": "file",
+      "name": "vite-env.d.ts",
+      "filePath": "src/vite-env.d.ts",
+      "summary": "Source file for Vite Env.D.",
+      "tags": [
+        "code",
+        "typescript",
+        "src"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:vite.config.ts",
+      "type": "file",
+      "name": "vite.config.ts",
+      "filePath": "vite.config.ts",
+      "summary": "Vite build and plugin configuration.",
+      "tags": [
+        "code",
+        "typescript",
+        "root"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/App.tsx",
+      "target": "file:src/App.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.tsx",
+      "target": "file:src/PWABadge.tsx",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/components/AuthGuard.tsx",
+      "target": "file:src/components/AuthGuard.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/components/Footer.tsx",
+      "target": "file:src/components/Footer.module.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/components/Loading.tsx",
+      "target": "file:src/components/Loading.module.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/components/Modal.tsx",
+      "target": "file:src/components/Modal.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/components/Navbar.tsx",
+      "target": "file:src/components/Navbar.module.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/components/Navbar.tsx",
+      "target": "file:src/utils/CssHelpers.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/components/Toast.tsx",
+      "target": "file:src/components/Toast.module.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/index.tsx",
+      "target": "file:src/App.tsx",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/index.tsx",
+      "target": "file:src/index.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/index.tsx",
+      "target": "file:src/state/index.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/index.tsx",
+      "target": "file:src/supabase/index.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/About/About.tsx",
+      "target": "file:src/pages/About/About.module.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Error/Error.tsx",
+      "target": "file:src/pages/Error/Error.module.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Feedback/Feedback.tsx",
+      "target": "file:src/pages/Feedback/Feedback.module.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Home/Home.tsx",
+      "target": "file:src/pages/Home/Home.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Home/Home.tsx",
+      "target": "file:src/pages/Home/Home.query.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Home/Home.tsx",
+      "target": "file:src/pages/Service/Service.utils.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Login/Login.tsx",
+      "target": "file:src/pages/Login/Login.module.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/NotFound/NotFound.tsx",
+      "target": "file:src/pages/NotFound/NotFound.module.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Profile/Profile.tsx",
+      "target": "file:src/pages/Profile/Profile.module.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/ContactDetails.tsx",
+      "target": "file:src/pages/Service/Service.module.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/ServiceReport.tsx",
+      "target": "file:src/pages/Service/components/SuggestionPicker.tsx",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/ServiceReport.tsx",
+      "target": "file:src/pages/Service/Service.module.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/ServiceReport.tsx",
+      "target": "file:src/pages/Service/Service.tsx",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/ServiceReport.tsx",
+      "target": "file:src/pages/Service/Service.types.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/ServiceReport.tsx",
+      "target": "file:src/pages/Service/Service.utils.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/SuggestionPicker.tsx",
+      "target": "file:src/pages/Service/components/Suggestion.constants.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/SuggestionPicker.tsx",
+      "target": "file:src/pages/Service/components/Suggestion.query.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/SuggestionPicker.tsx",
+      "target": "file:src/pages/Service/Service.types.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/SuggestionPicker.tsx",
+      "target": "file:src/pages/Service/Service.utils.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/SuppliesDetails.tsx",
+      "target": "file:src/pages/Service/Service.module.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/components/SuppliesDetails.tsx",
+      "target": "file:src/pages/Service/Service.utils.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/Service.tsx",
+      "target": "file:src/pages/Service/components/index.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/Service.tsx",
+      "target": "file:src/pages/Service/Service.module.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/Service.tsx",
+      "target": "file:src/pages/Service/Service.query.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/Service.tsx",
+      "target": "file:src/pages/Service/Service.types.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/Service.tsx",
+      "target": "file:src/pages/Service/Service.utils.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/pages/Service/Service.utils.ts",
+      "target": "file:src/pages/Service/Service.types.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/PWABadge.tsx",
+      "target": "file:src/components/index.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/PWABadge.tsx",
+      "target": "file:src/PWABadge.module.css",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/PWABadge.tsx",
+      "target": "file:src/supabase/index.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/supabase/Auth.ts",
+      "target": "file:src/supabase/Database.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:project-setup",
+      "name": "Project Setup",
+      "description": "Documentation, manifests, build config, and repository tooling.",
+      "nodeIds": [
+        "config:.hintrc",
+        "config:.understand-anything/.understandignore",
+        "config:.understand-anything/config.json",
+        "config:netlify.toml",
+        "config:package.json",
+        "config:tsconfig.json",
+        "config:tsconfig.node.json",
+        "document:README.md",
+        "file:index.html",
+        "file:update-types.ps1"
+      ]
+    },
+    {
+      "id": "layer:app-shell",
+      "name": "App Shell",
+      "description": "Application bootstrap, shared UI, and global styling.",
+      "nodeIds": [
+        "file:src/App.css",
+        "file:src/App.tsx",
+        "file:src/PWABadge.module.css",
+        "file:src/PWABadge.tsx",
+        "file:src/components/AuthGuard.css",
+        "file:src/components/AuthGuard.tsx",
+        "file:src/components/Footer.module.css",
+        "file:src/components/Footer.tsx",
+        "file:src/components/Loading.module.css",
+        "file:src/components/Loading.tsx",
+        "file:src/components/Modal.css",
+        "file:src/components/Modal.tsx",
+        "file:src/components/Navbar.module.css",
+        "file:src/components/Navbar.tsx",
+        "file:src/components/Toast.module.css",
+        "file:src/components/Toast.tsx",
+        "file:src/components/index.ts",
+        "file:src/globals.d.ts",
+        "file:src/index.css",
+        "file:src/index.tsx",
+        "file:src/vite-env.d.ts",
+        "file:vite.config.ts"
+      ]
+    },
+    {
+      "id": "layer:feature-pages",
+      "name": "Feature Pages",
+      "description": "User-facing page flows and page-specific components.",
+      "nodeIds": [
+        "file:src/pages/About/About.module.css",
+        "file:src/pages/About/About.tsx",
+        "file:src/pages/About/index.ts",
+        "file:src/pages/Error/Error.module.css",
+        "file:src/pages/Error/Error.tsx",
+        "file:src/pages/Error/index.ts",
+        "file:src/pages/Feedback/Feedback.module.css",
+        "file:src/pages/Feedback/Feedback.tsx",
+        "file:src/pages/Feedback/index.ts",
+        "file:src/pages/Home/Home.css",
+        "file:src/pages/Home/Home.query.ts",
+        "file:src/pages/Home/Home.tsx",
+        "file:src/pages/Home/index.ts",
+        "file:src/pages/Login/Login.module.css",
+        "file:src/pages/Login/Login.tsx",
+        "file:src/pages/Login/index.ts",
+        "file:src/pages/NotFound/NotFound.module.css",
+        "file:src/pages/NotFound/NotFound.tsx",
+        "file:src/pages/NotFound/index.ts",
+        "file:src/pages/Profile/Profile.module.css",
+        "file:src/pages/Profile/Profile.tsx",
+        "file:src/pages/Profile/index.ts",
+        "file:src/pages/Service/Service.module.css",
+        "file:src/pages/Service/Service.query.ts",
+        "file:src/pages/Service/Service.tsx",
+        "file:src/pages/Service/Service.types.ts",
+        "file:src/pages/Service/Service.utils.ts",
+        "file:src/pages/Service/components/ContactDetails.tsx",
+        "file:src/pages/Service/components/ServiceReport.tsx",
+        "file:src/pages/Service/components/Suggestion.constants.ts",
+        "file:src/pages/Service/components/Suggestion.query.ts",
+        "file:src/pages/Service/components/SuggestionPicker.tsx",
+        "file:src/pages/Service/components/SuppliesDetails.tsx",
+        "file:src/pages/Service/components/index.ts",
+        "file:src/pages/Service/index.ts",
+        "file:src/pages/index.ts"
+      ]
+    },
+    {
+      "id": "layer:platform-data",
+      "name": "Platform and Data",
+      "description": "Supabase integration, app state, shared utilities, and domain types.",
+      "nodeIds": [
+        "file:src/constants/index.ts",
+        "file:src/state/Profile.ts",
+        "file:src/state/index.ts",
+        "file:src/supabase/Auth.ts",
+        "file:src/supabase/Database.ts",
+        "file:src/supabase/index.ts",
+        "file:src/types/Events.ts",
+        "file:src/types/index.ts",
+        "file:src/utils/Animations.ts",
+        "file:src/utils/Compression.ts",
+        "file:src/utils/Constants.ts",
+        "file:src/utils/CssHelpers.ts",
+        "file:src/utils/Date.ts",
+        "file:src/utils/DeviceType.ts",
+        "file:src/utils/Touch.ts",
+        "file:src/utils/index.ts"
+      ]
+    },
+    {
+      "id": "layer:static-assets",
+      "name": "Static Assets",
+      "description": "Public assets, generated artifacts, and visual resources.",
+      "nodeIds": []
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Project Overview",
+      "description": "Start with the README and manifest to understand the app purpose, scripts, and deployment shape.",
+      "nodeIds": [
+        "document:README.md",
+        "config:package.json",
+        "file:index.html"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "Application Bootstrap",
+      "description": "Follow the Vite entry point into the Solid app shell and global styles.",
+      "nodeIds": [
+        "file:src/index.tsx",
+        "file:src/App.tsx",
+        "file:src/index.css",
+        "file:src/App.css"
+      ]
+    },
+    {
+      "order": 3,
+      "title": "Shared UI and Routing",
+      "description": "Inspect the shared components and page registry that structure navigation across the app.",
+      "nodeIds": [
+        "file:src/components/Navbar.tsx",
+        "file:src/components/Toast.tsx",
+        "file:src/components/Modal.tsx",
+        "file:src/pages/index.ts"
+      ]
+    },
+    {
+      "order": 4,
+      "title": "Feature Flows",
+      "description": "Move through the page-level features, especially the Home and Service flows that drive the app.",
+      "nodeIds": [
+        "file:src/pages/Home/Home.tsx",
+        "file:src/pages/Service/Service.tsx",
+        "file:src/pages/Service/components/SuggestionPicker.tsx",
+        "file:src/pages/Login/Login.tsx",
+        "file:src/pages/Profile/Profile.tsx"
+      ]
+    },
+    {
+      "order": 5,
+      "title": "Data and Platform",
+      "description": "Review the Supabase layer, shared helpers, and domain types that support the feature flows.",
+      "nodeIds": [
+        "file:src/supabase/Auth.ts",
+        "file:src/supabase/Database.ts",
+        "file:src/state/Profile.ts",
+        "file:src/utils/index.ts",
+        "file:src/types/Events.ts"
+      ]
+    }
+  ]
+}

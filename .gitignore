@@ -13,6 +13,11 @@ dist-ssr
 dev-dist
 *.local
 
+# Understand Anything analysis outputs
+.understand-anything/intermediate/
+.understand-anything/tmp/
+.understand-anything/.trash-*/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
