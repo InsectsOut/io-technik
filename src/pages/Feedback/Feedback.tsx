@@ -5,7 +5,7 @@ import { createMutable } from "solid-js/store";
 import { FaSolidUpload } from "solid-icons/fa";
 import { Buckets, ImgFile } from "@/utils";
 import { useToast } from "@/components";
-import { supabase } from "@/supabase";
+import { supabase, Logger } from "@/supabase";
 import { employeeProfile } from "@/state";
 
 import "./Feedback.module.css";
@@ -33,6 +33,12 @@ export function Feedback() {
 
         if (result && result.error) {
             addToast("Error subiendo captura adjunta", "is-warning");
+            Logger.write({
+                message: `Error uploading feedback screenshot: ${result.error.message}`,
+                severity: "Low",
+                type: "Error",
+                debug: { titulo: feedbackForm.titulo },
+            });
         }
 
         const insert = await supabase
@@ -46,8 +52,21 @@ export function Feedback() {
             });
 
         if (insert.error) {
+            Logger.write({
+                message: `Error saving feedback report: ${insert.error.message}`,
+                severity: "Mid",
+                type: "Error",
+                debug: { titulo: feedbackForm.titulo, tipo: feedbackForm.tipo },
+            });
             return addToast("Ha ocurrido un error cargando el reporte", "is-danger");
         }
+
+        Logger.write({
+            message: "Feedback report submitted successfully",
+            severity: "None",
+            type: "Info",
+            debug: { titulo: feedbackForm.titulo, tipo: feedbackForm.tipo },
+        });
 
         window.requestAnimationFrame(() => {
             // Clears the report

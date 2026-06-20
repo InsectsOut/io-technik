@@ -4,7 +4,7 @@ import { destructure } from "@solid-primitives/destructure";
 import { useQuery } from "@tanstack/solid-query";
 
 import { Buckets, classNames, getFileExtension, windowSize } from "@/utils";
-import { IO_Database, supabase, Tables } from "@/supabase";
+import { IO_Database, Logger, supabase, Tables } from "@/supabase";
 import { Modal, useToast } from "@/components";
 
 import { getImageId, getServiceImgPath } from "../Service.utils"
@@ -165,6 +165,13 @@ export function SuggestionPicker(props: PickerProps) {
             query.refetch();
             setSugerencias(sugerencias.filter((s) => s.id !== sugerencia.id));
             addToast("Sugerencia eliminada correctamente", "is-info");
+        } else if (deleted?.error) {
+            Logger.write({
+                message: `Error deleting suggestion: ${deleted.error.message}`,
+                severity: "Low",
+                type: "Error",
+                debug: { suggestionId: sugerencia.id, details: deleted.error.details },
+            });
         }
     }
 
@@ -224,6 +231,12 @@ export function SuggestionPicker(props: PickerProps) {
             .select("id");
 
         if (update.error) {
+            Logger.write({
+                message: `Error saving suggestion: ${update.error.message}`,
+                severity: "Mid",
+                type: "Error",
+                debug: { folio: folio(), servicioId: servicioId(), details: update.error.details },
+            });
             addToast("Error guardando sugerencia", "is-danger");
             return clearReportForm();
         }

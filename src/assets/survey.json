@@ -1,0 +1,56 @@
+{
+    "version": "1.0",
+    "questions": [
+        {
+            "id": "q_satisfaction",
+            "type": "rating",
+            "text": "¿Cómo calificaría la calidad general del servicio recibido?",
+            "required": true,
+            "min": 1,
+            "max": 5
+        },
+        {
+            "id": "q_recommend",
+            "type": "yes_no",
+            "text": "¿Recomendaría nuestros servicios a otras personas?",
+            "required": true
+        },
+        {
+            "id": "q_pest_type",
+            "type": "single_choice",
+            "text": "¿Cuál fue el principal problema de plaga tratado en este servicio?",
+            "required": true,
+            "options": ["Cucarachas", "Ratas / Ratones", "Hormigas", "Moscas", "Mosquitos", "Otro"]
+        },
+        {
+            "id": "q_issues",
+            "type": "multi_choice",
+            "text": "¿Experimentó alguno de los siguientes problemas durante la visita?",
+            "required": false,
+            "options": ["Retraso en la llegada", "Falta de comunicación", "Equipamiento insuficiente", "Actitud del técnico", "Ninguno"]
+        },
+        {
+            "id": "q_nps",
+            "type": "linear_scale",
+            "text": "Del 0 al 10, ¿qué tan probable es que recomiende IO-Technik a un conocido?",
+            "required": true,
+            "min": 0,
+            "max": 10,
+            "minLabel": "Nada probable",
+            "maxLabel": "Muy probable"
+        },
+        {
+            "id": "q_next_visit",
+            "type": "date",
+            "text": "¿En qué fecha le gustaría programar su próxima visita?",
+            "required": false
+        },
+        {
+            "id": "q_comments",
+            "type": "free_text",
+            "text": "¿Tiene algún comentario o sugerencia adicional para mejorar nuestro servicio?",
+            "required": false,
+            "maxLength": 500
+        }
+    ]
+}

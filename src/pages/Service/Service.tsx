@@ -5,7 +5,7 @@ import { Motion } from "solid-motionone";
 import { useQuery } from "@tanstack/solid-query";
 import { Tables } from "@/supabase";
 
-import { ContactDetails, SuppliesDetails, ServiceReport } from "./components/";
+import { ContactDetails, SuppliesDetails, ServiceReport, ServiceSurvey } from "./components/";
 import { getServiceByFolio, ServiceDetails } from "./Service.query";
 import { getServiceStatus, tabOrder } from "./Service.utils";
 import { Tabs } from "./Service.types";
@@ -75,6 +75,7 @@ export function Service() {
     const [showConfirm, setShowConfirm] = createSignal(false);
     const isSupplies = () => view() === "suministros";
     const isContact = () => view() === "contacto";
+    const isEncuesta = () => view() === "encuesta";
     const isReport = () => view() === "reporte";
     const isInfo = () => view() === "detalles";
 
@@ -246,13 +247,10 @@ export function Service() {
 
     return (
         <Suspense fallback={<Loading />}>
-            <nav id="service_detail" class="panel is-shadowless">
-                <h1 class="title has-text-centered">
-                    Servicio #{folio.toString().replace("-", "FT-")}
+            <nav id="service_detail" class="panel is-shadowless is-sticky-top">
+                <h1 class="title has-text-centered mb-2">
+                    Servicio # {folio.toString().replace("-", "FT-")}
                 </h1>
-                <h2 class="subtitle has-text-centered">
-                    {org}
-                </h2>
 
                 <p class="panel-tabs is-justify-content-start scrollable hide-scroll">
                     <a class={classNames(["is-active", isInfo()])}
@@ -286,6 +284,14 @@ export function Service() {
                         tabindex={0}
                     >
                         Reporte
+                    </a>
+                    <a class={classNames(["is-active", isEncuesta()])}
+                        onKeyDown={setAndFocusTab}
+                        onClick={setAndFocusTab}
+                        id="encuesta"
+                        tabindex={0}
+                    >
+                        Encuesta
                     </a>
                 </p>
 
@@ -420,6 +426,10 @@ export function Service() {
                         <Match when={service() && isReport()}>
                             <ServiceReport service={service() ?? undefined} onServiceUpdate={onServiceUpdate} />
                         </Match>
+
+                        <Match when={service() && isEncuesta()}>
+                            <ServiceSurvey service={service() ?? undefined} />
+                        </Match>
                     </Switch>
                 </Motion.div>
 
@@ -438,28 +448,30 @@ export function Service() {
                     </Modal>
                 </Show>
 
-                <Show when={!isReport()}>
-                    <div class="field is-flex is-justify-content-center gap-3 mt-4 px-4">
-                        <button
-                            class="column button is-link is-outlined"
-                            onClick={goHome}
-                            type="button"
-                        >
-                            <span class="text-top">Regresar a servicios</span>
-                        </button>
-
-                        <Show when={navigator.share}>
+                <Show when={!isReport() && !isEncuesta()}>
+                    <div class={css.stickyButtonContainer}>
+                        <div class="field is-flex is-justify-content-center gap-3 px-4 py-3">
                             <button
-                                onClick={() => Share(service()!, view())}
-                                class="column button is-info is-outlined"
+                                class="column button is-link is-outlined"
+                                onClick={goHome}
                                 type="button"
                             >
-                                <span class="text-top">Compartir</span>
-                                <span class="icon text-sub">
-                                    <FiShare class="is-size-5" aria-hidden="true" />
-                                </span>
+                                <span class="text-top">Regresar a servicios</span>
                             </button>
-                        </Show>
+
+                            <Show when={navigator.share}>
+                                <button
+                                    onClick={() => Share(service()!, view())}
+                                    class="column button is-info is-outlined"
+                                    type="button"
+                                >
+                                    <span class="text-top">Compartir</span>
+                                    <span class="icon text-sub">
+                                        <FiShare class="is-size-5" aria-hidden="true" />
+                                    </span>
+                                </button>
+                            </Show>
+                        </div>
                     </div>
                 </Show>
             </nav>

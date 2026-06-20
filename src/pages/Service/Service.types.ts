@@ -38,7 +38,7 @@ export function isServicioStatus(value: any): value is ServicioEstatus {
 }
 
 /** Tabs to show for the service component */
-export type Tabs = "detalles" | "reporte" | "contacto" | "suministros";
+export type Tabs = "detalles" | "reporte" | "contacto" | "suministros" | "encuesta";
 
 /** Tipo para una recomendación de servicio */
 export type Recomendacion = {

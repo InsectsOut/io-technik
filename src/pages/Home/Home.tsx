@@ -15,7 +15,7 @@ import { InputEvent } from "@/types";
 import { match } from "ts-pattern";
 import dayjs from "dayjs";
 
-import { FaSolidBan, FaSolidCalendarDays, FaSolidCheck, FaSolidChevronDown, FaSolidChevronLeft, FaSolidChevronRight, FaSolidChevronUp, FaSolidCircleInfo, FaSolidFilter, FaSolidMagnifyingGlass, FaSolidMapPin, FaSolidPhoneFlip, FaSolidTrashCan, FaSolidXmark } from "solid-icons/fa";
+import { FaSolidBan, FaSolidCalendarDays, FaSolidCheck, FaSolidChevronDown, FaSolidChevronLeft, FaSolidChevronRight, FaSolidChevronUp, FaSolidCircleInfo, FaSolidClock, FaSolidFilter, FaSolidMagnifyingGlass, FaSolidMapPin, FaSolidPhoneFlip, FaSolidTrashCan, FaSolidXmark } from "solid-icons/fa";
 import { getServiceStatus } from "../Service/Service.utils";
 import { TbOutlineProgressAlert } from "solid-icons/tb";
 import { FiSend } from "solid-icons/fi";
@@ -128,7 +128,7 @@ export function Home() {
   let dropTriggerRef: Maybe<HTMLDivElement>;
 
   const fullDate = () => date().toDate()
-    .toLocaleDateString(LocaleMX, { dateStyle: "full" });
+    .toLocaleDateString(LocaleMX, { dateStyle: "long" });
 
   const updateSearch = debounce((search: string) => {
     setSearch(search);
@@ -347,8 +347,10 @@ export function Home() {
         </Match>
 
         <Match when={services.data}>
-          <h1 class="title p-0 has-text-centered">Servicios</h1>
-          <h2 class="subtitle p-0 has-text-centered">{fullDate()}</h2>
+          <h1 class="title p-0 pb-1 has-text-centered is-flex is-justify-content-center is-align-items-center gap-2">
+            <span>Servicios</span>
+            <span class="has-text-grey is-size-6 has-text-weight-medium">· {fullDate()}</span>
+          </h1>
           <div class="panel-block p-0 pb-2 is-flex is-gap-1 is-borderless">
             <p class="control">
               <input onInput={(e) => updateSearch(e.target.value)}
@@ -491,7 +493,8 @@ export function Home() {
           </Show>
 
           <Show when={filteredServices()?.length} fallback={NoServices(emptyMessage())}>
-            <div class="scroll-hint-wrapper hide-scroll test">
+            <>
+            <div class="scroll-hint-wrapper hide-scroll test is-hidden-mobile">
               <div class="table-container io-table-container hide-scroll is-clickable">
                 <table class="table io-table">
                   <thead>
@@ -595,6 +598,12 @@ export function Home() {
               </div>
               <div class="scroll-hint-right" />
             </div>
+            <div class="is-hidden-tablet scrollable hide-scroll" style={{ height: "65dvh" }}>
+              <For each={filteredServices()}>
+                {s => <ServiceCard service={s} showDate={searchByFolio()} />}
+              </For>
+            </div>
+            </>
           </Show>
 
           <div class="panel-block reset-filter gap-3 p-0" style={{ height: "5dvh" }}>
@@ -666,5 +675,71 @@ function HomeActions({ service }: { service: Service }): JSX.Element {
         </Show>
       </td>
     </>
+  );
+}
+
+function ServiceCard({ service, showDate }: { service: Service; showDate: boolean }) {
+  const { folio, Clientes: c, Direcciones: dir, organizacion: org } = service;
+
+  return (
+    <div class="card mb-2 service_card">
+      <header class="card-header is-shadowless">
+        <div class="card-header-title">
+          <div class="tags has-addons is-flex-wrap-nowrap">
+            <span class="tag is-info">{org}</span>
+            <span class="tag is-dark">{folio.toString().replace("-", "FT-")}</span>
+          </div>
+        </div>
+        <span class="card-header-icon is-flex gap-1">
+          {getStatusIcon(service)}
+          <span class="is-size-7 has-text-weight-semibold">{getServiceStatus(service)}</span>
+        </span>
+      </header>
+
+      <div class="card-content">
+        <div class="is-flex is-align-items-center is-justify-content-space-between">
+          <a href={`${Pages.Services}/${org}/${folio}`} class="has-text-weight-bold is-size-6 has-text-link">
+            {getClientName(service)}
+          </a>
+          <p class="is-flex is-align-items-center gap-1 has-text-weight-bold is-size-5">
+            <FaSolidClock class="has-text-info is-size-6" />
+            <span>{getSimpleTime(service)}</span>
+          </p>
+        </div>
+        <Show when={showDate}>
+          <p class="is-flex is-align-items-center gap-1 is-size-7 has-text-grey">
+            <FaSolidCalendarDays />
+            <span>{getSimpleDateTime(service)}</span>
+          </p>
+        </Show>
+      </div>
+
+      <footer class="card-footer">
+        <a class="card-footer-item is-justify-content-center" title="Teléfono" href={`tel:${c?.telefono}`}>
+          <span class="icon"><FaSolidPhoneFlip class="has-text-primary" /></span>
+        </a>
+        <a class="card-footer-item is-justify-content-center" title="Información" href={`${Pages.Services}/${org}/${folio}`}>
+          <span class="icon"><FaSolidCircleInfo class="has-text-info" /></span>
+        </a>
+        <a class="card-footer-item is-justify-content-center"
+          classList={{ "disabled": !dir?.ubicacion }}
+          href={dir?.ubicacion ?? "#"}
+          title="Ubicación"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="icon">
+            {dir?.ubicacion
+              ? <FaSolidMapPin class="has-text-danger" />
+              : <FaSolidBan class="has-text-grey" />}
+          </span>
+        </a>
+        <Show when={'share' in navigator}>
+          <a class="card-footer-item is-justify-content-center" title="Compartir" onClick={() => Share(service)}>
+            <span class="icon"><FiSend class="has-text-dark" /></span>
+          </a>
+        </Show>
+      </footer>
+    </div>
   );
 }

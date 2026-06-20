@@ -76,3 +76,10 @@ h1 {
 .tag-w {
     min-width: 70px;
 }
+
+.service_card {
+    display: block;
+    padding: 0;
+    gap: 0;
+    box-shadow: 0 1px 3px rgba(10, 10, 10, 0.1);
+}
